@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// 1. Tambahkan "use" untuk UserController di bagian atas
+use App\Http\Controllers\Admin\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,8 +56,8 @@ Route::middleware(['auth', 'verified', 'role.admin']) // Middleware untuk memast
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // Anda bisa menambahkan rute-rute khusus admin lainnya di sini
-    // contoh: Route::get('/users', ...)->name('users');
+    // 2. Tambahkan rute resource untuk user DI DALAM GRUP INI
+    Route::resource('users', UserController::class);
 
 });
 // ==========================================================

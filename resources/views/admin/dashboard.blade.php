@@ -13,11 +13,16 @@
                         {{ __("Selamat datang di Halaman Admin!") }}
                     </p>
                     
-                    {{-- TOMBOL MANAJEMEN USER DITAMBAHKAN DI SINI --}}
-                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                        Manajemen User
-                    </a>
-                    {{-- AKHIR BAGIAN TOMBOL --}}
+                    <div class="flex space-x-4">
+                        <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
+                            Manajemen User
+                        </a>
+                        
+                        {{-- TOMBOL MANAJEMEN MENU BARU --}}
+                        <a href="{{ route('admin.menus.index') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700">
+                            Manajemen Menu
+                        </a>
+                    </div>
                     
                 </div>
             </div>

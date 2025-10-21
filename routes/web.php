@@ -3,8 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// 1. Tambahkan "use" untuk UserController di bagian atas
+// 1. Tambahkan "use" untuk Controller di bagian atas
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MenuController; // <-- TAMBAHKAN INI
 
 /*
 |--------------------------------------------------------------------------
@@ -56,8 +57,11 @@ Route::middleware(['auth', 'verified', 'role.admin']) // Middleware untuk memast
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // 2. Tambahkan rute resource untuk user DI DALAM GRUP INI
+    // Rute resource untuk user
     Route::resource('users', UserController::class);
+
+    // 2. TAMBAHKAN RUTE RESOURCE UNTUK MENU DI SINI
+    Route::resource('menus', MenuController::class);
 
 });
 // ==========================================================
@@ -65,3 +69,4 @@ Route::middleware(['auth', 'verified', 'role.admin']) // Middleware untuk memast
 
 // Rute Autentikasi (login, register, dll.)
 require __DIR__.'/auth.php';
+

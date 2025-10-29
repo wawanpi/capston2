@@ -14,13 +14,19 @@
                     </p>
                     
                     <div class="flex space-x-4">
+                        {{-- Tombol Manajemen User --}}
                         <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
                             Manajemen User
                         </a>
                         
-                        {{-- TOMBOL MANAJEMEN MENU BARU --}}
-                        <a href="{{ route('admin.menus.index') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700">
+                        {{-- Tombol Manajemen Menu --}}
+                        <a href="{{ route('admin.menus.index') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
                             Manajemen Menu
+                        </a>
+
+                        {{-- TOMBOL BARU: KELOLA PESANAN --}}
+                        <a href="{{ route('admin.pesanan.index') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600">
+                            Kelola Pesanan
                         </a>
                     </div>
                     
@@ -29,3 +35,4 @@
         </div>
     </div>
 </x-app-layout>
+

@@ -3,70 +3,67 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// 1. Tambahkan "use" untuk Controller di bagian atas
+// 1. Tambahkan "use" untuk semua Controller yang digunakan
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\MenuController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Customer\CheckoutController; // <-- TAMBAHKAN INI
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Di sinilah Anda dapat mendaftarkan rute web untuk aplikasi Anda. Rute-rute
-| ini dimuat oleh RouteServiceProvider dan semuanya akan
-| ditugaskan ke grup middleware "web". Buat sesuatu yang hebat!
-|
 */
 
-// Rute Publik (Bisa diakses siapa saja)
+// Rute Landing Page (untuk tamu), tidak mengambil data dari database.
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
-// Rute Dashboard untuk USER BIASA (dan admin jika dia akses langsung)
-// Middleware 'auth' & 'verified' memastikan hanya user terautentikasi yang bisa masuk
-Route::get('/dashboard', function () {
-    // TIPS: Redirect admin ke dashboard-nya sendiri jika dia tidak sengaja mengakses ini
-    if (auth()->user()->hasRole('admin')) {
-        return redirect()->route('admin.dashboard');
-    }
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Rute Profil (untuk semua user yang terautentikasi)
-Route::middleware('auth')->group(function () {
+// Rute untuk semua user yang SUDAH LOGIN
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Rute Dashboard (memanggil HomeController@index untuk mengambil data menu)
+    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+
+    // Rute Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Rute Keranjang Belanja
+    Route::get('/cart', [CartController::class, 'cartList'])->name('cart.list');
+    Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.store');
+    Route::post('/update-cart', [CartController::class, 'updateCart'])->name('cart.update');
+    Route::post('/remove-cart', [CartController::class, 'removeCart'])->name('cart.remove');
+    Route::post('/clear-cart', [CartController::class, 'clearAllCart'])->name('cart.clear');
+
+    // === RUTE BARU UNTUK CHECKOUT (INI YANG HILANG) ===
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    // ===================================================
 });
 
 
-// ==========================================================
-// ==          GRUP RUTE BARU UNTUK ADMIN SAJA             ==
-// ==========================================================
-Route::middleware(['auth', 'verified', 'role.admin']) // Middleware untuk memastikan login, terverifikasi, dan role-nya adalah 'admin'
-    ->prefix('admin')                           // Semua URL akan diawali dengan /admin/...
-    ->name('admin.')                            // Semua nama route akan diawali dengan admin....
+// Grup Rute KHUSUS ADMIN
+Route::middleware(['auth', 'verified', 'role.admin'])
+    ->prefix('admin')
+    ->name('admin.')
     ->group(function () {
+        Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
+        
+        Route::resource('users', UserController::class);
+        Route::resource('menus', MenuController::class);
 
-    // Contoh rute dashboard admin
-    // URL: your-app.com/admin/dashboard
-    // Nama Route: admin.dashboard
-    Route::get('/dashboard', function () {
-        // Buat file view ini: resources/views/admin/dashboard.blade.php
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    // Rute resource untuk user
-    Route::resource('users', UserController::class);
-
-    // 2. TAMBAHKAN RUTE RESOURCE UNTUK MENU DI SINI
-    Route::resource('menus', MenuController::class);
-
+        Route::get('pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+        Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
+        Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 });
-// ==========================================================
 
 
-// Rute Autentikasi (login, register, dll.)
+// Rute Autentikasi
 require __DIR__.'/auth.php';
 

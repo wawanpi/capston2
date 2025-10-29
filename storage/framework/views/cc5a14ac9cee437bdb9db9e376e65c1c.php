@@ -67,21 +67,21 @@
 
         <!-- 2. Profil Pengguna Sidebar -->
         <div class="p-4 flex items-center gap-3 border-b">
-            @auth
+            <?php if(auth()->guard()->check()): ?>
                 <div class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
                     <i data-lucide="user" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <span class="font-semibold text-gray-800">{{ Auth::user()->name ?? 'Wawan' }}</span>
+                    <span class="font-semibold text-gray-800"><?php echo e(Auth::user()->name ?? 'Wawan'); ?></span>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
                     <i data-lucide="user" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <a href="{{ route('login') }}" class="font-semibold text-gray-800">Login / Daftar</a>
+                    <a href="<?php echo e(route('login')); ?>" class="font-semibold text-gray-800">Login / Daftar</a>
                 </div>
-            @endauth
+            <?php endif; ?>
         </div>
 
         <!-- 3. Link Navigasi Sidebar -->
@@ -116,11 +116,11 @@
             </a>
 
             <!-- Tombol Logout 1 (di dalam Sidebar) -->
-            @auth
+            <?php if(auth()->guard()->check()): ?>
                 <div class="border-t pt-2 mt-2">
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <a href="{{ route('logout') }}" 
+                    <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
+                        <?php echo csrf_field(); ?>
+                        <a href="<?php echo e(route('logout')); ?>" 
                            onclick="event.preventDefault(); this.closest('form').submit();"
                            class="flex items-center gap-3 p-3 rounded-lg text-red-600 hover:bg-red-50 w-full">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
@@ -128,7 +128,7 @@
                         </a>
                     </form>
                 </div>
-            @endauth
+            <?php endif; ?>
         </nav>
 
         <!-- 4. Footer Sidebar (Download App) -->
@@ -202,13 +202,13 @@
                                     <i data-lucide="user" class="w-6 h-6"></i>
                                 </div>
                                 <div>
-                                    @auth
-                                        <span class="font-semibold text-gray-800">{{ Auth::user()->name ?? 'Wawan' }}</span>
+                                    <?php if(auth()->guard()->check()): ?>
+                                        <span class="font-semibold text-gray-800"><?php echo e(Auth::user()->name ?? 'Wawan'); ?></span>
                                         <a href="#" class="text-sm text-red-600 block">Complete your profile</a>
-                                    @else
-                                        <a href="{{ route('login') }}" class="font-semibold text-gray-800">Login / Daftar</a>
+                                    <?php else: ?>
+                                        <a href="<?php echo e(route('login')); ?>" class="font-semibold text-gray-800">Login / Daftar</a>
                                         <p class="text-sm text-gray-500">Login untuk melihat profil</p>
-                                    @endauth
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -270,17 +270,17 @@
                             </a>
 
                             <!-- Tombol Logout 2 (di dalam Dropdown Profil) -->
-                            @auth
-                                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                    @csrf
-                                    <a href="{{ route('logout') }}" 
+                            <?php if(auth()->guard()->check()): ?>
+                                <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
+                                    <?php echo csrf_field(); ?>
+                                    <a href="<?php echo e(route('logout')); ?>" 
                                        onclick="event.preventDefault(); this.closest('form').submit();"
                                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 w-full">
                                         <i data-lucide="log-out" class="w-5 h-5"></i>
                                         <span class="font-semibold">Logout</span>
                                     </a>
                                 </form>
-                            @endauth
+                            <?php endif; ?>
                         </nav>
                     </div>
                 </div>
@@ -334,16 +334,16 @@
 
             <!-- Pesan Sukses/Error (dari kode Anda) -->
             <div class="mb-4">
-                @if(session('success'))
+                <?php if(session('success')): ?>
                     <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                        <span class="block sm:inline">{{ session('success') }}</span>
+                        <span class="block sm:inline"><?php echo e(session('success')); ?></span>
                     </div>
-                @endif
-                @if(session('error'))
+                <?php endif; ?>
+                <?php if(session('error')): ?>
                     <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <span class="block sm:inline">{{ session('error') }}</span>
+                        <span class="block sm:inline"><?php echo e(session('error')); ?></span>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- 4. ORDER TYPE (Tipe Pesanan) -->
@@ -388,35 +388,35 @@
                     <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a>
                 </div>
                 
-                @if(!isset($menus) || $menus->isEmpty())
+                <?php if(!isset($menus) || $menus->isEmpty()): ?>
                     <p class="text-gray-500">Saat ini belum ada menu yang tersedia.</p>
-                @else
+                <?php else: ?>
                     <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                        @foreach ($menus as $menu)
+                        <?php $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                                <img class="w-full h-48 object-cover" src="{{ asset($menu->gambar) }}" alt="{{ $menu->namaMenu }}">
+                                <img class="w-full h-48 object-cover" src="<?php echo e(asset($menu->gambar)); ?>" alt="<?php echo e($menu->namaMenu); ?>">
                                 
                                 <div class="p-4 flex flex-col" style="height: 200px;">
-                                    <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
-                                    <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                    <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+                                    <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
+                                    <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                    <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
 
-                                    <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
-                                        @csrf
-                                        <input type="hidden" value="{{ $menu->id }}" name="id">
+                                    <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                        <?php echo csrf_field(); ?>
+                                        <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                         <input type="hidden" value="1" name="quantity">
                                         
-                                        @if($menu->stok > 0)
+                                        <?php if($menu->stok > 0): ?>
                                             <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                        @else
+                                        <?php else: ?>
                                             <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
-                                        @endif
+                                        <?php endif; ?>
                                     </form>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </section>
             
             <!-- 6. EXCLUSIVE KFCKU APP -->
@@ -528,7 +528,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-                <p class="mb-4 md:mb-0">&copy; {{ date('Y') }} kfc.com by PT FASTFOOD INDONESIA Tbk. | All rights reserved.</p>
+                <p class="mb-4 md:mb-0">&copy; <?php echo e(date('Y')); ?> kfc.com by PT FASTFOOD INDONESIA Tbk. | All rights reserved.</p>
                 <div class="flex gap-4">
                     <a href="#" class="hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
                     <a href="#" class="hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
@@ -542,13 +542,13 @@
     <!-- === TOMBOL MELAYANG === -->
     
     <!-- Tombol Keranjang Melayang -->
-    <a href="{{ route('cart.list') }}" class="fixed bottom-16 right-4 z-30 bg-kfc-red p-4 rounded-full shadow-lg group">
+    <a href="<?php echo e(route('cart.list')); ?>" class="fixed bottom-16 right-4 z-30 bg-kfc-red p-4 rounded-full shadow-lg group">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.023.828l1.25 5.001A2.25 2.25 0 0 0 6.095 12H17.25a2.25 2.25 0 0 0 2.22-1.87l.46-4.885A1.125 1.125 0 0 0 18.72 4.125H5.111M7.5 18a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm10.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
         </svg>
-        @if (\Cart::getTotalQuantity() > 0)
-            <span class="absolute -top-2 -right-2 bg-white text-kfc-red text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{{ \Cart::getTotalQuantity() }}</span>
-        @endif
+        <?php if(\Cart::getTotalQuantity() > 0): ?>
+            <span class="absolute -top-2 -right-2 bg-white text-kfc-red text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"><?php echo e(\Cart::getTotalQuantity()); ?></span>
+        <?php endif; ?>
     </a>
     
     <!-- Tombol Hadiah Melayang -->
@@ -563,4 +563,4 @@
 </body>
 </html>
 
- 
+ <?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/dashboard.blade.php ENDPATH**/ ?>

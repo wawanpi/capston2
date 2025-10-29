@@ -28,6 +28,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // === LOGIKA PENGALIHAN BERDASARKAN ROLE ===
+        // Periksa apakah user yang baru login memiliki role 'admin'
+        if ($request->user()->hasRole('admin')) {
+            // Jika ya, arahkan ke rute 'admin.dashboard'
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+        // =======================================
+
+        // Jika bukan admin (berarti user biasa), arahkan ke rute 'dashboard' biasa
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -45,3 +54,4 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
+

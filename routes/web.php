@@ -9,7 +9,8 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
-use App\Http\Controllers\Customer\CheckoutController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\Customer\CheckoutController;
+use App\Http\Controllers\Customer\OrderController; // <-- TAMBAHKAN INI
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,7 @@ use App\Http\Controllers\Customer\CheckoutController; // <-- TAMBAHKAN INI
 |--------------------------------------------------------------------------
 */
 
-// Rute Landing Page (untuk tamu), tidak mengambil data dari database.
+// Rute Landing Page (untuk tamu)
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -26,7 +27,7 @@ Route::get('/', function () {
 // Rute untuk semua user yang SUDAH LOGIN
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // Rute Dashboard (memanggil HomeController@index untuk mengambil data menu)
+    // Rute Dashboard (Menampilkan Menu)
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
     // Rute Profil
@@ -41,10 +42,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/remove-cart', [CartController::class, 'removeCart'])->name('cart.remove');
     Route::post('/clear-cart', [CartController::class, 'clearAllCart'])->name('cart.clear');
 
-    // === RUTE BARU UNTUK CHECKOUT (INI YANG HILANG) ===
+    // Rute Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-    // ===================================================
+
+    // === RUTE BARU UNTUK RIWAYAT PESANAN ===
+    Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
+    // ======================================
 });
 
 

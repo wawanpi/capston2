@@ -45,6 +45,13 @@
                                 <span class="ms-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-kfc-red rounded-full">{{ \Cart::getTotalQuantity() }}</span>
                             @endif
                         </x-nav-link>
+                        
+                        {{-- === LINK BARU UNTUK RIWAYAT PESANAN (DESKTOP) === --}}
+                        <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
+                            {{ __('Riwayat Pesanan') }}
+                        </x-nav-link>
+                        {{-- ================================================= --}}
+
                     @endif
                 </div>
             </div>
@@ -123,6 +130,13 @@
                         <span class="ms-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-kfc-red rounded-full">{{ \Cart::getTotalQuantity() }}</span>
                     @endif
                 </x-responsive-nav-link>
+                
+                {{-- === LINK BARU UNTUK RIWAYAT PESANAN (MOBILE) === --}}
+                <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
+                    {{ __('Riwayat Pesanan') }}
+                </x-responsive-nav-link>
+                {{-- =============================================== --}}
+                
             @endif
         </div>
 
@@ -152,3 +166,4 @@
         </div>
     </div>
 </nav>
+

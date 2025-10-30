@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\TransaksiController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\CheckoutController;
-use App\Http\Controllers\Customer\OrderController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\Customer\OrderController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -46,10 +47,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-    // === RUTE BARU UNTUK RIWAYAT PESANAN ===
+    // Rute Riwayat Pesanan
     Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
-    // ======================================
 });
 
 
@@ -63,9 +63,15 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         Route::resource('users', UserController::class);
         Route::resource('menus', MenuController::class);
 
+        // Rute Kelola Pesanan
         Route::get('pesanan', [PesananController::class, 'index'])->name('pesanan.index');
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
+
+        // === RUTE BARU UNTUK KELOLA TRANSAKSI (INI YANG MEMPERBAIKI ERROR) ===
+        Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::post('transaksi/verifikasi/{pesanan}', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+        // ====================================================================
 });
 
 

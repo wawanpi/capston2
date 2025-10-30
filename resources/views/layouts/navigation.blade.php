@@ -33,6 +33,13 @@
                         <x-nav-link :href="route('admin.pesanan.index')" :active="request()->routeIs('admin.pesanan.*')">
                             {{ __('Kelola Pesanan') }}
                         </x-nav-link>
+                        
+                        {{-- === LANGKAH 7: TAMBAHKAN LINK INI (DESKTOP) === --}}
+                        <x-nav-link :href="route('admin.transaksi.index')" :active="request()->routeIs('admin.transaksi.index')">
+                            {{ __('Kelola Transaksi') }}
+                        </x-nav-link>
+                        {{-- =============================================== --}}
+
                     @else
                         {{-- Link untuk User Biasa --}}
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -46,11 +53,10 @@
                             @endif
                         </x-nav-link>
                         
-                        {{-- === LINK BARU UNTUK RIWAYAT PESANAN (DESKTOP) === --}}
+                        {{-- Link untuk Riwayat Pesanan (Desktop) --}}
                         <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
                             {{ __('Riwayat Pesanan') }}
                         </x-nav-link>
-                        {{-- ================================================= --}}
 
                     @endif
                 </div>
@@ -119,6 +125,13 @@
                  <x-responsive-nav-link :href="route('admin.pesanan.index')" :active="request()->routeIs('admin.pesanan.*')">
                     {{ __('Kelola Pesanan') }}
                 </x-responsive-nav-link>
+                
+                {{-- === LANGKAH 7: TAMBAHKAN LINK INI (MOBILE) === --}}
+                <x-responsive-nav-link :href="route('admin.transaksi.index')" :active="request()->routeIs('admin.transaksi.index')">
+                    {{ __('Kelola Transaksi') }}
+                </x-responsive-nav-link>
+                {{-- ============================================= --}}
+
             @else
                 {{-- Link Responsive untuk User Biasa --}}
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -131,11 +144,10 @@
                     @endif
                 </x-responsive-nav-link>
                 
-                {{-- === LINK BARU UNTUK RIWAYAT PESANAN (MOBILE) === --}}
+                {{-- Link untuk Riwayat Pesanan (Mobile) --}}
                 <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
                     {{ __('Riwayat Pesanan') }}
                 </x-responsive-nav-link>
-                {{-- =============================================== --}}
                 
             @endif
         </div>

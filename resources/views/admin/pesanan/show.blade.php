@@ -7,14 +7,20 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            {{-- Notifikasi Sukses/Error --}}
             @if ($message = Session::get('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                     <span class="block sm:inline">{{ $message }}</span>
                 </div>
             @endif
+             @if ($message = Session::get('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ $message }}</span>
+                </div>
+            @endif
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Kolom Kiri: Detail Pesanan & Update Status --}}
+                {{-- Kolom Kiri: Detail Pesanan, Update Status, Verifikasi Bayar --}}
                 <div class="md:col-span-2">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                          <div class="p-6 border-b border-gray-200">
@@ -32,7 +38,9 @@
                                 ">{{ ucfirst($pesanan->status) }}</span>
                             </p>
                         </div>
-                        <div class="p-6">
+                        
+                        {{-- Form Ubah Status --}}
+                        <div class="p-6 border-b border-gray-200">
                              <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
                              <form action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}" method="POST">
                                  @csrf
@@ -48,6 +56,28 @@
                                  </div>
                              </form>
                         </div>
+
+                        {{-- === BAGIAN BARU UNTUK LANGKAH 6 === --}}
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold mb-4">Tindakan Pembayaran</h3>
+                            {{-- Cek apakah pesanan sudah punya transaksi (sudah lunas) --}}
+                            @if($pesanan->transaksi)
+                                <div class="p-4 bg-green-100 rounded-lg text-green-700 font-semibold">
+                                    Pesanan ini sudah lunas dibayar.
+                                </div>
+                            @else
+                                {{-- Jika belum lunas, tampilkan tombol verifikasi --}}
+                                <form action="{{ route('admin.transaksi.verifikasi', $pesanan->id) }}" method="POST">
+                                    @csrf
+                                    <p class="text-sm text-gray-600 mb-2">Klik tombol ini untuk mengonfirmasi bahwa pembayaran tunai telah diterima di kasir.</p>
+                                    <x-primary-button class="bg-green-600 hover:bg-green-700">
+                                        Verifikasi Pembayaran
+                                    </x-primary-button>
+                                </form>
+                            @endif
+                        </div>
+                        {{-- === AKHIR BAGIAN BARU === --}}
+
                     </div>
                 </div>
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne; // <-- TAMBAHKAN IMPORT INI
 
 class Pesanan extends Model
 {
@@ -33,4 +34,13 @@ class Pesanan extends Model
     {
         return $this->hasMany(PesananDetail::class);
     }
+
+    /**
+     * Mendefinisikan relasi: Satu Pesanan memiliki satu Transaksi.
+     */
+    public function transaksi(): HasOne
+    {
+        return $this->hasOne(Transaksi::class);
+    }
 }
+

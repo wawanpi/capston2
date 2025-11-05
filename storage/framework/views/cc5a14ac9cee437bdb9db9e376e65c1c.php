@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesan KFC Online - KF Cku Web</title>
+    <title>Pesan BURMIN Online </title>
     
     <!-- Memuat Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,8 +56,8 @@
     >
         <!-- 1. Header Sidebar -->
         <div class="flex justify-between items-center p-4 border-b">
-            <div class="text-2xl font-bold tracking-wider uppercase text-kfc-red">
-                KFC
+            <div class="text-2xl font-bold tracking-wider uppercase text-burmin-red">
+                BURMIN
                 <span class="block text-xs font-normal capitalize">Jagonya Ayam</span>
             </div>
             <button @click="sidebarOpen = false">
@@ -152,23 +152,13 @@
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
                 <div class="text-2xl font-bold tracking-wider uppercase">
-                    KFC
+                    BURMIN
                     <span class="block text-xs font-normal capitalize">Jagonya Ayam</span>
                 </div>
             </div>
 
             <!-- Sisi Kanan: Kupon, Bahasa, User -->
             <div class="flex items-center gap-3 md:gap-5">
-                <button class="hidden md:flex items-center gap-2 border-2 border-white rounded-full px-4 py-2 text-sm font-semibold hover:bg-white hover:text-red-600 transition-colors">
-                    <i data-lucide="tag" class="w-5 h-5"></i>
-                    Apply Coupon Code
-                </button>
-                <button class="md:hidden relative">
-                    <!-- Ganti '1' dengan \Cart::getTotalQuantity() jika ini untuk keranjang -->
-                    <span class="absolute -top-1 -right-1 bg-white text-kfc-red text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">1</span>
-                    <i data-lucide="tag" class="w-6 h-6"></i>
-                </button>
-                
                 <div class="relative">
                     <button class="flex items-center gap-1 font-semibold text-sm">
                         EN <i data-lucide="chevron-down" class="w-4 h-4"></i>
@@ -437,7 +427,7 @@
                         <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-spaylater-10-percent-landscape-thumbnail.0441065e.jpg" alt="Promo 1">
                         <div class="p-4">
                             <h4 class="font-bold text-lg mb-1">Potongan Harga 10%...</h4>
-                            <p class="text-sm text-gray-600 mb-4">Save 10% on your favorite KFC menu with ShopeePayLater!</p>
+                            <p class="text-sm text-gray-600 mb-4">Save 10% on your favorite BURMIN menu with ShopeePayLater!</p>
                             <a href="#" class="font-bold text-kfc-red">See Detail</a>
                         </div>
                     </div>
@@ -479,7 +469,7 @@
                     </div>
                 </div>
                 <div class="hidden md:block">
-                    <img src="https://kfcindonesia.com/static/media/KFC-App-Landscape.a9e0364c.png" alt="KFC App" class="max-w-md w-full mx-auto">
+                    <img src="https://kfcindonesia.com/static/media/KFC-App-Landscape.a9e0364c.png" alt="BURMIN App" class="max-w-md w-full mx-auto">
                 </div>
             </section>
 
@@ -492,7 +482,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <div>
                     <h4 class="text-lg font-bold text-white mb-4">PT FAST FOOD INDONESIA TBK</h4>
-                    <p class="text-sm mb-2">Address: Jl. MT Haryono Kav 7 Jakarta Selatan 12810, Indonesia</p>
+                    <p class="text-sm mb-2">Address: Jl. Bunga, Geblagan, Tamantirto, Kec. Kasihan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55184</p>
                     <p class="text-sm mb-2">Operating hours: <br> Weekday: 08.00 - 20.00 <br> Weekend: 10.00 - 19.00</p>
                     <p class="text-sm mb-2">Telephone: 14022</p>
                     <p class="text-sm">E-mail: info@kfcindonesia.com</p>
@@ -531,7 +521,7 @@
                 <p class="mb-4 md:mb-0">&copy; <?php echo e(date('Y')); ?> kfc.com by PT FASTFOOD INDONESIA Tbk. | All rights reserved.</p>
                 <div class="flex gap-4">
                     <a href="#" class="hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    <a href="#" class="hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="https://www.instagram.com/burjominang/" class="hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
                     <a href="#" class="hover:text-white"><i data-lucide="twitter" class="w-5 h-5"></i></a>
                     <a href="#" class="hover:text-white"><i data-lucide="youtube" class="w-5 h-5"></i></a>
                 </div>

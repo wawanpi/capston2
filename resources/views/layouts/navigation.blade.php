@@ -1,181 +1,238 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    {{-- Logo mengarah ke dashboard yang sesuai --}}
-                    @if(Auth::user()->hasRole('admin'))
-                        <a href="{{ route('admin.dashboard') }}">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                        </a>
-                    @else
-                        <a href="{{ route('dashboard') }}">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                        </a>
-                    @endif
-                </div>
+<!-- === SIDEBAR MENU UTAMA (Drawer) === -->
+<!-- 
+    File ini dimuat oleh app.blade.php 
+    Variabel 'sidebarOpen' dan 'profileOpen' didapat dari <body> di app.blade.php
+-->
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::user()->hasRole('admin'))
-                        {{-- Link untuk Admin --}}
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                            {{ __('Dashboard Admin') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.menus.index')" :active="request()->routeIs('admin.menus.*')">
-                            {{ __('Manajemen Menu') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Manajemen User') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.pesanan.index')" :active="request()->routeIs('admin.pesanan.*')">
-                            {{ __('Kelola Pesanan') }}
-                        </x-nav-link>
-                        
-                        {{-- === LANGKAH 7: TAMBAHKAN LINK INI (DESKTOP) === --}}
-                        <x-nav-link :href="route('admin.transaksi.index')" :active="request()->routeIs('admin.transaksi.index')">
-                            {{ __('Kelola Transaksi') }}
-                        </x-nav-link>
-                        {{-- =============================================== --}}
+<!-- Backdrop Overlay (Latar belakang gelap) -->
+<div 
+    x-show="sidebarOpen" 
+    @click="sidebarOpen = false"
+    x-transition:enter="ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-black/60 z-40"
+    x-cloak
+></div>
 
-                    @else
-                        {{-- Link untuk User Biasa --}}
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Menu Makanan') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('cart.list')" :active="request()->routeIs('cart.list')">
-                            {{ __('Keranjang') }}
-                            {{-- Tampilkan jumlah item di keranjang --}}
-                            @if (\Cart::getTotalQuantity() > 0)
-                                <span class="ms-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-kfc-red rounded-full">{{ \Cart::getTotalQuantity() }}</span>
-                            @endif
-                        </x-nav-link>
-                        
-                        {{-- Link untuk Riwayat Pesanan (Desktop) --}}
-                        <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
-                            {{ __('Riwayat Pesanan') }}
-                        </x-nav-link>
-
-                    @endif
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication (Tombol Logout) -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+<!-- Panel Sidebar -->
+<div 
+    x-show="sidebarOpen"
+    x-transition:enter="transform ease-out duration-300"
+    x-transition:enter-start="-translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform ease-in duration-200"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="-translate-x-full"
+    class="fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-lg flex flex-col"
+    x-cloak
+>
+    <!-- 1. Header Sidebar -->
+    <div class="flex justify-between items-center p-4 border-b">
+        <div class="text-2xl font-bold tracking-wider uppercase text-burmin-red">
+            BURMIN
+            <span class="block text-xs font-normal capitalize">Jagonya Warmindo</span>
         </div>
+        <button @click="sidebarOpen = false">
+            <i data-lucide="x" class="w-6 h-6 text-gray-700"></i>
+        </button>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+    <!-- 2. Profil Pengguna Sidebar -->
+    <div class="p-4 flex items-center gap-3 border-b">
+        @auth
+            <div class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
+                <i data-lucide="user" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="font-semibold text-gray-800">{{ Auth::user()->name }}</span>
+            </div>
+        @else
+            <div class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
+                <i data-lucide="user" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <a href="{{ route('login') }}" class="font-semibold text-gray-800">Login / Daftar</a>
+            </div>
+        @endauth
+    </div>
+
+    <!-- 3. Link Navigasi Sidebar (Logika Role Diterapkan di Sini) -->
+    <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+        
+        @auth
             @if(Auth::user()->hasRole('admin'))
-                {{-- Link Responsive untuk Admin --}}
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                    {{ __('Dashboard Admin') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.menus.index')" :active="request()->routeIs('admin.menus.*')">
-                    {{ __('Manajemen Menu') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    {{ __('Manajemen User') }}
-                </x-responsive-nav-link>
-                 <x-responsive-nav-link :href="route('admin.pesanan.index')" :active="request()->routeIs('admin.pesanan.*')">
-                    {{ __('Kelola Pesanan') }}
-                </x-responsive-nav-link>
-                
-                {{-- === LANGKAH 7: TAMBAHKAN LINK INI (MOBILE) === --}}
-                <x-responsive-nav-link :href="route('admin.transaksi.index')" :active="request()->routeIs('admin.transaksi.index')">
-                    {{ __('Kelola Transaksi') }}
-                </x-responsive-nav-link>
-                {{-- ============================================= --}}
+                <!-- === LINK UNTUK ADMIN === -->
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Dashboard Admin</span>
+                </a>
+                <a href="{{ route('admin.menus.index') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('admin.menus.*') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Manajemen Menu</span>
+                </a>
+                <a href="{{ route('admin.pesanan.index') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('admin.pesanan.*') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Kelola Pesanan</span>
+                </a>
+                <a href="{{ route('admin.transaksi.index') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('admin.transaksi.*') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Kelola Transaksi</span>
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Manajemen User</span>
+                </a>
 
             @else
-                {{-- Link Responsive untuk User Biasa --}}
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Menu Makanan') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('cart.list')" :active="request()->routeIs('cart.list')">
-                     {{ __('Keranjang') }}
+                <!-- === LINK UNTUK PELANGGAN === -->
+                <a href="{{ route('dashboard') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('dashboard') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Menu Makanan</span>
+                </a>
+                <a href="{{ route('cart.list') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('cart.list') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Keranjang Saya</span>
                     @if (\Cart::getTotalQuantity() > 0)
-                        <span class="ms-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-kfc-red rounded-full">{{ \Cart::getTotalQuantity() }}</span>
+                        <span class="px-2 py-0.5 text-xs font-bold text-white bg-kfc-red rounded-full">{{ \Cart::getTotalQuantity() }}</span>
                     @endif
-                </x-responsive-nav-link>
-                
-                {{-- Link untuk Riwayat Pesanan (Mobile) --}}
-                <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index') || request()->routeIs('orders.show')">
-                    {{ __('Riwayat Pesanan') }}
-                </x-responsive-nav-link>
-                
+                </a>
+                <a href="{{ route('orders.index') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('orders.*') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Riwayat Pesanan</span>
+                </a>
+                <a href="{{ route('profile.edit') }}" class="flex items-center justify-between p-3 rounded-lg font-semibold hover:bg-gray-100 {{ request()->routeIs('profile.edit') ? 'bg-gray-100 text-kfc-red' : 'text-gray-700' }}">
+                    <span>Profil Saya</span>
+                </a>
             @endif
-        </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+            <!-- Tombol Logout 1 (di dalam Sidebar) -->
+            <div class="border-t pt-2 mt-2">
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    <a href="{{ route('logout') }}" 
+                       onclick="event.preventDefault(); this.closest('form').submit();"
+                       class="flex items-center gap-3 p-3 rounded-lg text-red-600 hover:bg-red-50 w-full">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        <span class="font-semibold">Logout</span>
+                    </a>
                 </form>
             </div>
+        @endauth
+    </nav>
+
+    <!-- 4. Footer Sidebar (Download App) -->
+    <div class="mt-auto p-4 bg-gray-800 text-white">
+        <h4 class="font-bold mb-3 uppercase">DOWNLOAD APP</h4>
+        <div class="flex flex-col gap-3">
+            <a href="#"><img src="https://kfcindonesia.com/static/media/app_store.e23d24be.png" alt="App Store" class="h-12 w-auto"></a>
+            <a href="#"><img src="https://kfcindonesia.com/static/media/google_play.d51c76c0.png" alt="Google Play" class="h-12 w-auto"></a>
         </div>
     </div>
-</nav>
+</div>
+<!-- === AKHIR SIDEBAR MENU UTAMA === -->
 
+
+<!-- === 1. HEADER (Top Navigation) === -->
+<header class="bg-kfc-red text-white shadow-lg sticky top-0 z-30">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <!-- Sisi Kiri: Menu & Logo -->
+        <div class="flex items-center gap-4">
+            <button @click="sidebarOpen = true">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <a href="{{ route('dashboard') }}" class="text-2xl font-bold tracking-wider uppercase">
+                BURMIN
+                <span class="block text-xs font-normal capitalize">Jagonya Warmindo</span>
+            </a>
+        </div>
+
+        <!-- Sisi Kanan: Kupon, Bahasa, User -->
+        <div class="flex items-center gap-3 md:gap-5">
+            <div class="relative">
+                <button class="flex items-center gap-1 font-semibold text-sm">
+                    ID <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <!-- === DROPDOWN PROFIL === -->
+            <div class="relative">
+                <!-- Tombol Ikon User -->
+                <button @click="profileOpen = !profileOpen" class="w-10 h-10 bg-white text-kfc-red rounded-full flex items-center justify-center">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Panel Dropdown Profile -->
+                <div 
+                    x-show="profileOpen"
+                    @click.outside="profileOpen = false"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="absolute right-0 top-12 z-50 w-80 bg-white rounded-lg shadow-lg border text-gray-800"
+                    x-cloak
+                >
+                    <!-- 1. User Info -->
+                    <div class="p-4 border-b">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                @auth
+                                    <span class="font-semibold text-gray-800">{{ Auth::user()->name }}</span>
+                                    <a href="{{ route('profile.edit') }}" class="text-sm text-red-600 block">Lihat Profil</a>
+                                @else
+                                    <a href="{{ route('login') }}" class="font-semibold text-gray-800">Login / Daftar</a>
+                                    <p class="text-sm text-gray-500">Login untuk melihat profil</p>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                    
+                    @auth
+                    <!-- 2. Menu Navigasi Profil (Hanya untuk user login) -->
+                    <nav class="p-2 text-gray-700">
+                        @if(Auth::user()->hasRole('admin'))
+                            <!-- Link Cepat Admin -->
+                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                                <span class="font-semibold">Dashboard Admin</span>
+                            </a>
+                            <a href="{{ route('admin.pesanan.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                                <span class="font-semibold">Kelola Pesanan</span>
+                            </a>
+                        @else
+                            <!-- Link Cepat Pelanggan -->
+                            <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="package" class="w-5 h-5"></i>
+                                <span class="font-semibold">Riwayat Pesanan</span>
+                            </a>
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="settings-2" class="w-5 h-5"></i>
+                                <span class="font-semibold">Pengaturan Akun</span>
+                            </a>
+                        @endif
+                    </nav>
+
+                    <!-- 3. Separator & Tombol Logout -->
+                    <div class="border-t mx-2"></div>
+                    <nav class="p-2 text-gray-700">
+                        <!-- Tombol Logout 2 (di dalam Dropdown Profil) -->
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <a href="{{ route('logout') }}" 
+                               onclick="event.preventDefault(); this.closest('form').submit();"
+                               class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 w-full">
+                                <i data-lucide="log-out" class="w-5 h-5"></i>
+                                <span class="font-semibold">Logout</span>
+                            </a>
+                        </form>
+                    </nav>
+                    @endauth
+                </div>
+            </div>
+            <!-- === AKHIR DROPDOWN PROFIL === -->
+
+        </div>
+    </div>
+</header>

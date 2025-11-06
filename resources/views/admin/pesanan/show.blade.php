@@ -29,6 +29,13 @@
                             <p><strong>Email:</strong> {{ $pesanan->user->email }}</p>
                             <p><strong>Tanggal Pesan:</strong> {{ $pesanan->created_at->format('d M Y, H:i') }}</p>
                             <p><strong>Tipe Layanan:</strong> {{ $pesanan->tipe_layanan }}</p>
+
+                            {{-- === INI BARIS YANG DITAMBAHKAN === --}}
+                            @if($pesanan->tipe_layanan == 'Dine-in')
+                                <p><strong>Jumlah Tamu:</strong> <span class="font-bold text-kfc-red">{{ $pesanan->jumlah_tamu }} orang</span></p>
+                            @endif
+                            {{-- === AKHIR BLOK BARU === --}}
+
                             <p><strong>Total Bayar:</strong> <span class="font-bold">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</span></p>
                             <p><strong>Status Saat Ini:</strong> 
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -38,28 +45,28 @@
                                     @if($pesanan->status == 'cancelled') bg-red-100 text-red-800 @endif
                                 ">{{ ucfirst($pesanan->status) }}</span>
                             </p>
-                        </div>
+                         </div>
                         
                         {{-- Form Ubah Status --}}
-                        <div class="p-6 border-b border-gray-200">
-                             <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
-                             <form action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}" method="POST">
-                                 @csrf
-                                 @method('PUT')
-                                 <div class="flex items-center">
-                                     <select name="status" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                         <option value="pending" {{ $pesanan->status == 'pending' ? 'selected' : '' }}>Pending (Menunggu diproses)</option>
-                                         <option value="processing" {{ $pesanan->status == 'processing' ? 'selected' : '' }}>Processing (Sedang dibuat)</option>
-                                         <option value="completed" {{ $pesanan->status == 'completed' ? 'selected' : '' }}>Completed (Siap diambil)</option>
-                                         <option value="cancelled" {{ $pesanan->status == 'cancelled' ? 'selected' : '' }}>Cancelled (Dibatalkan)</option>
-                                     </select>
-                                     <x-primary-button class="ml-4">Update</x-primary-button>
-                                 </div>
-                             </form>
-                        </div>
+                         <div class="p-6 border-b border-gray-200">
+                               <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
+                               <form action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}" method="POST">
+                                   @csrf
+                                   @method('PUT')
+                                   <div class="flex items-center">
+                                       <select name="status" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                           <option value="pending" {{ $pesanan->status == 'pending' ? 'selected' : '' }}>Pending (Menunggu diproses)</option>
+                                           <option value="processing" {{ $pesanan->status == 'processing' ? 'selected' : '' }}>Processing (Sedang dibuat)</option>
+                                           <option value="completed" {{ $pesanan->status == 'completed' ? 'selected' : '' }}>Completed (Siap diambil)</option>
+                                           <option value="cancelled" {{ $pesanan->status == 'cancelled' ? 'selected' : '' }}>Cancelled (Dibatalkan)</option>
+                                       </select>
+                                       <x-primary-button class="ml-4">Update</x-primary-button>
+                                   </div>
+                               </form>
+                         </div>
 
-                        {{-- === BAGIAN BARU UNTUK LANGKAH 6 === --}}
-                        <div class="p-6">
+                        {{-- Tindakan Pembayaran --}}
+                         <div class="p-6">
                             <h3 class="text-lg font-semibold mb-4">Tindakan Pembayaran</h3>
                             {{-- Cek apakah pesanan sudah punya transaksi (sudah lunas) --}}
                             @if($pesanan->transaksi)
@@ -76,35 +83,34 @@
                                     </x-primary-button>
                                 </form>
                             @endif
-                        </div>
-                        {{-- === AKHIR BAGIAN BARU === --}}
+                         </div>
 
                     </div>
                 </div>
 
                 {{-- Kolom Kanan: Item yang Dipesan --}}
                 <div class="md:col-span-1">
-                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold mb-4">Item yang Dipesan</h3>
-                            <div class="space-y-4">
-                                @foreach($pesanan->details as $item)
-                                    <div class="flex justify-between items-start border-b pb-2">
-                                        <div>
-                                            <p class="font-semibold">{{ $item->menu->namaMenu }}</p>
-                                            <p class="text-sm text-gray-600">{{ $item->jumlah }} x Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</p>
+                       <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-4">Item yang Dipesan</h3>
+                                <div class="space-y-4">
+                                    @foreach($pesanan->details as $item)
+                                        <div class="flex justify-between items-start border-b pb-2">
+                                            <div>
+                                                <p class="font-semibold">{{ $item->menu->namaMenu }}</p>
+                                                <p class="text-sm text-gray-600">{{ $item->jumlah }} x Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</p>
+                                            </div>
+                                            <p class="text-sm font-semibold text-gray-800">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                                         </div>
-                                        <p class="text-sm font-semibold text-gray-800">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                     </div>
                 </div>
             </div>
              <div class="mt-6">
                 <a href="{{ route('admin.pesanan.index') }}" class="text-indigo-600 hover:text-indigo-900">&larr; Kembali ke Daftar Pesanan</a>
-            </div>
+             </div>
         </div>
     </div>
 </x-app-layout>

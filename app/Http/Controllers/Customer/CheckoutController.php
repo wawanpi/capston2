@@ -44,6 +44,15 @@ class CheckoutController extends Controller
             return redirect()->route('dashboard')->with('error', 'Keranjang Anda kosong.');
         }
 
+        // --- Validasi Data dari Form ---
+        $validatedData = $request->validate([
+            // Pastikan nilai 'in' (Take Away,Dine-in) SAMA PERSIS dengan database Anda
+            'tipe_layanan' => 'required|in:Take Away,Dine-in', 
+            'catatan_pelanggan' => 'nullable|string|max:255',
+            'jumlah_tamu' => 'required_if:tipe_layanan,Dine-in|nullable|numeric|min:1',
+        ]);
+        // ---------------------------------
+
         // Kita gunakan DB Transaction, jika ada 1 proses gagal, semua akan dibatalkan.
         try {
             DB::beginTransaction();
@@ -53,8 +62,9 @@ class CheckoutController extends Controller
                 'user_id' => Auth::id(), // Ambil ID user yang sedang login
                 'total_bayar' => Cart::getTotal(),
                 'status' => 'pending', // Status awal pesanan
-                'catatan_pelanggan' => $request->input('catatan_pelanggan'), // Ambil catatan dari form
-                'tipe_layanan' => $request->input('tipe_layanan') // <-- INI BARIS YANG DITAMBAHKAN
+                'catatan_pelanggan' => $validatedData['catatan_pelanggan'], // <-- Diubah
+                'tipe_layanan' => $validatedData['tipe_layanan'], // <-- Diubah
+                'jumlah_tamu' => $validatedData['jumlah_tamu'] ?? 1,   // <-- Ditambah (Gunakan 1 jika null)
             ]);
 
             // 2. Loop semua item di keranjang
@@ -93,6 +103,13 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             // 7. Jika ada kegagalan (misal stok habis), batalkan semua yang sudah disimpan
             DB::rollBack();
+
+            // Jika error-nya karena validasi, kembalikan ke form
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return redirect()->back()->withErrors($e->errors())->withInput();
+            }
+
+            // Jika error-nya karena stok atau lainnya
             return redirect()->route('cart.list')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

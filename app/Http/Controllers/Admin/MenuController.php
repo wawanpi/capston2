@@ -35,28 +35,32 @@ class MenuController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * (DIUPDATE DENGAN LOGIKA KATEGORI & VALIDATED)
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // Validasi SEMUA input, termasuk 'kategori'
+        $validatedData = $request->validate([
             'namaMenu' => 'required|string|max:255|unique:menus,namaMenu',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
             'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'kategori' => 'required|string|in:makanan,minuman', // <-- DITAMBAHKAN
         ]);
 
-        $input = $request->except('gambar');
-
-        // PERUBAHAN LOGIKA UPLOAD
+        // Logika upload gambar (sudah benar)
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('menu-images'), $filename); // Pindahkan langsung ke public/menu-images
-            $input['gambar'] = 'menu-images/' . $filename; // Simpan path relatif terhadap public
+            $file->move(public_path('menu-images'), $filename);
+            
+            // Tambahkan path gambar ke data yang sudah divalidasi
+            $validatedData['gambar'] = 'menu-images/' . $filename;
         }
 
-        Menu::create($input);
+        // Buat menu HANYA menggunakan data yang sudah tervalidasi
+        Menu::create($validatedData);
 
         return redirect()->route('admin.menus.index')
                          ->with('success', 'Menu baru berhasil ditambahkan.');
@@ -67,7 +71,6 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
-        // Biasanya tidak digunakan di panel admin, redirect saja ke index
         return redirect()->route('admin.menus.index');
     }
 
@@ -81,20 +84,21 @@ class MenuController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * (DIUPDATE DENGAN LOGIKA KATEGORI & VALIDATED)
      */
     public function update(Request $request, Menu $menu)
     {
-        $request->validate([
+        // Validasi SEMUA input, termasuk 'kategori'
+        $validatedData = $request->validate([
             'namaMenu' => 'required|string|max:255|unique:menus,namaMenu,' . $menu->id,
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Gambar boleh null saat update
+            'kategori' => 'required|string|in:makanan,minuman', // <-- DITAMBAHKAN
         ]);
 
-        $input = $request->except('gambar');
-
-        // PERUBAHAN LOGIKA UPDATE GAMBAR
+        // Logika update gambar (sudah benar)
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama dari folder public
             if ($menu->gambar && File::exists(public_path($menu->gambar))) {
@@ -104,10 +108,13 @@ class MenuController extends Controller
             $file = $request->file('gambar');
             $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('menu-images'), $filename);
-            $input['gambar'] = 'menu-images/' . $filename;
+            
+            // Tambahkan path gambar baru ke data yang sudah divalidasi
+            $validatedData['gambar'] = 'menu-images/' . $filename;
         }
 
-        $menu->update($input);
+        // Update menu HANYA menggunakan data yang sudah tervalidasi
+        $menu->update($validatedData);
 
         return redirect()->route('admin.menus.index')
                          ->with('success', 'Menu berhasil diperbarui.');
@@ -118,7 +125,7 @@ class MenuController extends Controller
      */
     public function destroy(Menu $menu)
     {
-        // PERUBAHAN LOGIKA HAPUS GAMBAR
+        // Logika hapus gambar (sudah benar)
         if ($menu->gambar && File::exists(public_path($menu->gambar))) {
             File::delete(public_path($menu->gambar));
         }
@@ -129,4 +136,3 @@ class MenuController extends Controller
                          ->with('success', 'Menu berhasil dihapus.');
     }
 }
-

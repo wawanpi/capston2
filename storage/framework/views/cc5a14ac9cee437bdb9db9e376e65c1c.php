@@ -71,7 +71,7 @@
                 <span class="w-3 h-10 bg-kfc-red"></span>
                 <span class="w-3 h-10 bg-kfc-red"></span>
             </div>
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">HUNGRY TODAY? LET'S ORDER</h2>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">Hungry today? Let’s order</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     <img src="https://kfcindonesia.com/static/media/Dine-in.0135d1f8.png" alt="Dine-In" class="h-16 w-16">
@@ -92,7 +92,7 @@
             </div>
         </section>
 
-        <!-- 5. HOT DEALS (Menu Loop) -->
+        <!-- 5. MENU TERLARIS (Best Seller) -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -101,18 +101,17 @@
                         <span class="w-3 h-10 bg-kfc-red"></span>
                         <span class="w-3 h-10 bg-kfc-red"></span>
                     </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Hot Deals</h3>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Best Seller</h3>
                 </div>
-                <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a>
+                
             </div>
             
-            <?php if(!isset($menus) || $menus->isEmpty()): ?>
-                <p class="text-gray-500">Saat ini belum ada menu yang tersedia.</p>
+            <?php if(!isset($bestSellers) || $bestSellers->isEmpty()): ?>
+                <p class="text-gray-500">Saat ini belum ada menu terlaris.</p>
             <?php else: ?>
                 <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    <?php $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $bestSellers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                            
                             <img class="w-full h-48 object-cover" 
                                  src="<?php echo e(asset($menu->gambar)); ?>" 
                                  alt="<?php echo e($menu->namaMenu); ?>"
@@ -141,7 +140,7 @@
             <?php endif; ?>
         </section>
         
-        <!-- 6. EXCLUSIVE KFCKU APP -->
+        <!-- 6. SEMUA MAKANAN -->
         <section class="mb-12">
              <div class="flex justify-between items-center mb-6">
                 <div>
@@ -150,39 +149,94 @@
                         <span class="w-3 h-10 bg-kfc-red"></span>
                         <span class="w-3 h-10 bg-kfc-red"></span>
                     </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">EXCLUSIVE KFCKU APP</h3>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Makanan</h3>
                 </div>
-                <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a>
+                
             </div>
-            <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-spaylater-10-percent-landscape-thumbnail.0441065e.jpg" alt="Promo 1">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">Potongan Harga 10%...</h4>
-                        <p class="text-sm text-gray-600 mb-4">Save 10% on your favorite BURMIN menu with ShopeePayLater!</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
+            
+            <?php if(!isset($allFood) || $allFood->isEmpty()): ?>
+                <p class="text-gray-500">Saat ini belum ada menu makanan.</p>
+            <?php else: ?>
+                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
+                    <?php $__currentLoopData = $allFood; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
+                            <img class="w-full h-48 object-cover" 
+                                 src="<?php echo e(asset($menu->gambar)); ?>" 
+                                 alt="<?php echo e($menu->namaMenu); ?>"
+                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+                            
+                            <div class="p-4 flex flex-col" style="height: 200px;">
+                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
+
+                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
+                                    <input type="hidden" value="1" name="quantity">
+                                    
+                                    <?php if($menu->stok > 0): ?>
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
+                                    <?php else: ?>
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-1-pc-landscape-thumbnail.69637c35.jpg" alt="Promo 2">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">MidWeek 1 Pc Chicken + 1...</h4>
-                        <p class="text-sm text-gray-600 mb-4">Enjoy 1 Pc Chicken + Rice for only Rp15,000</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
-                </div>
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-4-pc-landscape-thumbnail.c41b893f.jpg" alt="Promo 3">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">MIDWEEK CRUNCH</h4>
-                        <p class="text-sm text-gray-600 mb-4">Midweek Crunch 4 Pc Chicken</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
-                </div>
-            </div>
+            <?php endif; ?>
         </section>
 
-        <!-- 7. APP DOWNLOAD SECTION -->
+        <!-- 7. SEMUA MINUMAN (BAGIAN BARU) -->
+        <section class="mb-12">
+             <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Minuman</h3>
+                </div>
+                 
+            </div>
+            
+            <?php if(!isset($allDrinks) || $allDrinks->isEmpty()): ?>
+                <p class="text-gray-500">Saat ini belum ada menu minuman.</p>
+            <?php else: ?>
+                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
+                    <?php $__currentLoopData = $allDrinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
+                            <img class="w-full h-48 object-cover" 
+                                 src="<?php echo e(asset($menu->gambar)); ?>" 
+                                 alt="<?php echo e($menu->namaMenu); ?>"
+                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+                            
+                            <div class="p-4 flex flex-col" style="height: 200px;">
+                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
+
+                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
+                                    <input type="hidden" value="1" name="quantity">
+                                    
+                                    <?php if($menu->stok > 0): ?>
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
+                                    <?php else: ?>
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+            <?php endif; ?>
+        </section>
+
+        <!-- 8. APP DOWNLOAD SECTION (sebelumnya section 7) -->
         <section class="my-16 bg-white p-8 rounded-xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
             <div class="text-center md:text-left">
                 <div class="flex justify-center md:justify-start items-center gap-2 mb-4">

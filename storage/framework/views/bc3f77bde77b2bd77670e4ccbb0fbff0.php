@@ -115,7 +115,7 @@
 
                     <?php else: ?>
                         <p class="text-gray-500">Keranjang belanja Anda masih kosong.</p>
-                        <a href="<?php echo e(route('welcome')); ?>" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900">&larr; Kembali belanja</a>
+                        <a href="<?php echo e(route('dashboard')); ?>" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900">&larr; Kembali belanja</a>
                     <?php endif; ?>
                 </div>
             </div>

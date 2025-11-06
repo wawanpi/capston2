@@ -103,7 +103,7 @@
 
                     @else
                         <p class="text-gray-500">Keranjang belanja Anda masih kosong.</p>
-                        <a href="{{ route('welcome') }}" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900">&larr; Kembali belanja</a>
+                        <a href="{{ route('dashboard') }}" class="mt-4 inline-block text-indigo-600 hover:text-indigo-900">&larr; Kembali belanja</a>
                     @endif
                 </div>
             </div>

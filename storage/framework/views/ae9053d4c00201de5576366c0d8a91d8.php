@@ -39,50 +39,85 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gambar</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Menu</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <?php $__empty_1 = true; $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gambar</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Menu</th>
                                     
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <?php if($menu->gambar): ?>
-                                            
-                                            <img src="<?php echo e(asset($menu->gambar)); ?>" alt="<?php echo e($menu->namaMenu); ?>" class="w-16 h-16 object-cover rounded">
-                                        <?php else: ?>
-                                            <span class="text-xs text-gray-400">No Image</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo e($menu->namaMenu); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp <?php echo e(number_format($menu->harga, 2, ',', '.')); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo e($menu->stok); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="<?php echo e(route('admin.menus.edit', $menu->id)); ?>" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                        <form action="<?php echo e(route('admin.menus.destroy', $menu->id)); ?>" method="POST" onsubmit="return confirm('Yakin ingin menghapus menu ini?');" style="display:inline;">
-                                            <?php echo csrf_field(); ?>
-                                            <?php echo method_field('DELETE'); ?>
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                        </form>
-                                    </td>
+                                    
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
+                                    
+                                    
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stok</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                 </tr>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                <tr>
-                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada menu.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                     <div class="mt-4">
-                        <?php echo e($menus->withQueryString()->links()); ?>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php $__empty_1 = true; $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <tr>
+                                        
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?php if($menu->gambar): ?>
+                                                
+                                                <img src="<?php echo e(asset($menu->gambar)); ?>" 
+                                                     alt="<?php echo e($menu->namaMenu); ?>" 
+                                                     class="w-16 h-16 object-cover rounded"
+                                                     onerror="this.src='https://placehold.co/64x64/e2e8f0/e2e8f0?text=IMG'">
+                                            <?php else: ?>
+                                                <div class="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                                                    <span class="text-xs text-gray-400">No Image</span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo e($menu->namaMenu); ?></td>
+                                        
+                                        
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <?php if($menu->kategori == 'makanan'): ?>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Makanan
+                                                </span>
+                                            <?php elseif($menu->kategori == 'minuman'): ?>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    Minuman
+                                                </span>
+                                            <?php else: ?>
+                                                
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                    N/A
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        
+                                        
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo e($menu->stok); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <a href="<?php echo e(route('admin.menus.edit', $menu->id)); ?>" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                            <form action="<?php echo e(route('admin.menus.destroy', $menu->id)); ?>" method="POST" onsubmit="return confirm('Yakin ingin menghapus menu ini?');" style="display:inline;">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('DELETE'); ?>
+                                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <tr>
+                                        
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada menu.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                         <div class="mt-4">
+                             
+                            <?php echo e($menus->withQueryString()->links()); ?>
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,6 +132,4 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?>
-
-<?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/admin/menus/index.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/admin/menus/index.blade.php ENDPATH**/ ?>

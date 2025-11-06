@@ -62,7 +62,7 @@
                 <span class="w-3 h-10 bg-kfc-red"></span>
                 <span class="w-3 h-10 bg-kfc-red"></span>
             </div>
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">HUNGRY TODAY? LET'S ORDER</h2>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">Hungry today? Let’s order</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     <img src="https://kfcindonesia.com/static/media/Dine-in.0135d1f8.png" alt="Dine-In" class="h-16 w-16">
@@ -83,7 +83,7 @@
             </div>
         </section>
 
-        <!-- 5. HOT DEALS (Menu Loop) -->
+        <!-- 5. MENU TERLARIS (Best Seller) -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -92,18 +92,17 @@
                         <span class="w-3 h-10 bg-kfc-red"></span>
                         <span class="w-3 h-10 bg-kfc-red"></span>
                     </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Hot Deals</h3>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Best Seller</h3>
                 </div>
-                <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a>
+                {{-- Link See All dihapus --}}
             </div>
             
-            @if(!isset($menus) || $menus->isEmpty())
-                <p class="text-gray-500">Saat ini belum ada menu yang tersedia.</p>
+            @if(!isset($bestSellers) || $bestSellers->isEmpty())
+                <p class="text-gray-500">Saat ini belum ada menu terlaris.</p>
             @else
                 <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    @foreach ($menus as $menu)
+                    @foreach ($bestSellers as $menu)
                         <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                            {{-- Menambahkan placeholder jika gambar error --}}
                             <img class="w-full h-48 object-cover" 
                                  src="{{ asset($menu->gambar) }}" 
                                  alt="{{ $menu->namaMenu }}"
@@ -132,7 +131,7 @@
             @endif
         </section>
         
-        <!-- 6. EXCLUSIVE KFCKU APP -->
+        <!-- 6. SEMUA MAKANAN -->
         <section class="mb-12">
              <div class="flex justify-between items-center mb-6">
                 <div>
@@ -141,39 +140,94 @@
                         <span class="w-3 h-10 bg-kfc-red"></span>
                         <span class="w-3 h-10 bg-kfc-red"></span>
                     </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">EXCLUSIVE KFCKU APP</h3>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Makanan</h3>
                 </div>
-                <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a>
+                {{-- <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a> --}}
             </div>
-            <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-spaylater-10-percent-landscape-thumbnail.0441065e.jpg" alt="Promo 1">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">Potongan Harga 10%...</h4>
-                        <p class="text-sm text-gray-600 mb-4">Save 10% on your favorite BURMIN menu with ShopeePayLater!</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
+            
+            @if(!isset($allFood) || $allFood->isEmpty())
+                <p class="text-gray-500">Saat ini belum ada menu makanan.</p>
+            @else
+                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
+                    @foreach ($allFood as $menu)
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
+                            <img class="w-full h-48 object-cover" 
+                                 src="{{ asset($menu->gambar) }}" 
+                                 alt="{{ $menu->namaMenu }}"
+                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+                            
+                            <div class="p-4 flex flex-col" style="height: 200px;">
+                                <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+
+                                <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
+                                    @csrf
+                                    <input type="hidden" value="{{ $menu->id }}" name="id">
+                                    <input type="hidden" value="1" name="quantity">
+                                    
+                                    @if($menu->stok > 0)
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
+                                    @else
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                    @endif
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-1-pc-landscape-thumbnail.69637c35.jpg" alt="Promo 2">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">MidWeek 1 Pc Chicken + 1...</h4>
-                        <p class="text-sm text-gray-600 mb-4">Enjoy 1 Pc Chicken + Rice for only Rp15,000</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
-                </div>
-                <div class="border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                    <img class="w-full h-48 object-cover" src="https://kfcindonesia.com/static/media/mobile-midweek-4-pc-landscape-thumbnail.c41b893f.jpg" alt="Promo 3">
-                    <div class="p-4">
-                        <h4 class="font-bold text-lg mb-1">MIDWEEK CRUNCH</h4>
-                        <p class="text-sm text-gray-600 mb-4">Midweek Crunch 4 Pc Chicken</p>
-                        <a href="#" class="font-bold text-kfc-red">See Detail</a>
-                    </div>
-                </div>
-            </div>
+            @endif
         </section>
 
-        <!-- 7. APP DOWNLOAD SECTION -->
+        <!-- 7. SEMUA MINUMAN (BAGIAN BARU) -->
+        <section class="mb-12">
+             <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                        <span class="w-3 h-10 bg-kfc-red"></span>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Minuman</h3>
+                </div>
+                 {{-- <a href="#" class="text-sm font-semibold text-kfc-red hover:text-red-700">See All &rarr;</a> --}}
+            </div>
+            
+            @if(!isset($allDrinks) || $allDrinks->isEmpty())
+                <p class="text-gray-500">Saat ini belum ada menu minuman.</p>
+            @else
+                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
+                    @foreach ($allDrinks as $menu)
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
+                            <img class="w-full h-48 object-cover" 
+                                 src="{{ asset($menu->gambar) }}" 
+                                 alt="{{ $menu->namaMenu }}"
+                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+                            
+                            <div class="p-4 flex flex-col" style="height: 200px;">
+                                <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+
+                                <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
+                                    @csrf
+                                    <input type="hidden" value="{{ $menu->id }}" name="id">
+                                    <input type="hidden" value="1" name="quantity">
+                                    
+                                    @if($menu->stok > 0)
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
+                                    @else
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                    @endif
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        <!-- 8. APP DOWNLOAD SECTION (sebelumnya section 7) -->
         <section class="my-16 bg-white p-8 rounded-xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
             <div class="text-center md:text-left">
                 <div class="flex justify-center md:justify-start items-center gap-2 mb-4">

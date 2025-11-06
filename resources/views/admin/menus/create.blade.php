@@ -27,18 +27,36 @@
                             <div>
                                 <x-input-label for="namaMenu" :value="__('Nama Menu')" />
                                 <x-text-input id="namaMenu" class="block mt-1 w-full" type="text" name="namaMenu" :value="old('namaMenu')" required autofocus />
+                                <x-input-error :messages="$errors->get('namaMenu')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="harga" :value="__('Harga')" />
                                 <x-text-input id="harga" class="block mt-1 w-full" type="number" name="harga" :value="old('harga')" required step="0.01" />
+                                <x-input-error :messages="$errors->get('harga')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="deskripsi" :value="__('Deskripsi')" />
                                 <textarea id="deskripsi" name="deskripsi" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('deskripsi') }}</textarea>
+                                <x-input-error :messages="$errors->get('deskripsi')" class="mt-2" />
                             </div>
+
+                            {{-- === BLOK BARU UNTUK KATEGORI === --}}
+                            <div>
+                                <x-input-label for="kategori" :value="__('Kategori')" />
+                                <select id="kategori" name="kategori" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                    <option value="">-- Pilih Kategori --</option>
+                                    {{-- 'old' helper untuk mengingat pilihan jika validasi gagal --}}
+                                    <option value="makanan" {{ old('kategori') == 'makanan' ? 'selected' : '' }}>Makanan</option>
+                                    <option value="minuman" {{ old('kategori') == 'minuman' ? 'selected' : '' }}>Minuman</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('kategori')" class="mt-2" />
+                            </div>
+                            {{-- === AKHIR BLOK BARU === --}}
+
                             <div>
                                 <x-input-label for="stok" :value="__('Stok')" />
                                 <x-text-input id="stok" class="block mt-1 w-full" type="number" name="stok" :value="old('stok', 0)" required />
+                                <x-input-error :messages="$errors->get('stok')" class="mt-2" />
                             </div>
                             
                             {{-- INPUT BARU UNTUK GAMBAR --}}
@@ -59,4 +77,3 @@
         </div>
     </div>
 </x-app-layout>
-

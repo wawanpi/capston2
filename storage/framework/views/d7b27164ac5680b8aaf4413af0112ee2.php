@@ -49,9 +49,24 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Catatan & Tombol Bayar -->
+                    <!-- Kolom Kanan: Tipe Layanan, Catatan & Tombol Bayar -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                          <div class="p-6 text-gray-900">
+                            
+                            
+                            <h3 class="text-xl font-semibold mb-4">Pilih Tipe Layanan</h3>
+                            <div class="flex space-x-4 mb-6">
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer flex-1">
+                                    <input type="radio" name="tipe_layanan" value="Take Away" class="mr-2 text-kfc-red focus:ring-kfc-red" checked>
+                                    <span class="font-semibold">Ambil di Tempat (Take Away)</span>
+                                </label>
+                                <label class="flex items-center p-4 border rounded-lg cursor-pointer flex-1">
+                                    <input type="radio" name="tipe_layanan" value="Dine-in" class="mr-2 text-kfc-red focus:ring-kfc-red">
+                                    <span class="font-semibold">Makan di Tempat (Dine-in)</span>
+                                </label>
+                            </div>
+                            
+
                              <h3 class="text-xl font-semibold mb-4">Detail Tambahan</h3>
                             
                             
@@ -64,7 +79,7 @@
                             <div class="mt-6">
                                 <h4 class="text-lg font-semibold">Metode Pembayaran</h4>
                                 <div class="mt-2 p-4 bg-gray-100 rounded-lg">
-                                    <p class="font-semibold">Pembayaran di Tempat (Takeaway)</p>
+                                    <p class="font-semibold">Pembayaran di Tempat</p>
                                     <p class="text-sm text-gray-600">Sistem ini hanya untuk booking. Silakan lakukan pembayaran di kasir saat mengambil pesanan Anda.</p>
                                 </div>
                             </div>
@@ -94,18 +109,4 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?>
-```
-
-### Langkah 4: Perbarui Tombol di Halaman Keranjang
-
-Terakhir, buka file `resources/views/cart.blade.php` Anda dan pastikan tombol "Lanjut ke Checkout" sudah mengarah ke rute yang benar (`checkout.index`).
-
-**Cari baris ini:**
-```html
-<a href="#" ... >Lanjut ke Checkout</a>
-```
-**Ganti menjadi:**
-```html
-<a href="<?php echo e(route('checkout.index')); ?>" ... >Lanjut ke Checkout</a>
-<?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/checkout.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/checkout.blade.php ENDPATH**/ ?>

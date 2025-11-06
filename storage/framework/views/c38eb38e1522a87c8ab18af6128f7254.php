@@ -38,6 +38,7 @@
                             <p><strong>Pelanggan:</strong> <?php echo e($pesanan->user->name); ?></p>
                             <p><strong>Email:</strong> <?php echo e($pesanan->user->email); ?></p>
                             <p><strong>Tanggal Pesan:</strong> <?php echo e($pesanan->created_at->format('d M Y, H:i')); ?></p>
+                            <p><strong>Tipe Layanan:</strong> <?php echo e($pesanan->tipe_layanan); ?></p>
                             <p><strong>Total Bayar:</strong> <span class="font-bold">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></span></p>
                             <p><strong>Status Saat Ini:</strong> 
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 

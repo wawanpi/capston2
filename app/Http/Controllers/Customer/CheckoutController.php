@@ -45,7 +45,6 @@ class CheckoutController extends Controller
         }
 
         // Kita gunakan DB Transaction, jika ada 1 proses gagal, semua akan dibatalkan.
-        // Ini untuk mencegah stok terpotong tapi pesanan gagal dibuat.
         try {
             DB::beginTransaction();
 
@@ -54,7 +53,8 @@ class CheckoutController extends Controller
                 'user_id' => Auth::id(), // Ambil ID user yang sedang login
                 'total_bayar' => Cart::getTotal(),
                 'status' => 'pending', // Status awal pesanan
-                'catatan_pelanggan' => $request->input('catatan_pelanggan') // Ambil catatan dari form
+                'catatan_pelanggan' => $request->input('catatan_pelanggan'), // Ambil catatan dari form
+                'tipe_layanan' => $request->input('tipe_layanan') // <-- INI BARIS YANG DITAMBAHKAN
             ]);
 
             // 2. Loop semua item di keranjang
@@ -87,8 +87,8 @@ class CheckoutController extends Controller
             // 6. Konfirmasi transaksi database (simpan permanen)
             DB::commit();
 
-            // Sesuai PDF, arahkan ke halaman sukses (kita arahkan kembali ke dashboard)
-            return redirect()->route('dashboard')->with('success', 'Pesanan Anda (#'.$pesanan->id.') berhasil dibuat dan sedang diproses!');
+            // Sesuai PDF, arahkan ke halaman sukses (kita arahkan ke riwayat pesanan)
+            return redirect()->route('orders.index')->with('success', 'Pesanan Anda (#'.$pesanan->id.') berhasil dibuat dan sedang diproses!');
 
         } catch (\Exception $e) {
             // 7. Jika ada kegagalan (misal stok habis), batalkan semua yang sudah disimpan

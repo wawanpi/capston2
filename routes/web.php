@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\Admin\TransaksiController;
+use App\Http\Controllers\Admin\DashboardController; // <-- DITAMBAHKAN
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\CheckoutController;
@@ -62,7 +63,9 @@ Route::middleware(['auth', 'verified', 'role.admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
+        // --- BARIS INI DIUBAH ---
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        // -----------------------
         
         Route::resource('users', UserController::class);
         Route::resource('menus', MenuController::class);

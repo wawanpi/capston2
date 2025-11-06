@@ -124,5 +124,10 @@
     <script>
         lucide.createIcons();
     </script>
+
+    
+    <?php echo e($scripts ?? ''); ?>
+
+
 </body>
 </html><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/layouts/app.blade.php ENDPATH**/ ?>

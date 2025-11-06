@@ -123,5 +123,9 @@
     <script>
         lucide.createIcons();
     </script>
+
+    {{-- === INI BARIS YANG HILANG DARI SCREENSHOT ANDA === --}}
+    {{ $scripts ?? '' }}
+
 </body>
 </html>

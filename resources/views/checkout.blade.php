@@ -147,4 +147,3 @@
     {{-- === AKHIR BLOK SCRIPT === --}}
 
 </x-app-layout>
-```eof

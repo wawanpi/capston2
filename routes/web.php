@@ -51,9 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
 
-    // === INI RUTE BARU YANG DITAMBAHKAN ===
-    // Menggunakan {pesanan} agar konsisten dengan rute show (model binding)
-    // Method-nya POST karena kita menggunakan form di view
+    // === Rute "Pesan Lagi" (Pelanggan) ===
     Route::post('/riwayat-pesanan/{pesanan}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
     // ======================================
 });
@@ -73,6 +71,11 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         Route::get('pesanan', [PesananController::class, 'index'])->name('pesanan.index');
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
+
+        // === INI RUTE BARU YANG DITAMBAHKAN ===
+        // Rute untuk Admin menambah item ke pesanan yang ada
+        Route::post('pesanan/{pesanan}/tambah-item', [PesananController::class, 'addItem'])->name('pesanan.addItem');
+        // =======================================
 
         // Rute Kelola Transaksi
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');

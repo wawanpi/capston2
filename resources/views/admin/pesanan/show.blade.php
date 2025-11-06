@@ -19,6 +19,19 @@
                 </div>
             @endif
 
+            {{-- Tampilkan Error Validasi Form Tambah Item --}}
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Oops! Ada kesalahan:</strong>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {{-- Kolom Kiri: Detail Pesanan, Update Status, Verifikasi Bayar --}}
                 <div class="md:col-span-2">
@@ -30,13 +43,11 @@
                             <p><strong>Tanggal Pesan:</strong> {{ $pesanan->created_at->format('d M Y, H:i') }}</p>
                             <p><strong>Tipe Layanan:</strong> {{ $pesanan->tipe_layanan }}</p>
 
-                            {{-- === INI BARIS YANG DITAMBAHKAN === --}}
                             @if($pesanan->tipe_layanan == 'Dine-in')
                                 <p><strong>Jumlah Tamu:</strong> <span class="font-bold text-kfc-red">{{ $pesanan->jumlah_tamu }} orang</span></p>
                             @endif
-                            {{-- === AKHIR BLOK BARU === --}}
 
-                            <p><strong>Total Bayar:</strong> <span class="font-bold">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</span></p>
+                            <p class="mt-2 text-xl"><strong>Total Bayar:</strong> <span class="font-bold text-gray-900">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</span></p>
                             <p><strong>Status Saat Ini:</strong> 
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     @if($pesanan->status == 'pending') bg-yellow-100 text-yellow-800 @endif
@@ -48,6 +59,8 @@
                          </div>
                         
                         {{-- Form Ubah Status --}}
+                        {{-- Hanya tampilkan jika status belum selesai atau batal --}}
+                        @if($pesanan->status == 'pending' || $pesanan->status == 'processing')
                          <div class="p-6 border-b border-gray-200">
                                <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
                                <form action="{{ route('admin.pesanan.updateStatus', $pesanan->id) }}" method="POST">
@@ -64,6 +77,7 @@
                                    </div>
                                </form>
                          </div>
+                         @endif
 
                         {{-- Tindakan Pembayaran --}}
                          <div class="p-6">
@@ -88,13 +102,15 @@
                     </div>
                 </div>
 
-                {{-- Kolom Kanan: Item yang Dipesan --}}
-                <div class="md:col-span-1">
+                {{-- Kolom Kanan: Item yang Dipesan & Form Tambah Item --}}
+                <div class="md:col-span-1 space-y-6">
+                       
+                       {{-- Card Item yang Dipesan --}}
                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold mb-4">Item yang Dipesan</h3>
                                 <div class="space-y-4">
-                                    @foreach($pesanan->details as $item)
+                                    @forelse($pesanan->details as $item)
                                         <div class="flex justify-between items-start border-b pb-2">
                                             <div>
                                                 <p class="font-semibold">{{ $item->menu->namaMenu }}</p>
@@ -102,10 +118,55 @@
                                             </div>
                                             <p class="text-sm font-semibold text-gray-800">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                                         </div>
-                                    @endforeach
+                                    @empty
+                                        <p class="text-sm text-gray-500">Belum ada item.</p>
+                                    @endforelse
                                 </div>
                             </div>
-                     </div>
+                       </div>
+
+                        {{-- === CARD BARU UNTUK TAMBAH ITEM === --}}
+                        {{-- Hanya tampilkan jika status masih 'pending' atau 'processing' --}}
+                        @if($pesanan->status == 'pending' || $pesanan->status == 'processing')
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-4">Tambah Item ke Pesanan</h3>
+                                <form action="{{ route('admin.pesanan.addItem', $pesanan->id) }}" method="POST">
+                                    @csrf
+                                    <div class="space-y-4">
+                                        {{-- Dropdown Menu --}}
+                                        <div>
+                                            <label for="menu_id" class="block text-sm font-medium text-gray-700">Pilih Menu</label>
+                                            <select name="menu_id" id="menu_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                                <option value="">-- Pilih Menu --</option>
+                                                @foreach ($menus as $menu)
+                                                    {{-- Tampilkan stok yang tersisa --}}
+                                                    <option value="{{ $menu->id }}">
+                                                        {{ $menu->namaMenu }} (Stok: {{ $menu->stok }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        
+                                        {{-- Input Jumlah --}}
+                                        <div>
+                                            <label for="jumlah" class="block text-sm font-medium text-gray-700">Jumlah</label>
+                                            <input type="number" name="jumlah" id="jumlah" value="1" min="1" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                        </div>
+
+                                        {{-- Tombol Submit --}}
+                                        <div>
+                                            <x-primary-button class="w-full justify-center">
+                                                Tambah Item
+                                            </x-primary-button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        @endif
+                        {{-- === AKHIR CARD BARU === --}}
+
                 </div>
             </div>
              <div class="mt-6">

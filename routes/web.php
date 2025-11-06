@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
-use App\Http\Controllers\Admin\TransaksiController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\CheckoutController;
@@ -50,6 +50,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rute Riwayat Pesanan
     Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
+
+    // === INI RUTE BARU YANG DITAMBAHKAN ===
+    // Menggunakan {pesanan} agar konsisten dengan rute show (model binding)
+    // Method-nya POST karena kita menggunakan form di view
+    Route::post('/riwayat-pesanan/{pesanan}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+    // ======================================
 });
 
 
@@ -68,13 +74,11 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 
-        // === RUTE BARU UNTUK KELOLA TRANSAKSI (INI YANG MEMPERBAIKI ERROR) ===
+        // Rute Kelola Transaksi
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('transaksi/verifikasi/{pesanan}', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
-        // ====================================================================
 });
 
 
 // Rute Autentikasi
 require __DIR__.'/auth.php';
-

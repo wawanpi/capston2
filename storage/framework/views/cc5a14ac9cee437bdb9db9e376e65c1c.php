@@ -1,4 +1,13 @@
-<x-app-layout>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
 
     <!-- 3. HERO BANNER (Carousel) -->
     <section class="relative w-full h-[50vh] bg-cover bg-center" style="background-image: url('https://kfcindonesia.com/static/media/monday-deal-web-1.b0f20952.jpg');">
@@ -16,16 +25,16 @@
 
         <!-- Pesan Sukses/Error (dari kode Anda) -->
         <div class="mb-4">
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                    <span class="block sm:inline"><?php echo e(session('success')); ?></span>
                 </div>
-            @endif
-            @if(session('error'))
+            <?php endif; ?>
+            <?php if(session('error')): ?>
                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
+                    <span class="block sm:inline"><?php echo e(session('error')); ?></span>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
         <!-- 4. ORDER TYPE (Tipe Pesanan) -->
@@ -69,55 +78,55 @@
                 </div>
             </div>
             
-            @if(!isset($bestSellers) || $bestSellers->isEmpty())
+            <?php if(!isset($bestSellers) || $bestSellers->isEmpty()): ?>
                 <p class="text-gray-500">Saat ini belum ada menu terlaris.</p>
-            @else
+            <?php else: ?>
                 <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    @foreach ($bestSellers as $menu)
+                    <?php $__currentLoopData = $bestSellers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
                             <img class="w-full h-48 object-cover" 
-                                 src="{{ asset($menu->gambar) }}" 
-                                 alt="{{ $menu->namaMenu }}"
+                                 src="<?php echo e(asset($menu->gambar)); ?>" 
+                                 alt="<?php echo e($menu->namaMenu); ?>"
                                  onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
                             
                             <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
+                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
                                 
-                                {{-- Menampilkan Rating --}}
+                                
                                 <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    @php
+                                    <?php
                                         $avgRating = $menu->average_rating;
                                         $count = $menu->ratings_count;
-                                    @endphp
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4" fill="{{ $avgRating >= $i ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
+                                    ?>
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
                                         </svg>
-                                    @endfor
+                                    <?php endfor; ?>
                                     <span class="ml-2 text-xs text-gray-600">
-                                        {{ $avgRating > 0 ? $avgRating : '0.0' }} ({{ $count }})
+                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
                                     </span>
                                 </div>
                                 
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
 
-                                <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
-                                    @csrf
-                                    <input type="hidden" value="{{ $menu->id }}" name="id">
+                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    @if($menu->stok > 0)
+                                    <?php if($menu->stok > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    @else
+                                    <?php else: ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
-                                    @endif
+                                    <?php endif; ?>
                                 </form>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
         </section>
         
         <!-- 6. SEMUA MAKANAN -->
@@ -133,55 +142,55 @@
                 </div>
             </div>
             
-            @if(!isset($allFood) || $allFood->isEmpty())
+            <?php if(!isset($allFood) || $allFood->isEmpty()): ?>
                 <p class="text-gray-500">Saat ini belum ada menu makanan.</p>
-            @else
+            <?php else: ?>
                 <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    @foreach ($allFood as $menu)
+                    <?php $__currentLoopData = $allFood; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
                             <img class="w-full h-48 object-cover" 
-                                 src="{{ asset($menu->gambar) }}" 
-                                 alt="{{ $menu->namaMenu }}"
+                                 src="<?php echo e(asset($menu->gambar)); ?>" 
+                                 alt="<?php echo e($menu->namaMenu); ?>"
                                  onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
                             
                             <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
+                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
                                 
-                                {{-- Menampilkan Rating --}}
+                                
                                 <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    @php
+                                    <?php
                                         $avgRating = $menu->average_rating;
                                         $count = $menu->ratings_count;
-                                    @endphp
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4" fill="{{ $avgRating >= $i ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
+                                    ?>
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
                                         </svg>
-                                    @endfor
+                                    <?php endfor; ?>
                                     <span class="ml-2 text-xs text-gray-600">
-                                        {{ $avgRating > 0 ? $avgRating : '0.0' }} ({{ $count }})
+                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
                                     </span>
                                 </div>
 
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
 
-                                <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
-                                    @csrf
-                                    <input type="hidden" value="{{ $menu->id }}" name="id">
+                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    @if($menu->stok > 0)
+                                    <?php if($menu->stok > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    @else
+                                    <?php else: ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
-                                    @endif
+                                    <?php endif; ?>
                                 </form>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
         </section>
 
         <!-- 7. SEMUA MINUMAN -->
@@ -197,55 +206,55 @@
                 </div>
             </div>
             
-            @if(!isset($allDrinks) || $allDrinks->isEmpty())
+            <?php if(!isset($allDrinks) || $allDrinks->isEmpty()): ?>
                 <p class="text-gray-500">Saat ini belum ada menu minuman.</p>
-            @else
+            <?php else: ?>
                 <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    @foreach ($allDrinks as $menu)
+                    <?php $__currentLoopData = $allDrinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
                             <img class="w-full h-48 object-cover" 
-                                 src="{{ asset($menu->gambar) }}" 
-                                 alt="{{ $menu->namaMenu }}"
+                                 src="<?php echo e(asset($menu->gambar)); ?>" 
+                                 alt="<?php echo e($menu->namaMenu); ?>"
                                  onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
                             
                             <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1">{{ $menu->namaMenu }}</h4>
+                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
                                 
-                                {{-- Menampilkan Rating --}}
+                                
                                 <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    @php
+                                    <?php
                                         $avgRating = $menu->average_rating;
                                         $count = $menu->ratings_count;
-                                    @endphp
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4" fill="{{ $avgRating >= $i ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
+                                    ?>
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
                                         </svg>
-                                    @endfor
+                                    <?php endfor; ?>
                                     <span class="ml-2 text-xs text-gray-600">
-                                        {{ $avgRating > 0 ? $avgRating : '0.0' }} ({{ $count }})
+                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
                                     </span>
                                 </div>
 
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow">{{ Str::limit($menu->deskripsi, 50) }}</p>
+                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
+                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
 
-                                <form action="{{ route('cart.store') }}" method="POST" class="mt-auto">
-                                    @csrf
-                                    <input type="hidden" value="{{ $menu->id }}" name="id">
+                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    @if($menu->stok > 0)
+                                    <?php if($menu->stok > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    @else
+                                    <?php else: ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
-                                    @endif
+                                    <?php endif; ?>
                                 </form>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
         </section>
 
         <!-- 8. APP DOWNLOAD SECTION (sebelumnya section 7) -->
@@ -273,4 +282,13 @@
 
     </div> <!-- Penutup Wrapper Konten -->
 
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/dashboard.blade.php ENDPATH**/ ?>

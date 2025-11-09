@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Pesanan; // <-- Impor model Pesanan
-use Illuminate\Support\Facades\Auth; // <-- Impor Auth untuk mendapatkan user ID
-use App\Models\Menu; // <-- DITAMBAHKAN: Untuk cek stok & harga baru
-use Cart; // <-- DITAMBAHKAN: Untuk memasukkan item ke keranjang
+use App\Models\Pesanan; 
+use Illuminate\Support\Facades\Auth; 
+use App\Models\Menu; 
+use Cart; 
+// use Illuminate\Database\Eloquent\Relations\HasMany; <-- BARIS INI TIDAK ADA DI SINI
 
 class OrderController extends Controller
 {
@@ -21,15 +22,13 @@ class OrderController extends Controller
         $userId = Auth::id();
 
         // 2. Ambil semua pesanan dari database HANYA untuk user ini
-        //    'with('details')' -> Eager load detailnya agar efisien
-        //    'latest()' -> Urutkan dari yang paling baru
+        //    PENTING: Memuat relasi 'details' dan 'reviews' untuk performa dan tombol ulasan
         $pesanans = Pesanan::where('user_id', $userId)
-                             ->with('details') 
+                             ->with(['details', 'reviews']) // <-- KODE PENTING: Memperbaiki bug Undefined Property
                              ->latest()
-                             ->paginate(10); // Tampilkan 10 pesanan per halaman
+                             ->paginate(10); 
 
         // 3. Tampilkan view 'my-orders.blade.php' dan kirim data pesanan
-        //    (Ini adalah file view yang akan kita edit di langkah selanjutnya)
         return view('my-orders', compact('pesanans'));
     }
 
@@ -37,25 +36,20 @@ class OrderController extends Controller
      * Menampilkan detail satu pesanan spesifik.
      * Dipanggil oleh Rute: route('orders.show', $pesanan)
      */
-    public function show(Pesanan $pesanan) // Laravel otomatis mencari pesanan berdasarkan ID di URL
+    public function show(Pesanan $pesanan) 
     {
         // === PENTING: Cek Keamanan ===
-        // Pastikan user yang sedang login adalah pemilik pesanan ini.
         if (Auth::id() !== $pesanan->user_id) {
             abort(403, 'ANDA TIDAK BERHAK MENGAKSES PESANAN INI.');
         }
 
         // Jika lolos cek keamanan, ambil semua data yang berhubungan:
-        // 'user' -> Info pemesan
-        // 'details.menu' -> Rincian item dan data menu-nya
-        $pesanan->load(['user', 'details.menu']);
-
+        $pesanan->load(['user', 'details.menu', 'reviews']); // <-- Memuat reviews di detail
+        
         // Tampilkan view 'order-detail.blade.php'
         return view('order-detail', compact('pesanan'));
     }
 
-
-    // === METHOD BARU DITAMBAHKAN DI SINI ===
 
     /**
      * Memproses "Pesan Lagi" dari pesanan lama.
@@ -98,7 +92,6 @@ class OrderController extends Controller
                     'price' => $menu->harga, // Ambil harga TERBARU dari tabel menu
                     'quantity' => $item->jumlah,
                     'attributes' => [
-                        // Sesuaikan 'gambar' dengan nama kolom di tabel Menu Anda
                         'image' => $menu->gambar ?? 'images/default.jpg' 
                     ]
                 ]);

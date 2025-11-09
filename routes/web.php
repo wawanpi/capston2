@@ -8,11 +8,12 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\Admin\TransaksiController;
-use App\Http\Controllers\Admin\DashboardController; // <-- DITAMBAHKAN
+use App\Http\Controllers\Admin\DashboardController; 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\OrderController; 
+use App\Http\Controllers\Customer\ReviewController; // <-- DITAMBAHKAN
 
 /*
 |--------------------------------------------------------------------------
@@ -52,9 +53,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
 
-    // === Rute "Pesan Lagi" (Pelanggan) ===
+    // Rute "Pesan Lagi" (Pelanggan)
     Route::post('/riwayat-pesanan/{pesanan}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
-    // ======================================
+
+    // === RUTE BARU UNTUK REVIEW/ULASAN ===
+    Route::get('/riwayat-pesanan/{pesanan}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/riwayat-pesanan/{pesanan}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    // =====================================
 });
 
 
@@ -75,10 +80,8 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 
-        // === INI RUTE BARU YANG DITAMBAHKAN ===
         // Rute untuk Admin menambah item ke pesanan yang ada
         Route::post('pesanan/{pesanan}/tambah-item', [PesananController::class, 'addItem'])->name('pesanan.addItem');
-        // =======================================
 
         // Rute Kelola Transaksi
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');

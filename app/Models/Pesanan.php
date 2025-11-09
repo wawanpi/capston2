@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne; // <-- TAMBAHKAN IMPORT INI
+use Illuminate\Database\Eloquent\Relations\HasOne; 
 
 class Pesanan extends Model
 {
@@ -42,5 +42,14 @@ class Pesanan extends Model
     {
         return $this->hasOne(Transaksi::class);
     }
-}
 
+    /**
+     * === METHOD BARU UNTUK REVIEW ===
+     * Mendefinisikan relasi: Satu Pesanan memiliki banyak Review.
+     * Ini memperbaiki error RelationNotFoundException.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+}

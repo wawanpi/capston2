@@ -22,6 +22,9 @@ class MenuController extends Controller
 
         $menus = $query->latest()->paginate(10); // Urutkan dari yang terbaru
 
+        // Memuat relasi reviews (rating count) untuk Index Page
+        $menus->load('reviews'); 
+
         return view('admin.menus.index', compact('menus'));
     }
 
@@ -35,7 +38,6 @@ class MenuController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * (DIUPDATE DENGAN LOGIKA KATEGORI & VALIDATED)
      */
     public function store(Request $request)
     {
@@ -46,7 +48,7 @@ class MenuController extends Controller
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
             'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'kategori' => 'required|string|in:makanan,minuman', // <-- DITAMBAHKAN
+            'kategori' => 'required|string|in:makanan,minuman',
         ]);
 
         // Logika upload gambar (sudah benar)
@@ -67,11 +69,16 @@ class MenuController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource (Halaman Detail/Ulasan).
+     * @param Menu $menu
      */
     public function show(Menu $menu)
     {
-        return redirect()->route('admin.menus.index');
+        // === KODE BARU: Memuat relasi reviews dan user yang memberi ulasan ===
+        $menu->load('reviews.user');
+        
+        // Mengembalikan view show.blade.php untuk menampilkan detail dan ulasan
+        return view('admin.menus.show', compact('menu'));
     }
 
     /**
@@ -84,7 +91,6 @@ class MenuController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * (DIUPDATE DENGAN LOGIKA KATEGORI & VALIDATED)
      */
     public function update(Request $request, Menu $menu)
     {
@@ -94,8 +100,8 @@ class MenuController extends Controller
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Gambar boleh null saat update
-            'kategori' => 'required|string|in:makanan,minuman', // <-- DITAMBAHKAN
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+            'kategori' => 'required|string|in:makanan,minuman', 
         ]);
 
         // Logika update gambar (sudah benar)

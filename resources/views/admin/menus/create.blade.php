@@ -24,23 +24,8 @@
                     <form method="POST" action="{{ route('admin.menus.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="space-y-4">
-                            <div>
-                                <x-input-label for="namaMenu" :value="__('Nama Menu')" />
-                                <x-text-input id="namaMenu" class="block mt-1 w-full" type="text" name="namaMenu" :value="old('namaMenu')" required autofocus />
-                                <x-input-error :messages="$errors->get('namaMenu')" class="mt-2" />
-                            </div>
-                            <div>
-                                <x-input-label for="harga" :value="__('Harga')" />
-                                <x-text-input id="harga" class="block mt-1 w-full" type="number" name="harga" :value="old('harga')" required step="0.01" />
-                                <x-input-error :messages="$errors->get('harga')" class="mt-2" />
-                            </div>
-                            <div>
-                                <x-input-label for="deskripsi" :value="__('Deskripsi')" />
-                                <textarea id="deskripsi" name="deskripsi" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('deskripsi') }}</textarea>
-                                <x-input-error :messages="$errors->get('deskripsi')" class="mt-2" />
-                            </div>
 
-                            {{-- === BLOK BARU UNTUK KATEGORI === --}}
+                            {{-- === 1. BLOK KATEGORI (PINDAH KE ATAS) === --}}
                             <div>
                                 <x-input-label for="kategori" :value="__('Kategori')" />
                                 <select id="kategori" name="kategori" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
@@ -51,20 +36,45 @@
                                 </select>
                                 <x-input-error :messages="$errors->get('kategori')" class="mt-2" />
                             </div>
-                            {{-- === AKHIR BLOK BARU === --}}
 
+                            {{-- === 2. NAMA MENU === --}}
                             <div>
-                                <x-input-label for="stok" :value="__('Stok')" />
-                                <x-text-input id="stok" class="block mt-1 w-full" type="number" name="stok" :value="old('stok', 0)" required />
-                                <x-input-error :messages="$errors->get('stok')" class="mt-2" />
+                                <x-input-label for="namaMenu" :value="__('Nama Menu')" />
+                                <x-text-input id="namaMenu" class="block mt-1 w-full" type="text" name="namaMenu" :value="old('namaMenu')" required autofocus />
+                                <x-input-error :messages="$errors->get('namaMenu')" class="mt-2" />
+                            </div>
+
+                            {{-- === 3. DESKRIPSI === --}}
+                            <div>
+                                <x-input-label for="deskripsi" :value="__('Deskripsi')" />
+                                <textarea id="deskripsi" name="deskripsi" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('deskripsi') }}</textarea>
+                                <x-input-error :messages="$errors->get('deskripsi')" class="mt-2" />
                             </div>
                             
-                            {{-- INPUT BARU UNTUK GAMBAR --}}
+                            {{-- === 4. HARGA === --}}
+                            <div>
+                                <x-input-label for="harga" :value="__('Harga')" />
+                                <x-text-input id="harga" class="block mt-1 w-full" type="number" name="harga" :value="old('harga')" required />
+                                <x-input-error :messages="$errors->get('harga')" class="mt-2" />
+                            </div>
+
+                            {{-- === 5. PERBAIKAN: STOK MENJADI KAPASITAS === --}}
+                            <div>
+                                {{-- Label diubah dari 'Stok' menjadi 'Kapasitas Harian' --}}
+                                <x-input-label for="kapasitas" :value="__('Kapasitas Harian')" />
+                                {{-- ID dan Name diubah dari 'stok' menjadi 'kapasitas' --}}
+                                <x-text-input id="kapasitas" class="block mt-1 w-full" type="number" name="kapasitas" :value="old('kapasitas', 0)" required />
+                                {{-- Error message diubah dari 'stok' menjadi 'kapasitas' --}}
+                                <x-input-error :messages="$errors->get('kapasitas')" class="mt-2" />
+                            </div>
+                            
+                            {{-- === 6. INPUT GAMBAR === --}}
                             <div>
                                 <x-input-label for="gambar" :value="__('Gambar Menu')" />
                                 <input id="gambar" name="gambar" type="file" class="block mt-1 w-full" required>
                                 <x-input-error :messages="$errors->get('gambar')" class="mt-2" />
                             </div>
+
                         </div>
 
                         <div class="flex items-center justify-end mt-6">

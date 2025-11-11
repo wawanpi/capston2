@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Casts\Attribute; // <-- TAMBAH: Untuk computed attribute
+use Illuminate\Database\Eloquent\Casts\Attribute; 
+use Illuminate\Support\Facades\DB;
 
 class Menu extends Model
 {
@@ -16,28 +17,49 @@ class Menu extends Model
         'harga',
         'deskripsi',
         'kategori',
-        'stok',
+        // REVISI: Menggunakan KAPASITAS (lebih simpel dari patokan_harian)
+        'kapasitas', 
         'gambar',
     ];
 
-    // --- Relasi yang sudah Anda miliki ---
+    // --- Relasi yang sudah Anda miliki (Tidak Berubah) ---
     public function pesananDetails(): HasMany
     {
-        return $this->hasMany(PesananDetail::class);
+        return $this->hasMany(PesananDetail::class, 'menu_id');
     }
     
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
-    // --- AKHIR Relasi ---
 
-
-    // === FUNGSI BARU UNTUK RATING DI DASHBOARD ===
+    // === RELASI KETERSEDIAAN BARU ===
 
     /**
-     * Computed Attribute: Menghitung rata-rata rating (average_rating)
+     * Relasi ke ketersediaan hari ini (DailyKetersediaan).
+     * Memuat data ketersediaan harian untuk menu ini.
      */
+    public function ketersediaanHariIni()
+    {
+        return $this->hasOne(DailyKetersediaan::class)
+                    ->whereDate('tanggal', today());
+    }
+
+    /**
+     * Computed Attribute: Mengambil kuantitas menu yang tersisa hari ini.
+     * Akses menggunakan $menu->jumlah_saat_ini
+     * (Menggantikan sisa_hari_ini untuk menghindari konotasi 'sisa/stok')
+     */
+    protected function jumlahSaatIni(): Attribute
+    {
+        // PERBAIKAN: Mengakses kolom 'jumlah_saat_ini' dari relasi DailyKetersediaan
+        // Catatan: Anda HARUS memastikan nama kolom di DB di tabel daily_ketersediaan adalah 'jumlah_saat_ini'
+        return Attribute::make(
+            get: fn () => $this->ketersediaanHariIni?->jumlah_saat_ini ?? 0
+        );
+    }
+    
+    // === FUNGSI RATING YANG SUDAH ADA (Tidak Berubah) ===
     protected function averageRating(): Attribute
     {
         return Attribute::make(
@@ -45,9 +67,6 @@ class Menu extends Model
         );
     }
 
-    /**
-     * Computed Attribute: Menghitung jumlah total ulasan (ratings_count)
-     */
     protected function ratingsCount(): Attribute
     {
         return Attribute::make(

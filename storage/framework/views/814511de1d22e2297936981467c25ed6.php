@@ -40,10 +40,20 @@
                                 </span>
                             </p>
                             <p><strong>Harga:</strong> Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
-                            <p><strong>Stok Saat Ini:</strong> 
-                                <span class="font-bold <?php echo e($menu->stok <= 10 ? 'text-red-500' : 'text-green-500'); ?>"><?php echo e($menu->stok); ?></span>
+                            
+                            
+                            <p><strong>Jumlah Hari Ini:</strong> 
+                                <?php
+                                    $jumlahRiil = $menu->jumlah_saat_ini;
+                                    $isLow = $jumlahRiil <= 10;
+                                ?>
+                                <span class="font-bold <?php echo e($isLow ? 'text-red-500' : 'text-green-600'); ?>">
+                                    <?php echo e($jumlahRiil); ?>
+
+                                </span>
                             </p>
-                            <p class="mt-4"><strong>Deskripsi:</strong> <br><?php echo e($menu->deskripsi); ?></p>
+                            
+                            <p class="mt-4"><strong>Deskripsi:</strong> <br><?php echo e($menu->deskripsi ?? 'Tidak ada deskripsi.'); ?></p>
 
                             <div class="mt-6 flex justify-between">
                                 <a href="<?php echo e(route('admin.menus.edit', $menu->id)); ?>" class="text-indigo-600 hover:text-indigo-900 font-semibold">Edit Menu</a>

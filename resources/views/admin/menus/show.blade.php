@@ -29,10 +29,23 @@
                                 </span>
                             </p>
                             <p><strong>Harga:</strong> Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                            <p><strong>Stok Saat Ini:</strong> 
-                                <span class="font-bold {{ $menu->stok <= 10 ? 'text-red-500' : 'text-green-500' }}">{{ $menu->stok }}</span>
+                            
+                            {{-- 
+                                PERBAIKAN: 
+                                Mengganti $menu->stok menjadi $menu->jumlah_saat_ini (dari accessor).
+                                Juga mengganti label 'Stok Saat Ini' menjadi 'Jumlah Hari Ini'.
+                            --}}
+                            <p><strong>Jumlah Hari Ini:</strong> 
+                                @php
+                                    $jumlahRiil = $menu->jumlah_saat_ini;
+                                    $isLow = $jumlahRiil <= 10;
+                                @endphp
+                                <span class="font-bold {{ $isLow ? 'text-red-500' : 'text-green-600' }}">
+                                    {{ $jumlahRiil }}
+                                </span>
                             </p>
-                            <p class="mt-4"><strong>Deskripsi:</strong> <br>{{ $menu->deskripsi }}</p>
+                            
+                            <p class="mt-4"><strong>Deskripsi:</strong> <br>{{ $menu->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
 
                             <div class="mt-6 flex justify-between">
                                 <a href="{{ route('admin.menus.edit', $menu->id) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">Edit Menu</a>

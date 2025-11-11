@@ -9,9 +9,7 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
 
-    <!-- 3. HERO BANNER (Carousel) -->
     <section class="relative w-full h-[50vh] bg-cover bg-center" style="background-image: url('https://kfcindonesia.com/static/media/monday-deal-web-1.b0f20952.jpg');">
-        <!-- Tombol Navigasi Slider -->
         <button class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md">
             <i data-lucide="chevron-left" class="text-gray-800"></i>
         </button>
@@ -20,10 +18,8 @@
         </button>
     </section>
 
-    <!-- Wrapper Konten (memberi padding) -->
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- Pesan Sukses/Error (dari kode Anda) -->
         <div class="mb-4">
             <?php if(session('success')): ?>
                 <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
@@ -37,7 +33,6 @@
             <?php endif; ?>
         </div>
 
-        <!-- 4. ORDER TYPE (Tipe Pesanan) -->
         <section class="mb-12">
             <div class="flex items-center gap-2 mb-6">
                 <span class="w-3 h-10 bg-kfc-red"></span>
@@ -46,26 +41,26 @@
             </div>
             <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">Hungry today? Let’s order</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                
+                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
                     <img src="https://kfcindonesia.com/static/media/Dine-in.0135d1f8.png" alt="Dine-In" class="h-16 w-16">
                     <span class="mt-2 font-bold text-lg text-gray-800">Dine-In</span>
                 </a>
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow ring-2 ring-kfc-red">
                     <img src="https://kfcindonesia.com/static/media/Take-away.299c8f00.png" alt="Take Away" class="h-16 w-16">
                     <span class="mt-2 font-bold text-lg text-gray-800">Take Away</span>
                 </a>
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
                     <img src="https://kfcindonesia.com/static/media/Delivery.b1b75356.png" alt="Delivery" class="h-16 w-16">
                     <span class="mt-2 font-bold text-lg text-gray-800">Delivery</span>
                 </a>
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                 <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
                     <img src="https://kfcindonesia.com/static/media/Drive-thru.6a1b2496.png" alt="Drive-Thru" class="h-16 w-16">
                     <span class="mt-2 font-bold text-lg text-gray-800">Drive-Thru</span>
                 </a>
             </div>
         </section>
 
-        <!-- 5. MENU TERLARIS (Best Seller - Campuran) -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -116,10 +111,12 @@
                                     <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    <?php if($menu->stok > 0): ?>
+                                    
+                                    <?php if($menu->jumlah_saat_ini > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
                                     <?php else: ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                        
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
                                     <?php endif; ?>
                                 </form>
                             </div>
@@ -129,7 +126,6 @@
             <?php endif; ?>
         </section>
         
-        <!-- 6. SEMUA MAKANAN -->
         <section class="mb-12">
              <div class="flex justify-between items-center mb-6">
                 <div>
@@ -180,10 +176,12 @@
                                     <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    <?php if($menu->stok > 0): ?>
+                                    
+                                    <?php if($menu->jumlah_saat_ini > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
                                     <?php else: ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                        
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
                                     <?php endif; ?>
                                 </form>
                             </div>
@@ -193,7 +191,6 @@
             <?php endif; ?>
         </section>
 
-        <!-- 7. SEMUA MINUMAN -->
         <section class="mb-12">
              <div class="flex justify-between items-center mb-6">
                 <div>
@@ -244,10 +241,12 @@
                                     <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
                                     <input type="hidden" value="1" name="quantity">
                                     
-                                    <?php if($menu->stok > 0): ?>
+                                    
+                                    <?php if($menu->jumlah_saat_ini > 0): ?>
                                         <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
                                     <?php else: ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Stok Habis</button>
+                                        
+                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
                                     <?php endif; ?>
                                 </form>
                             </div>
@@ -257,7 +256,6 @@
             <?php endif; ?>
         </section>
 
-        <!-- 8. APP DOWNLOAD SECTION (sebelumnya section 7) -->
         <section class="my-16 bg-white p-8 rounded-xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
             <div class="text-center md:text-left">
                 <div class="flex justify-center md:justify-start items-center gap-2 mb-4">
@@ -280,9 +278,7 @@
             </div>
         </section>
 
-    </div> <!-- Penutup Wrapper Konten -->
-
- <?php echo $__env->renderComponent(); ?>
+    </div>  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>

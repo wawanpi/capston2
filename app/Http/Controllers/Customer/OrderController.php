@@ -8,13 +8,13 @@ use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth; 
 use App\Models\Menu; 
 use Cart; 
-// use Illuminate\Database\Eloquent\Relations\HasMany; <-- BARIS INI TIDAK ADA DI SINI
+use App\Models\PesananDetail; // (Import ini sepertinya tidak terpakai di sini, tapi tidak masalah)
 
 class OrderController extends Controller
 {
     /**
      * Menampilkan daftar riwayat pesanan milik user yang sedang login.
-     * Dipanggil oleh Rute: route('orders.index')
+     * (Fungsi ini sudah benar)
      */
     public function index()
     {
@@ -22,19 +22,18 @@ class OrderController extends Controller
         $userId = Auth::id();
 
         // 2. Ambil semua pesanan dari database HANYA untuk user ini
-        //    PENTING: Memuat relasi 'details' dan 'reviews' untuk performa dan tombol ulasan
         $pesanans = Pesanan::where('user_id', $userId)
-                             ->with(['details', 'reviews']) // <-- KODE PENTING: Memperbaiki bug Undefined Property
-                             ->latest()
-                             ->paginate(10); 
+                            ->with(['details.menu', 'reviews']) // Eager load menu dan reviews
+                            ->latest()
+                            ->paginate(10); 
 
-        // 3. Tampilkan view 'my-orders.blade.php' dan kirim data pesanan
+        // 3. Tampilkan view 'my-orders.blade.php'
         return view('my-orders', compact('pesanans'));
     }
 
     /**
      * Menampilkan detail satu pesanan spesifik.
-     * Dipanggil oleh Rute: route('orders.show', $pesanan)
+     * (Fungsi ini sudah benar)
      */
     public function show(Pesanan $pesanan) 
     {
@@ -44,7 +43,7 @@ class OrderController extends Controller
         }
 
         // Jika lolos cek keamanan, ambil semua data yang berhubungan:
-        $pesanan->load(['user', 'details.menu', 'reviews']); // <-- Memuat reviews di detail
+        $pesanan->load(['user', 'details.menu', 'reviews']); 
         
         // Tampilkan view 'order-detail.blade.php'
         return view('order-detail', compact('pesanan'));
@@ -53,14 +52,15 @@ class OrderController extends Controller
 
     /**
      * Memproses "Pesan Lagi" dari pesanan lama.
-     * Dipanggil oleh Rute: route('orders.reorder', $id)
+     * PERBAIKAN: Menggunakan sistem ketersediaan harian.
      *
      * @param int $id ID dari pesanan LAMA
      */
     public function reorder($id)
     {
         // 1. Cari pesanan lama, beserta 'details' dan 'menu'
-        $pesananLama = Pesanan::with('details.menu')->find($id);
+        // PERBAIKAN: Eager load ketersediaanHariIni agar efisien!
+        $pesananLama = Pesanan::with('details.menu.ketersediaanHariIni')->find($id);
 
         // 2. Keamanan: Pastikan pesanan ada dan milik user yang login
         if (!$pesananLama || $pesananLama->user_id != Auth::id()) {
@@ -82,8 +82,9 @@ class OrderController extends Controller
 
             $menu = $item->menu;
 
-            // 4. Cek Stok: Pastikan menu masih ada, stoknya ada, dan stok cukup
-            if ($menu->stok > 0 && $menu->stok >= $item->jumlah) {
+            // 4. PERBAIKAN: Cek Ketersediaan Harian
+            // Gunakan accessor '$menu->jumlah_saat_ini'
+            if ($menu->jumlah_saat_ini >= $item->jumlah) {
                 
                 // 5. Masukkan ke keranjang baru (menggunakan library Cart)
                 Cart::add([
@@ -92,13 +93,13 @@ class OrderController extends Controller
                     'price' => $menu->harga, // Ambil harga TERBARU dari tabel menu
                     'quantity' => $item->jumlah,
                     'attributes' => [
-                        'image' => $menu->gambar ?? 'images/default.jpg' 
+                        'image' => $menu->gambar
                     ]
                 ]);
                 $itemsAdded++;
 
             } else {
-                // Jika stok habis atau menu sudah tidak ada
+                // Jika jumlah habis atau menu sudah tidak ada
                 $itemsSkipped++;
                 $skippedItemNames[] = $menu->namaMenu;
             }
@@ -106,8 +107,8 @@ class OrderController extends Controller
 
         // 6. Siapkan pesan notifikasi untuk pelanggan
         if ($itemsAdded == 0) {
-            // Tidak ada item yang berhasil ditambahkan (mungkin semua stok habis)
-            return redirect()->route('orders.index')->with('error', 'Semua item dari pesanan ini sedang habis stok atau tidak tersedia.');
+            // PERBAIKAN: Pesan error diubah
+            return redirect()->route('orders.index')->with('error', 'Semua item dari pesanan ini sedang habis atau tidak tersedia.');
         }
         
         // Buat pesan sukses
@@ -115,7 +116,8 @@ class OrderController extends Controller
         
         // Jika ada item yang dilewati, tambahkan info peringatan
         if ($itemsSkipped > 0) {
-            $message .= " " . $itemsSkipped . " item dilewati karena stok habis (" . implode(', ', $skippedItemNames) . ").";
+            // PERBAIKAN: Pesan error diubah
+            $message .= " " . $itemsSkipped . " item dilewati karena jumlah habis (" . implode(', ', $skippedItemNames) . ").";
         }
 
         // 7. Arahkan ke halaman keranjang

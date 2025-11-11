@@ -18,6 +18,7 @@ class CartController extends Controller
 
     /**
      * Menambahkan item ke keranjang dengan aman.
+     * PERBAIKAN: Cek ketersediaan harian.
      */
     public function addToCart(Request $request)
     {
@@ -27,12 +28,13 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // 2. Ambil data produk dari DATABASE (bukan dari request) untuk keamanan
+        // 2. Ambil data produk dari DATABASE
         $menu = Menu::findOrFail($request->id);
 
-        // 3. Cek ketersediaan stok
-        if ($menu->stok < $request->quantity) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk ' . $menu->namaMenu);
+        // 3. PERBAIKAN: Cek ketersediaan menggunakan accessor 'jumlah_saat_ini'
+        if ($menu->jumlah_saat_ini < $request->quantity) {
+            // PERBAIKAN: Pesan error diubah (tidak pakai kata 'stok')
+            return redirect()->back()->with('error', 'Jumlah tidak mencukupi untuk ' . $menu->namaMenu);
         }
 
         // 4. Tambahkan ke keranjang menggunakan data dari database
@@ -42,17 +44,18 @@ class CartController extends Controller
             'price' => $menu->harga,
             'quantity' => $request->quantity,
             'attributes' => [
-                'image' => $menu->gambar, // Ambil gambar dari database
+                'image' => $menu->gambar, 
             ]
         ]);
 
         session()->flash('success', 'Menu berhasil ditambahkan ke keranjang!');
 
-        return redirect()->route('cart.list');
+        // Arahkan ke halaman daftar menu (dashboard) agar bisa belanja lagi
+        return redirect()->route('dashboard')->with('success', 'Menu berhasil ditambahkan!');
     }
 
     /**
-     * Mengupdate jumlah item di keranjang dengan pengecekan stok.
+     * Mengupdate jumlah item di keranjang dengan pengecekan ketersediaan.
      */
     public function updateCart(Request $request)
     {
@@ -63,9 +66,10 @@ class CartController extends Controller
 
         $menu = Menu::findOrFail($request->id);
 
-        // Cek stok sebelum update
-        if ($menu->stok < $request->quantity) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk ' . $menu->namaMenu);
+        // PERBAIKAN: Cek ketersediaan sebelum update
+        if ($menu->jumlah_saat_ini < $request->quantity) {
+             // PERBAIKAN: Pesan error diubah (tidak pakai kata 'stok')
+            return redirect()->back()->with('error', 'Jumlah tidak mencukupi untuk ' . $menu->namaMenu);
         }
 
         \Cart::update(
@@ -106,4 +110,3 @@ class CartController extends Controller
         return redirect()->route('cart.list');
     }
 }
-

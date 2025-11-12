@@ -6,64 +6,50 @@ use App\Models\Menu;
 use App\Models\DailyKetersediaan;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon; // Pastikan Carbon diimport
+use Illuminate\Support\Carbon;
 
 class ResetDailyKetersediaan extends Command
 {
-    /**
-     * Nama dan signature dari command console.
-     * @var string
-     */
     protected $signature = 'ketersediaan:reset';
+    protected $description = 'Me-reset jumlah harian (jumlah_saat_ini) kembali ke nilai kapasitas.';
 
-    /**
-     * Deskripsi command console.
-     * @var string
-     */
-    protected $description = 'Menyalin jumlah default menu ke ketersediaan harian untuk hari ini.';
-
-    /**
-     * Jalankan command console.
-     * @return int
-     */
     public function handle()
     {
         $today = Carbon::today();
         $menus = Menu::all();
-        $records = [];
         $count = 0;
 
         $this->info("Memulai proses reset ketersediaan untuk tanggal: " . $today->toDateString());
 
-        // 1. Loop melalui semua menu yang ada di database
+        // 1. Loop melalui semua menu
         foreach ($menus as $menu) {
             
-            // 2. Cek apakah entri ketersediaan untuk menu ini hari ini sudah ada
-            $existing = DailyKetersediaan::where('menu_id', $menu->id)
-                                         ->whereDate('tanggal', $today)
-                                         ->first();
-
-            // Hanya buat entri baru jika belum ada DAN jika jumlah_default > 0
-            if (!$existing && $menu->jumlah_default > 0) {
+            // Hanya reset menu yang memiliki kapasitas
+            if ($menu->kapasitas > 0) {
                 
-                $records[] = [
-                    'menu_id' => $menu->id,
-                    'tanggal' => $today,
-                    'jumlah_awal_hari' => $menu->jumlah_default,
-                    'jumlah_saat_ini' => $menu->jumlah_default, // Stok riil di set sama dengan default
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                // 2. PERBAIKAN LOGIKA:
+                // Cari data harian berdasarkan menu_id dan tanggal HARI INI.
+                // Jika ADA, update jumlah_saat_ini kembali ke kapasitas.
+                // Jika TIDAK ADA, buat data baru.
+                DailyKetersediaan::updateOrCreate(
+                    [
+                        'menu_id' => $menu->id,
+                        'tanggal' => $today
+                    ],
+                    [
+                        'jumlah_awal_hari' => $menu->kapasitas,
+                        'jumlah_saat_ini' => $menu->kapasitas, // INI ADALAH LOGIKA RESETNYA
+                        'updated_at' => now()
+                    ]
+                );
                 $count++;
             }
         }
 
-        // 3. Masukkan data ke database secara massal (mass insert)
-        if (!empty($records)) {
-            DB::table('daily_ketersediaan')->insert($records);
-            $this->info("✅ Berhasil: " . $count . " menu baru berhasil di-reset untuk ketersediaan harian.");
+        if ($count > 0) {
+            $this->info("✅ Berhasil: " . $count . " menu telah di-reset jumlah hariannya.");
         } else {
-            $this->comment('ℹ️ Tidak ada menu baru yang perlu di-reset hari ini, atau sudah di-reset sebelumnya.');
+            $this->comment('ℹ️ Tidak ada menu yang memiliki kapasitas untuk di-reset.');
         }
 
         return 0;

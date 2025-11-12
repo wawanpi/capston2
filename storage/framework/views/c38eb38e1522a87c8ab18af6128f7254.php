@@ -8,14 +8,16 @@
 <?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
-     <?php $__env->slot('header', null, []); ?> 
+    
+     <?php $__env->slot('header', null, ['class' => 'no-print']); ?> 
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             <?php echo e(__('Detail Pesanan #')); ?><?php echo e($pesanan->id); ?>
 
         </h2>
      <?php $__env->endSlot(); ?>
 
-    <div class="py-12">
+    
+    <div class="py-12 no-print">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             
             <?php if($message = Session::get('success')): ?>
@@ -41,10 +43,10 @@
                 </div>
             <?php endif; ?>
 
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 print-area">
                 
-                <div class="md:col-span-2">
+                <div class="md:col-span-2 print-col">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                          <div class="p-6 border-b border-gray-200">
                             <h3 class="text-lg font-semibold mb-4">Ringkasan Pesanan</h3>
@@ -58,6 +60,7 @@
                             <?php endif; ?>
 
                             <p class="mt-2 text-xl"><strong>Total Bayar:</strong> <span class="font-bold text-gray-900">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></span></p>
+                            
                             <p><strong>Status Saat Ini:</strong> 
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     <?php if($pesanan->status == 'pending'): ?> bg-yellow-100 text-yellow-800 <?php endif; ?>
@@ -69,21 +72,20 @@
                          </div>
                         
                         
-                        
                         <?php if($pesanan->status == 'pending' || $pesanan->status == 'processing'): ?>
                          <div class="p-6 border-b border-gray-200">
-                               <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
-                               <form action="<?php echo e(route('admin.pesanan.updateStatus', $pesanan->id)); ?>" method="POST">
-                                   <?php echo csrf_field(); ?>
-                                   <?php echo method_field('PUT'); ?>
-                                   <div class="flex items-center">
-                                       <select name="status" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                           <option value="pending" <?php echo e($pesanan->status == 'pending' ? 'selected' : ''); ?>>Pending (Menunggu diproses)</option>
-                                           <option value="processing" <?php echo e($pesanan->status == 'processing' ? 'selected' : ''); ?>>Processing (Sedang dibuat)</option>
-                                           <option value="completed" <?php echo e($pesanan->status == 'completed' ? 'selected' : ''); ?>>Completed (Siap diambil)</option>
-                                           <option value="cancelled" <?php echo e($pesanan->status == 'cancelled' ? 'selected' : ''); ?>>Cancelled (Dibatalkan)</option>
-                                       </select>
-                                       <?php if (isset($component)) { $__componentOriginald411d1792bd6cc877d687758b753742c = $component; } ?>
+                                <h3 class="text-lg font-semibold mb-4">Ubah Status Pesanan</h3>
+                                <form action="<?php echo e(route('admin.pesanan.updateStatus', $pesanan->id)); ?>" method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('PUT'); ?>
+                                    <div class="flex items-center">
+                                        <select name="status" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                            <option value="pending" <?php echo e($pesanan->status == 'pending' ? 'selected' : ''); ?>>Pending (Menunggu diproses)</option>
+                                            <option value="processing" <?php echo e($pesanan->status == 'processing' ? 'selected' : ''); ?>>Processing (Sedang dibuat)</option>
+                                            <option value="completed" <?php echo e($pesanan->status == 'completed' ? 'selected' : ''); ?>>Completed (Siap diambil)</option>
+                                            <option value="cancelled" <?php echo e($pesanan->status == 'cancelled' ? 'selected' : ''); ?>>Cancelled (Dibatalkan)</option>
+                                        </select>
+                                        <?php if (isset($component)) { $__componentOriginald411d1792bd6cc877d687758b753742c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald411d1792bd6cc877d687758b753742c = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.primary-button','data' => ['class' => 'ml-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('primary-button'); ?>
@@ -102,21 +104,19 @@
 <?php $component = $__componentOriginald411d1792bd6cc877d687758b753742c; ?>
 <?php unset($__componentOriginald411d1792bd6cc877d687758b753742c); ?>
 <?php endif; ?>
-                                   </div>
-                               </form>
+                                    </div>
+                                </form>
                          </div>
                          <?php endif; ?>
 
                         
                          <div class="p-6">
                             <h3 class="text-lg font-semibold mb-4">Tindakan Pembayaran</h3>
-                            
                             <?php if($pesanan->transaksi): ?>
                                 <div class="p-4 bg-green-100 rounded-lg text-green-700 font-semibold">
                                     Pesanan ini sudah lunas dibayar.
                                 </div>
                             <?php else: ?>
-                                
                                 <form action="<?php echo e(route('admin.transaksi.verifikasi', $pesanan->id)); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
                                     <p class="text-sm text-gray-600 mb-2">Klik tombol ini untuk mengonfirmasi bahwa pembayaran tunai telah diterima di kasir.</p>
@@ -149,17 +149,17 @@
                 </div>
 
                 
-                <div class="md:col-span-1 space-y-6">
-                       
-                       
-                       <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="md:col-span-1 space-y-6 print-col">
+                        
+                        
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold mb-4">Item yang Dipesan</h3>
                                 <div class="space-y-4">
                                     <?php $__empty_1 = true; $__currentLoopData = $pesanan->details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <div class="flex justify-between items-start border-b pb-2">
                                             <div>
-                                                <p class="font-semibold"><?php echo e($item->menu->namaMenu); ?></p>
+                                                <p class="font-semibold"><?php echo e($item->menu->namaMenu ?? 'Menu Dihapus'); ?></p>
                                                 <p class="text-sm text-gray-600"><?php echo e($item->jumlah); ?> x Rp <?php echo e(number_format($item->harga_satuan, 0, ',', '.')); ?></p>
                                             </div>
                                             <p class="text-sm font-semibold text-gray-800">Rp <?php echo e(number_format($item->subtotal, 0, ',', '.')); ?></p>
@@ -171,7 +171,6 @@
                             </div>
                        </div>
 
-                        
                         
                         <?php if($pesanan->status == 'pending' || $pesanan->status == 'processing'): ?>
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -188,7 +187,7 @@
                                                 <?php $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     
                                                     <option value="<?php echo e($menu->id); ?>">
-                                                        <?php echo e($menu->namaMenu); ?> (Stok: <?php echo e($menu->stok); ?>)
+                                                        <?php echo e($menu->namaMenu); ?> (Sisa: <?php echo e($menu->jumlah_saat_ini); ?>)
                                                     </option>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
@@ -233,11 +232,100 @@
 
                 </div>
             </div>
-             <div class="mt-6">
-                <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="text-indigo-600 hover:text-indigo-900">&larr; Kembali ke Daftar Pesanan</a>
+             <div class="mt-6 flex justify-between">
+                <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="text-indigo-600 hover:text-indigo-900 no-print">&larr; Kembali ke Daftar Pesanan</a>
+                
+                
+                <?php if($pesanan->transaksi): ?>
+                    <button onclick="window.print()" class="px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 no-print">
+                        Cetak Nota
+                    </button>
+                <?php endif; ?>
              </div>
         </div>
     </div>
+
+    
+    
+    
+    <div class="print-this" aria-hidden="true">
+        <div class="nota-wrapper">
+            <div class="nota-header">
+                <h2>BURMIN - Jagonya Warmindo</h2>
+                <p>Jl. Bunga, Geblagan, Tamantirto, Bantul, DIY</p>
+                <p>Telp: (0274) 123456</p>
+            </div>
+
+            <div class="nota-separator"></div>
+
+            <div class="nota-details">
+                <p><span>No. Pesanan:</span> <strong>#<?php echo e($pesanan->id); ?></strong></p>
+                
+                <p><span>Kasir:</span> <strong><?php echo e(Auth::user()->name); ?></strong></p> 
+                <p><span>Pelanggan:</span> <strong><?php echo e($pesanan->user->name); ?></strong></p>
+                <p><span>Tanggal:</span> <strong><?php echo e($pesanan->created_at->format('d/m/Y H:i')); ?></strong></p>
+                <p><span>Layanan:</span> <strong><?php echo e($pesanan->tipe_layanan); ?></strong></p>
+            </div>
+
+            <div class="nota-separator"></div>
+
+            <div class="nota-items">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Jml</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $__currentLoopData = $pesanan->details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <tr>
+                            
+                            <td>
+                                <?php echo e($item->menu->namaMenu ?? 'Menu Dihapus'); ?>
+
+                                <br>
+                                <small>(@ Rp <?php echo e(number_format($item->harga_satuan, 0, ',', '.')); ?>)</small>
+                            </td>
+                            <td>x<?php echo e($item->jumlah); ?></td>
+                            <td>Rp <?php echo e(number_format($item->subtotal, 0, ',', '.')); ?></td>
+                        </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="nota-separator"></div>
+            
+            <div class="nota-total">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>Total Bayar</strong></td>
+                            <td><strong>Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></strong></td>
+                        </tr>
+                        <?php if($pesanan->transaksi): ?>
+                        <tr>
+                            <td>Status</td>
+                            <td>LUNAS (<?php echo e($pesanan->transaksi->metode_pembayaran); ?>)</td>
+                        </tr>
+                        <?php else: ?>
+                        <tr>
+                            <td>Status</td>
+                            <td>BELUM LUNAS</td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="nota-footer">
+                <p>Terima Kasih Atas Kunjungan Anda!</p>
+            </div>
+        </div>
+    </div>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

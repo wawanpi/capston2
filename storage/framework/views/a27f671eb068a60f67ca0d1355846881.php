@@ -9,41 +9,41 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        
+        <h2 class="font-bold text-xl text-gray-800 leading-tight">
             <?php echo e(__('Kelola Pesanan')); ?>
 
         </h2>
      <?php $__env->endSlot(); ?>
 
-    <div class="py-12">
+    
+    <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                 <div class="p-6 text-gray-900">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                            
+                            <thead class="bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Pesanan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
-                                    
-                                    
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item Dipesan</th>
-                                    
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe Layanan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah Tamu</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">ID Pesanan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Pelanggan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Item Dipesan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Tipe Layanan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Jumlah Tamu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <?php $__empty_1 = true; $__currentLoopData = $pesanans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pesanan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <tr>
+                                    <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#<?php echo e($pesanan->id); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo e($pesanan->user->name); ?></td>
                                         
                                         
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            
                                             <?php if($pesanan->relationLoaded('details')): ?>
                                                 <ul class="list-disc list-inside">
                                                     <?php $__currentLoopData = $pesanan->details->take(2); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $detail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -64,16 +64,15 @@
                                         
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-800 text-white">
                                                     Dine-in
                                                 </span>
                                             <?php else: ?>
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">
                                                     Take Away
                                                 </span>
                                             <?php endif; ?>
                                         </td>
-                                        
                                         
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
@@ -83,23 +82,26 @@
                                             <?php endif; ?>
                                         </td>
                                         
+                                        
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                <?php if($pesanan->status == 'pending'): ?> bg-yellow-100 text-yellow-800 <?php endif; ?>
-                                                <?php if($pesanan->status == 'processing'): ?> bg-blue-100 text-blue-800 <?php endif; ?>
-                                                <?php if($pesanan->status == 'completed'): ?> bg-green-100 text-green-800 <?php endif; ?>
+                                                <?php if($pesanan->status == 'pending'): ?> bg-gray-200 text-gray-800 <?php endif; ?>
+                                                <?php if($pesanan->status == 'processing'): ?> bg-gray-800 text-white <?php endif; ?>
+                                                <?php if($pesanan->status == 'completed'): ?> bg-white text-gray-500 border border-gray-300 <?php endif; ?>
                                                 <?php if($pesanan->status == 'cancelled'): ?> bg-red-100 text-red-800 <?php endif; ?>
                                             "><?php echo e($pesanan->status); ?></span>
                                         </td>
                                         
+                                        
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="<?php echo e(route('admin.pesanan.show', $pesanan->id)); ?>" class="text-indigo-600 hover:text-indigo-900">Lihat Detail</a>
+                                            <a href="<?php echo e(route('admin.pesanan.show', $pesanan->id)); ?>" class="text-red-600 hover:text-red-800 border border-gray-300 p-1 rounded-md text-xs font-semibold">
+                                                Lihat Detail
+                                            </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <tr>
-                                        
-                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada pesanan.</td>
+                                        <td colspan="7" class="px-6 py-4 whitespace-nowNrap text-sm text-gray-500 text-center">Belum ada pesanan.</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>

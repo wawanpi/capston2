@@ -114,7 +114,7 @@
     </div>
 
     <!-- Page Content -->
-    <main>
+    <main class="pt-20"> 
         {{ $slot }}
     </main>
     

@@ -129,7 +129,7 @@
 
 
 <!-- === 1. HEADER (Top Navigation) === -->
-<header class="bg-kfc-red text-white shadow-lg sticky top-0 z-30">
+<header class="bg-kfc-red text-white shadow-lg fixed w-full top-0 z-50 transition-all duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
         <!-- Sisi Kiri: Menu & Logo -->
         <div class="flex items-center gap-4">

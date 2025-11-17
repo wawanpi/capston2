@@ -44,13 +44,19 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
                                 Terapkan Filter
                             </button>
+
+                            {{-- === TOMBOL CETAK LAPORAN DITAMBAHKAN DI SINI === --}}
+                            {{-- request()->query() akan mengirim filter (?range=daily) ke rute cetak --}}
+                            <a href="{{ route('admin.transaksi.cetak', request()->query()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition-colors">
+                                Cetak Laporan
+                            </a>
+                            {{-- === AKHIR TOMBOL CETAK === --}}
                         </div>
                     </form>
                 </div>
             </div>
 
             {{-- === BLOK TOTAL PENDAPATAN (Style Disesuaikan) === --}}
-            {{-- Kartu Stat: Diberi Aksen Hitam (Monokrom), Warna Teks Hijau dihilangkan --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 border-l-4 border-gray-800">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-bold text-gray-800 mb-2">Total Pendapatan ({{ $filterLabel }})</h3>

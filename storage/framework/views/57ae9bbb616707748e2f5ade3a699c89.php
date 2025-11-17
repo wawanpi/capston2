@@ -54,12 +54,18 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
                                 Terapkan Filter
                             </button>
+
+                            
+                            
+                            <a href="<?php echo e(route('admin.transaksi.cetak', request()->query())); ?>" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition-colors">
+                                Cetak Laporan
+                            </a>
+                            
                         </div>
                     </form>
                 </div>
             </div>
 
-            
             
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 border-l-4 border-gray-800">
                 <div class="p-6 text-gray-900">

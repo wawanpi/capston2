@@ -41,8 +41,9 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Tetapkan role 'user' ke user yang baru daftar
-        $user->assignRole('user');
+        // PERBAIKAN: Ganti role 'user' menjadi 'pelanggan'
+        // agar sesuai dengan DatabaseSeeder Anda
+        $user->assignRole('pelanggan');
 
         event(new Registered($user));
 

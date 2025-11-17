@@ -72,7 +72,11 @@ class TransaksiController extends Controller
      */
     public function verifikasi(Request $request, Pesanan $pesanan)
     {
-        // 1. Cek apakah pesanan ini sudah punya transaksi
+        // 1. Validasi request (termasuk metode pembayaran dari dropdown)
+        $validated = $request->validate([
+            'metode_pembayaran' => 'required|string|in:Tunai di Tempat,QRIS'
+        ]);
+        // 2. Cek apakah pesanan ini sudah punya transaksi
         if ($pesanan->transaksi) {
             return redirect()->route('admin.pesanan.show', $pesanan)->with('error', 'Pesanan ini sudah dibayar.');
         }
@@ -99,5 +103,48 @@ class TransaksiController extends Controller
             DB::rollBack();
             return redirect()->route('admin.pesanan.show', $pesanan)->with('error', 'Gagal memverifikasi pembayaran: ' . $e->getMessage());
         }
+    }
+    public function cetakLaporan(Request $request)
+    {
+        // 1. (KODE DISALIN DARI FUNGSI INDEX) Tentukan rentang waktu
+        $range = $request->query('range', 'daily');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $filterLabel = "Hari Ini";
+        $query = Transaksi::query();
+
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate)->startOfDay();
+            $endDate = Carbon::parse($endDate)->endOfDay();
+            $filterLabel = "Periode " . $startDate->format('d M Y') . " - " . $endDate->format('d M Y');
+            $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
+        } else {
+            if ($range == 'weekly') {
+                $startDate = Carbon::now()->startOfWeek();
+                $endDate = Carbon::now()->endOfWeek();
+                $filterLabel = "Minggu Ini";
+            } elseif ($range == 'monthly') {
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                $filterLabel = "Bulan Ini";
+            } else {
+                $startDate = Carbon::now()->startOfDay();
+                $endDate = Carbon::now()->endOfDay();
+                $filterLabel = "Hari Ini";
+            }
+            $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
+        }
+
+        // 2. (KODE DISALIN DARI FUNGSI INDEX) Hitung Total
+        $totalQuery = clone $query;
+        $totalPendapatan = $totalQuery->sum('total_bayar');
+
+        // 3. PERBEDAAN UTAMA: Ambil SEMUA data (tanpa paginate)
+        $transaksis = $query->with('pesanan.user')
+                            ->latest()
+                            ->get(); // <-- Gunakan get() BUKAN paginate()
+
+        // 4. Kembalikan view cetak (BUKAN view index)
+        return view('admin.transaksi.cetak', compact('transaksis', 'totalPendapatan', 'filterLabel', 'startDate', 'endDate'));
     }
 }

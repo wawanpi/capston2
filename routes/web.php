@@ -86,6 +86,8 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         // Rute Kelola Transaksi
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('transaksi/verifikasi/{pesanan}', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+        Route::get('transaksi/cetak', [TransaksiController::class, 'cetakLaporan'])->name('transaksi.cetak');
+
 });
 
 

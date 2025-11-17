@@ -10,35 +10,31 @@
 <?php $component->withAttributes([]); ?>
     
      <?php $__env->slot('header', null, ['class' => 'no-print']); ?> 
-        
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             <?php echo e(__('Detail Pesanan #')); ?><?php echo e($pesanan->id); ?>
 
         </h2>
      <?php $__env->endSlot(); ?>
 
     
-    
-    <div class="py-12 bg-gray-50 no-print">
-        
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-12 no-print">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             
             
             <?php if($message = Session::get('success')): ?>
-                <div class="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 no-print" role="alert">
                     <span class="block sm:inline"><?php echo e($message); ?></span>
                 </div>
             <?php endif; ?>
-             
              <?php if($message = Session::get('error')): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 no-print" role="alert">
                     <span class="block sm:inline"><?php echo e($message); ?></span>
                 </div>
             <?php endif; ?>
 
             
             <?php if($errors->any()): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 no-print" role="alert">
                     <strong class="font-bold">Oops! Ada kesalahan:</strong>
                     <ul class="mt-2 list-disc list-inside">
                         <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -48,7 +44,7 @@
                 </div>
             <?php endif; ?>
 
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 print-area">
                 
                 <div class="md:col-span-2 print-col">
@@ -61,14 +57,12 @@
                             <p><strong>Tipe Layanan:</strong> <?php echo e($pesanan->tipe_layanan); ?></p>
 
                             <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
-                                
                                 <p><strong>Jumlah Tamu:</strong> <span class="font-bold text-red-600"><?php echo e($pesanan->jumlah_tamu); ?> orang</span></p>
                             <?php endif; ?>
 
                             <p class="mt-2 text-xl"><strong>Total Bayar:</strong> <span class="font-bold text-gray-900">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></span></p>
                             
                             <p><strong>Status Saat Ini:</strong> 
-                                
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     <?php if($pesanan->status == 'pending'): ?> bg-gray-200 text-gray-800 <?php endif; ?>
                                     <?php if($pesanan->status == 'processing'): ?> bg-gray-800 text-white <?php endif; ?>
@@ -86,14 +80,12 @@
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('PUT'); ?>
                                     <div class="flex items-center">
-                                        
                                         <select name="status" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">
                                             <option value="pending" <?php echo e($pesanan->status == 'pending' ? 'selected' : ''); ?>>Pending (Menunggu diproses)</option>
                                             <option value="processing" <?php echo e($pesanan->status == 'processing' ? 'selected' : ''); ?>>Processing (Sedang dibuat)</option>
                                             <option value="completed" <?php echo e($pesanan->status == 'completed' ? 'selected' : ''); ?>>Completed (Siap diambil)</option>
                                             <option value="cancelled" <?php echo e($pesanan->status == 'cancelled' ? 'selected' : ''); ?>>Cancelled (Dibatalkan)</option>
                                         </select>
-                                        
                                         <button type="submit" class="ml-4 inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
                                             Update
                                         </button>
@@ -106,14 +98,34 @@
                          <div class="p-6">
                             <h3 class="text-lg font-bold text-gray-800 mb-4">Tindakan Pembayaran</h3>
                             <?php if($pesanan->transaksi): ?>
-                                
                                 <div class="p-4 bg-gray-100 rounded-lg text-gray-800 font-semibold">
                                     Pesanan ini sudah lunas dibayar.
                                 </div>
                             <?php else: ?>
+                                
                                 <form action="<?php echo e(route('admin.transaksi.verifikasi', $pesanan->id)); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
-                                    <p class="text-sm text-gray-600 mb-2">Klik tombol ini untuk mengonfirmasi bahwa pembayaran tunai telah diterima di kasir.</p>
+                                    
+                                    
+                                    <div class="mb-4">
+                                        <label for="metode_pembayaran" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+                                        <select name="metode_pembayaran" id="metode_pembayaran" class="mt-1 block w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" required>
+                                            <option value="Tunai di Tempat">Tunai di Tempat</option>
+                                            <option value="QRIS">QRIS</option>
+                                        </select>
+                                        <?php $__errorArgs = ['metode_pembayaran'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                    
+                                    <p class="text-sm text-gray-600 mb-2">Klik tombol ini untuk mengonfirmasi bahwa pembayaran telah diterima.</p>
                                     
                                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
                                         Verifikasi Pembayaran
@@ -186,14 +198,10 @@
                             </div>
                         </div>
                         <?php endif; ?>
-                        
-
                 </div>
             </div>
              <div class="mt-6 flex justify-between">
-                
                 <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="text-sm text-gray-600 hover:text-gray-900 no-print">&larr; Kembali ke Daftar Pesanan</a>
-                
                 
                 <?php if($pesanan->transaksi): ?>
                     <button onclick="window.print()" class="px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 no-print">
@@ -204,8 +212,6 @@
         </div>
     </div>
 
-    
-    
     
     
     <div class="print-this" aria-hidden="true">
@@ -266,6 +272,7 @@
                         <?php if($pesanan->transaksi): ?>
                         <tr>
                             <td>Status</td>
+                            
                             <td>LUNAS (<?php echo e($pesanan->transaksi->metode_pembayaran); ?>)</td>
                         </tr>
                         <?php else: ?>

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // <-- PENTING: Tambahkan ini
+use App\Models\User;
+use Spatie\Permission\Models\Role; // <-- PENTING: Import Model Role dari Spatie
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,20 +14,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Buat User Admin terlebih dahulu
-        // Menggunakan firstOrCreate agar tidak error jika admin sudah ada
-        User::firstOrCreate(
-            ['email' => 'admin@example.com'], // Cari user dengan email ini
+        // 1. Reset Cache Permission (Penting untuk menghindari error cache)
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // 2. BUAT ROLE (Ini langkah yang hilang di error Anda)
+        // Kita gunakan firstOrCreate agar tidak error jika data sudah ada
+        $roleAdmin = Role::firstOrCreate(['name' => 'admin']);
+        $rolePelanggan = Role::firstOrCreate(['name' => 'pelanggan']);
+
+        // 3. Buat User Admin
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('password'), // Ganti 'password' dengan password yang aman
+                'password' => Hash::make('12345678'),
                 'email_verified_at' => now(),
             ]
         );
+        // Berikan role admin ke user ini
+        $admin->assignRole($roleAdmin);
 
-        // 2. Buat User Biasa (seperti kode Anda)
-        // User ini akan mendapat ID=2 jika database kosong
-        User::firstOrCreate(
+        // 4. Buat User Pelanggan (Contoh)
+        $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
@@ -35,12 +43,7 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        
-        // (Opsional) Buat 10 user acak lainnya jika perlu
-        // User::factory(10)->create();
-
-        // 3. Panggil Seeder untuk membuat dan menetapkan Roles
-        // Ini akan membuat role 'admin' & 'user', lalu menetapkan 'admin' ke user ID 1
-        $this->call(RolesAndPermissionsSeeder::class);
+        // Berikan role pelanggan ke user ini
+        $user->assignRole($rolePelanggan);
     }
 }

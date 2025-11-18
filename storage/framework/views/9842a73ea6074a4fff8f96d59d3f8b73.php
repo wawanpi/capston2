@@ -10,23 +10,23 @@
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
         
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
+        <h2 class="font-bold text-xl text-red-700 leading-tight">
             <?php echo e(__('Edit Menu: ')); ?> <?php echo e($menu->namaMenu); ?>
 
         </h2>
      <?php $__env->endSlot(); ?>
 
     
-    <div class="py-12 bg-gray-50">
+    <div class="py-12 bg-yellow-50/50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg border-2 border-red-300">
                 <div class="p-6 text-gray-900">
                     
                     
                     <?php if($errors->any()): ?>
-                        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                            <strong class="font-bold">Error!</strong>
+                        <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 font-semibold">
+                            <strong class="font-bold">Gagal Memperbarui!</strong>
                             <ul class="mt-2 list-disc list-inside text-sm">
                                 <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li><?php echo e($error); ?></li>
@@ -38,7 +38,7 @@
                     <form method="POST" action="<?php echo e(route('admin.menus.update', $menu->id)); ?>" enctype="multipart/form-data">
                         <?php echo csrf_field(); ?>
                         <?php echo method_field('PUT'); ?>
-                        <div class="space-y-4">
+                        <div class="space-y-6">
 
                             
                             <div>
@@ -111,7 +111,6 @@
 <?php $component = $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581; ?>
 <?php unset($__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581); ?>
 <?php endif; ?>
-                                
                                 <?php if (isset($component)) { $__componentOriginal18c21970322f9e5c938bc954620c12bb = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal18c21970322f9e5c938bc954620c12bb = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'namaMenu','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'text','name' => 'namaMenu','value' => old('namaMenu', $menu->namaMenu),'required' => true,'autofocus' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -176,7 +175,7 @@
 <?php $component = $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581; ?>
 <?php unset($__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581); ?>
 <?php endif; ?>
-                                <textarea id="deskripsi" name="deskripsi" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm"><?php echo e(old('deskripsi', $menu->deskripsi)); ?></textarea>
+                                <textarea id="deskripsi" name="deskripsi" rows="3" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm"><?php echo e(old('deskripsi', $menu->deskripsi)); ?></textarea>
                                 <?php if (isset($component)) { $__componentOriginalf94ed9c5393ef72725d159fe01139746 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf94ed9c5393ef72725d159fe01139746 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-error','data' => ['messages' => $errors->get('deskripsi'),'class' => 'mt-2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -203,14 +202,14 @@
                             <div>
                                 <?php if (isset($component)) { $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'harga','value' => __('Harga')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'harga','value' => __('Harga (Rupiah)')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('input-label'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['for' => 'harga','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Harga'))]); ?>
+<?php $component->withAttributes(['for' => 'harga','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Harga (Rupiah)'))]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581)): ?>
@@ -223,14 +222,14 @@
 <?php endif; ?>
                                 <?php if (isset($component)) { $__componentOriginal18c21970322f9e5c938bc954620c12bb = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal18c21970322f9e5c938bc954620c12bb = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'harga','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'harga','value' => old('harga', $menu->harga),'required' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'harga','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'harga','value' => old('harga', $menu->harga),'required' => true,'min' => '1','placeholder' => 'Contoh: 15000','oninput' => 'this.value = this.value.replace(/[^0-9]/g, \'\');','onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('text-input'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['id' => 'harga','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'harga','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(old('harga', $menu->harga)),'required' => true]); ?>
+<?php $component->withAttributes(['id' => 'harga','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'harga','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(old('harga', $menu->harga)),'required' => true,'min' => '1','placeholder' => 'Contoh: 15000','oninput' => 'this.value = this.value.replace(/[^0-9]/g, \'\');','onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal18c21970322f9e5c938bc954620c12bb)): ?>
@@ -241,6 +240,7 @@
 <?php $component = $__componentOriginal18c21970322f9e5c938bc954620c12bb; ?>
 <?php unset($__componentOriginal18c21970322f9e5c938bc954620c12bb); ?>
 <?php endif; ?>
+                                <p class="text-xs text-gray-500 mt-1">*Masukkan angka saja, tanpa titik atau koma.</p>
                                 <?php if (isset($component)) { $__componentOriginalf94ed9c5393ef72725d159fe01139746 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf94ed9c5393ef72725d159fe01139746 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-error','data' => ['messages' => $errors->get('harga'),'class' => 'mt-2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -267,14 +267,14 @@
                             <div>
                                 <?php if (isset($component)) { $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'kapasitas','value' => __('Kapasitas Harian')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'kapasitas','value' => __('Kapasitas Harian (Stok Awal)')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('input-label'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['for' => 'kapasitas','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Kapasitas Harian'))]); ?>
+<?php $component->withAttributes(['for' => 'kapasitas','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Kapasitas Harian (Stok Awal)'))]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581)): ?>
@@ -287,14 +287,14 @@
 <?php endif; ?>
                                 <?php if (isset($component)) { $__componentOriginal18c21970322f9e5c938bc954620c12bb = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal18c21970322f9e5c938bc954620c12bb = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'kapasitas','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'kapasitas','value' => old('kapasitas', $menu->kapasitas),'required' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'kapasitas','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'kapasitas','value' => old('kapasitas', $menu->kapasitas),'required' => true,'min' => '1','placeholder' => 'Minimal 1 porsi','oninput' => 'this.value = this.value.replace(/[^0-9]/g, \'\');','onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('text-input'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['id' => 'kapasitas','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'kapasitas','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(old('kapasitas', $menu->kapasitas)),'required' => true]); ?>
+<?php $component->withAttributes(['id' => 'kapasitas','class' => 'block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm','type' => 'number','name' => 'kapasitas','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(old('kapasitas', $menu->kapasitas)),'required' => true,'min' => '1','placeholder' => 'Minimal 1 porsi','oninput' => 'this.value = this.value.replace(/[^0-9]/g, \'\');','onkeypress' => 'return event.charCode >= 48 && event.charCode <= 57']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal18c21970322f9e5c938bc954620c12bb)): ?>
@@ -305,6 +305,7 @@
 <?php $component = $__componentOriginal18c21970322f9e5c938bc954620c12bb; ?>
 <?php unset($__componentOriginal18c21970322f9e5c938bc954620c12bb); ?>
 <?php endif; ?>
+                                <p class="text-xs text-gray-500 mt-1">*Masukkan angka bulat saja.</p>
                                 <?php if (isset($component)) { $__componentOriginalf94ed9c5393ef72725d159fe01139746 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf94ed9c5393ef72725d159fe01139746 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-error','data' => ['messages' => $errors->get('kapasitas'),'class' => 'mt-2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -349,7 +350,6 @@
 <?php $component = $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581; ?>
 <?php unset($__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581); ?>
 <?php endif; ?>
-                                
                                 <input id="gambar" name="gambar" type="file" class="block w-full text-sm text-gray-500
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-md file:border-0
@@ -375,27 +375,26 @@
 <?php $component = $__componentOriginalf94ed9c5393ef72725d159fe01139746; ?>
 <?php unset($__componentOriginalf94ed9c5393ef72725d159fe01139746); ?>
 <?php endif; ?>
+
+                                
+                                <?php if($menu->gambar): ?>
+                                    <div class="mt-3 p-2 border border-gray-200 rounded-md inline-block bg-gray-50">
+                                        <p class="text-xs font-semibold text-gray-600 mb-1">Gambar Saat Ini:</p>
+                                        <img src="<?php echo e(asset($menu->gambar)); ?>" 
+                                             alt="<?php echo e($menu->namaMenu); ?>" 
+                                             class="w-32 h-32 object-cover rounded shadow-sm"
+                                             onerror="this.src='https://placehold.co/128x128/e2e8f0/e2e8f0?text=IMG'">
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
-                            
-                            <?php if($menu->gambar): ?>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-600">Gambar Saat Ini:</p>
-                                    <img src="<?php echo e(asset($menu->gambar)); ?>" 
-                                         alt="<?php echo e($menu->namaMenu); ?>" 
-                                         class="mt-1 w-32 h-32 object-cover rounded"
-                                         onerror="this.src='https://placehold.co/128x128/e2e8f0/e2e8f0?text=IMG'">
-                                </div>
-                            <?php endif; ?>
                         </div>
 
                         <div class="flex items-center justify-end mt-6">
-                            
                             <a href="<?php echo e(route('admin.menus.index')); ?>" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md mr-4"> Batal </a>
                             
-                            
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
-                                <?php echo e(__('Update Menu')); ?>
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors shadow-md">
+                                <i class="fas fa-save mr-1"></i> <?php echo e(__('Update Menu')); ?>
 
                             </button>
                         </div>

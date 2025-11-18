@@ -89,7 +89,8 @@ class TransaksiController extends Controller
                 'pesanan_id' => $pesanan->id,
                 'total_bayar' => $pesanan->total_bayar,
                 'status_pembayaran' => 'paid',
-                'metode_pembayaran' => 'Tunai di Tempat', // Sesuai alur
+                // [BENAR] AMBIL DARI REQUEST DROPDOWN:
+                'metode_pembayaran' => $request->metode_pembayaran,
                 'tanggal_transaksi' => now(),
             ]);
 

@@ -1,129 +1,70 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo e(config('app.name', 'Laravel')); ?></title>
 
-    <!-- ... (Script CDN Anda: Tailwind, Lucide, Alpine) ... -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
 
-    
     <style>
-        /* Style kustom Anda (TETAP ADA) */
+        /* Style Kustom */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .bg-kfc-red { background-color: #E3002B; }
         .text-kfc-red { color: #E3002B; }
-        .focus\:ring-kfc-red:focus {
-            --tw-ring-color: #E3002B;
-        }
+        .focus\:ring-kfc-red:focus { --tw-ring-color: #E3002B; }
         .text-burmin-red { color: #E3002B; }
         [x-cloak] { display: none !important; }
 
-        /* === CSS BARU UNTUK CETAK NOTA === */
-        
-        /* 1. Sembunyikan nota di tampilan layar biasa */
-        .print-this {
-            display: none;
-        }
-
+        /* === CSS UNTUK CETAK NOTA === */
+        .print-this { display: none; }
         @media print {
-            /* 2. Sembunyikan semua elemen yang punya kelas .no-print */
-            .no-print {
-                display: none !important;
-            }
-            
-            /* 3. Sembunyikan semua elemen di body */
-            body * {
-                visibility: hidden;
-            }
-            
-            /* 4. Tampilkan HANYA .print-this dan semua anaknya */
-            .print-this, .print-this * {
-                visibility: visible !important;
-            }
-
-            /* 5. Atur area cetak ke atas halaman */
+            .no-print { display: none !important; }
+            body * { visibility: hidden; }
+            .print-this, .print-this * { visibility: visible !important; }
             .print-this {
                 display: block !important;
                 position: absolute;
-                top: 10px;
-                left: 10px;
-                right: 10px;
+                top: 10px; left: 10px; right: 10px;
             }
-
-            /* 6. Terapkan style nota kasir */
             .nota-wrapper {
-                font-family: 'Courier New', Courier, monospace; /* Font ala kasir */
-                color: #000;
-                max-width: 320px; /* Lebar kertas thermal 80mm */
-                margin: 0 auto;
-                padding: 5px;
+                font-family: 'Courier New', Courier, monospace;
+                color: #000; max-width: 320px; margin: 0 auto; padding: 5px;
             }
-            .nota-header, .nota-footer {
-                text-align: center;
-            }
-            .nota-header h2 {
-                font-size: 1.1rem;
-                font-weight: bold;
-                margin: 0;
-            }
-            .nota-header p {
-                font-size: 0.8rem;
-                margin: 2px 0;
-            }
-            .nota-separator {
-                border-top: 1px dashed #000;
-                margin: 8px 0;
-            }
-            .nota-details, .nota-items, .nota-total {
-                font-size: 0.85rem;
-                margin-bottom: 8px;
-            }
-            .nota-details p {
-                margin: 2px 0;
-                display: flex;
-                justify-content: space-between;
-            }
-            .nota-items table, .nota-total table {
-                width: 100%;
-            }
-            .nota-items th {
-                text-align: left;
-                border-bottom: 1px solid #000;
-            }
-            .nota-items td:last-child, .nota-total td:last-child {
-                text-align: right;
-            }
-            .nota-footer p {
-                font-size: 0.8rem;
-                margin-top: 5px;
-            }
+            .nota-header, .nota-footer { text-align: center; }
+            .nota-header h2 { font-size: 1.1rem; font-weight: bold; margin: 0; }
+            .nota-header p { font-size: 0.8rem; margin: 2px 0; }
+            .nota-separator { border-top: 1px dashed #000; margin: 8px 0; }
+            .nota-details, .nota-items, .nota-total { font-size: 0.85rem; margin-bottom: 8px; }
+            .nota-details p { margin: 2px 0; display: flex; justify-content: space-between; }
+            .nota-items table, .nota-total table { width: 100%; }
+            .nota-items th { text-align: left; border-bottom: 1px solid #000; }
+            .nota-items td:last-child, .nota-total td:last-child { text-align: right; }
+            .nota-footer p { font-size: 0.8rem; margin-top: 5px; }
         }
-        /* === AKHIR BLOK CETAK NOTA === */
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans" x-data="{ sidebarOpen: false, profileOpen: false }">
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen" x-data="{ sidebarOpen: false, profileOpen: false }">
 
     
     <div class="no-print">
         <?php echo $__env->make('layouts.navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
 
-    <!-- Page Content -->
-    <main class="pt-20"> 
+    <main class="pt-20 flex-grow <?php echo e(Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : ''); ?> transition-all duration-300"> 
         <?php echo e($slot); ?>
 
     </main>
     
     
-    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 no-print">
-        
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 mt-auto no-print <?php echo e(Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : ''); ?> transition-all duration-300">
         <div class="container mx-auto px-4">
-             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <div>
                     <h4 class="text-lg font-bold text-white mb-4">PT FAST FOOD INDONESIA TBK</h4>
                     <p class="text-sm mb-2">Address: Jl. Bunga, Geblagan, Tamantirto, Kec. Kasihan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55184</p>
@@ -173,10 +114,9 @@
         </div>
     </footer>
 
-    <!-- === TOMBOL MELAYANG (Tambahkan no-print) === -->
     <?php if(auth()->guard()->check()): ?>
         <?php if(!Auth::user()->hasRole('admin')): ?>
-            <a href="<?php echo e(route('cart.list')); ?>" class="fixed bottom-16 right-4 z-30 bg-kfc-red p-4 rounded-full shadow-lg group no-print">
+            <a href="<?php echo e(route('cart.list')); ?>" class="fixed bottom-16 right-4 z-30 bg-kfc-red p-4 rounded-full shadow-lg group no-print hover:scale-105 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.023.828l1.25 5.001A2.25 2.25 0 0 0 6.095 12H17.25a2.25 2.25 0 0 0 2.22-1.87l.46-4.885A1.125 1.125 0 0 0 18.72 4.125H5.111M7.5 18a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm10.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
                 </svg>
@@ -184,7 +124,7 @@
                     <span class="absolute -top-2 -right-2 bg-white text-kfc-red text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"><?php echo e(\Cart::getTotalQuantity()); ?></span>
                 <?php endif; ?>
             </a>
-            <button class="fixed bottom-4 right-4 z-30 no-print">
+            <button class="fixed bottom-4 right-4 z-30 no-print hover:scale-105 transition-transform">
                 <img src="https://kfcindonesia.com/static/media/bucket-list-icon.1139e8c3.png" alt="Prize" class="w-16 h-16">
             </button>
         <?php endif; ?>

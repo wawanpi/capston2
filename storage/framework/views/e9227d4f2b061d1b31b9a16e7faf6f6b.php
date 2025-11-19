@@ -61,7 +61,7 @@
                 </div>
 
                 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-xl shadow-sm border-l-4 border-red-600 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
                             
@@ -76,7 +76,7 @@
                 </div>
 
                 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-xl shadow-sm border-l-4 border-gray-800 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pengguna Baru</h3>
@@ -110,25 +110,6 @@
 
                 
                 <div class="space-y-6">
-                    
-                    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Aksi Cepat</h3>
-                        <div class="space-y-3">
-                            <a href="<?php echo e(route('admin.menus.create')); ?>" class="flex items-center justify-between w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all shadow-md shadow-red-100 group">
-                                <span class="font-medium">Tambah Menu Baru</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                            </a>
-                            <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="flex items-center justify-between w-full px-4 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md group">
-                                <span class="font-medium">Kelola Pesanan</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                            </a>
-                            <a href="<?php echo e(route('admin.menus.index')); ?>" class="flex items-center justify-between w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-all group">
-                                <span class="font-medium">Lihat Semua Menu</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                            </a>
-                        </div>
-                    </div>
-
                     
                     <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Notifikasi</h3>

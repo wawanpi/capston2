@@ -8,17 +8,50 @@ use App\Models\DailyKetersediaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB; // <-- PENTING: Tambahkan ini untuk DB Transaction
 
 class MenuController extends Controller
 {
     public function index(Request $request)
     {
+        // =========================================================================
+        // 0. AUTO-GENERATE DAILY STOCK LOGIC
+        // =========================================================================
+        
+        $today = Carbon::today();
+
+        // 1. Cek apakah data daily_ketersediaan untuk tanggal hari ini sudah ada?
+        $cekDataHariIni = DailyKetersediaan::whereDate('tanggal', $today)->exists();
+
+        // 2. Jika BELUM ADA (kosong), maka lakukan Auto-Generate
+        if (!$cekDataHariIni) {
+            $allMenus = Menu::all();
+
+            // Gunakan DB Transaction agar proses insert aman (semua masuk atau tidak sama sekali)
+            DB::transaction(function () use ($allMenus, $today) {
+                foreach ($allMenus as $menu) {
+                    DailyKetersediaan::create([
+                        'menu_id'          => $menu->id,
+                        'tanggal'          => $today,
+                        // Reset Penuh sesuai kapasitas master menu
+                        'jumlah_awal_hari' => $menu->kapasitas, 
+                        'jumlah_saat_ini'  => $menu->kapasitas, 
+                    ]);
+                }
+            });
+        }
+
+        // =========================================================================
+        // LOGIKA QUERY LAMA (Menampilkan Data)
+        // =========================================================================
+
         $query = Menu::query();
 
         if ($request->has('search') && $request->search != '') {
             $query->where('namaMenu', 'like', '%' . $request->search . '%');
         }
 
+        // Load relasi ketersediaanHariIni agar kolom 'Jumlah Hari Ini' di tabel tidak 0
         $menus = $query->latest()->with('ketersediaanHariIni', 'reviews')->paginate(10); 
 
         return view('admin.menus.index', compact('menus'));
@@ -37,9 +70,9 @@ class MenuController extends Controller
         // --- 1. DEFINISI ATURAN VALIDASI ---
         $rules = [
             'namaMenu' => 'required|string|max:255|unique:menus,namaMenu',
-            'harga'    => 'required|numeric|min:1', // Minimal 1, tidak boleh 0/negatif
+            'harga'    => 'required|numeric|min:1', 
             'deskripsi'=> 'nullable|string',
-            'kapasitas'=> 'required|integer|min:1', // Minimal 1
+            'kapasitas'=> 'required|integer|min:1', 
             'gambar'   => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'kategori' => 'required|string|in:makanan,minuman',
         ];
@@ -58,7 +91,7 @@ class MenuController extends Controller
             'in'       => ':attribute yang dipilih tidak valid.',
         ];
 
-        // Custom Attribute Names agar pesan lebih enak dibaca
+        // Custom Attribute Names
         $customAttributes = [
             'namaMenu' => 'Nama Menu',
             'harga'    => 'Harga',
@@ -82,7 +115,7 @@ class MenuController extends Controller
         // 4. Buat Menu Baru
         $menu = Menu::create($validatedData);
 
-        // 5. Set Ketersediaan Hari Ini
+        // 5. Set Ketersediaan Hari Ini (Khusus menu baru yg dibuat hari ini)
         DailyKetersediaan::create([
             'menu_id' => $menu->id,
             'tanggal' => Carbon::today(),
@@ -93,8 +126,6 @@ class MenuController extends Controller
         return redirect()->route('admin.menus.index')
                          ->with('success', 'Menu baru berhasil ditambahkan!');
     }
-
-    // ... (Method show, edit, update, destroy biarkan seperti kode lama Anda atau minta update terpisah jika perlu)
     
     public function show(Menu $menu)
     {
@@ -110,10 +141,6 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
-        // Validasi Update juga perlu disesuaikan bahasanya jika mau konsisten
-        // Untuk sekarang saya gunakan logic default Anda yang sudah ada di chat sebelumnya
-        // tapi disarankan menerapkan $messages seperti di method store()
-        
         $validatedData = $request->validate([
             'namaMenu' => 'required|string|max:255|unique:menus,namaMenu,' . $menu->id,
             'harga' => 'required|numeric|min:1',
@@ -135,6 +162,7 @@ class MenuController extends Controller
 
         $menu->update($validatedData);
 
+        // Update stok hari ini jika kapasitas master berubah
         $ketersediaanHariIni = $menu->ketersediaanHariIni()->firstOrCreate(
             ['tanggal' => Carbon::today()],
             ['jumlah_awal_hari' => 0, 'jumlah_saat_ini' => 0]

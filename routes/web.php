@@ -70,6 +70,8 @@ Route::middleware(['auth', 'verified', 'role.admin'])
     ->group(function () {
         // --- BARIS INI DIUBAH ---
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('menus/{menu}/tambah-kuota', [MenuController::class, 'editKuota'])->name('menus.editKuota');
+        Route::put('menus/{menu}/update-kuota', [MenuController::class, 'updateKuota'])->name('menus.updateKuota');
         // -----------------------
         
         Route::resource('users', UserController::class);

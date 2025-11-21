@@ -191,4 +191,61 @@ class MenuController extends Controller
         return redirect()->route('admin.menus.index')
                          ->with('success', 'Menu berhasil dihapus.');
     }
+
+    // =========================================================================
+    // FITUR BARU: KHUSUS TAMBAH KUOTA HARIAN
+    // =========================================================================
+
+    /**
+     * Menampilkan form khusus untuk menambah kuota (stok) tanpa edit data lain.
+     */
+    public function editKuota(Menu $menu)
+    {
+        // Ambil data ketersediaan hari ini, atau buat default jika belum ada
+        $ketersediaan = $menu->ketersediaanHariIni()->firstOrCreate(
+            ['tanggal' => Carbon::today()],
+            ['jumlah_awal_hari' => $menu->kapasitas, 'jumlah_saat_ini' => $menu->kapasitas]
+        );
+
+        return view('admin.menus.add_quota', compact('menu', 'ketersediaan'));
+    }
+
+    /**
+     * Memproses penambahan kuota harian.
+     */
+    public function updateKuota(Request $request, Menu $menu)
+    {
+        $request->validate([
+            'tambahan_kuota' => 'required|integer|min:1',
+        ], [
+            'tambahan_kuota.required' => 'Jumlah tambahan wajib diisi.',
+            'tambahan_kuota.min'      => 'Minimal tambahan adalah 1 porsi.',
+        ]);
+
+        $today = Carbon::today();
+
+        // Cari record hari ini
+        $daily = DailyKetersediaan::where('menu_id', $menu->id)
+                    ->whereDate('tanggal', $today)
+                    ->first();
+
+        if ($daily) {
+            // Tambahkan ke 'jumlah_saat_ini' (stok ready)
+            // Tambahkan juga ke 'jumlah_awal_hari' (karena kapasitas hari ini bertambah)
+            $daily->increment('jumlah_saat_ini', $request->tambahan_kuota);
+            $daily->increment('jumlah_awal_hari', $request->tambahan_kuota);
+        } else {
+            // Jaga-jaga jika data belum ada (fallback)
+            DailyKetersediaan::create([
+                'menu_id' => $menu->id,
+                'tanggal' => $today,
+                'jumlah_awal_hari' => $menu->kapasitas + $request->tambahan_kuota,
+                'jumlah_saat_ini'  => $menu->kapasitas + $request->tambahan_kuota,
+            ]);
+        }
+
+        // Redirect kembali ke DASHBOARD agar Admin bisa lanjut pantau
+        return redirect()->route('admin.dashboard')
+                         ->with('success', "Porsi {$menu->namaMenu} berhasil ditambah {$request->tambahan_kuota} porsi.");
+    }
 }

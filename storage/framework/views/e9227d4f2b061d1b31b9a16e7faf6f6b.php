@@ -11,14 +11,12 @@
      <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <div>
-                
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                     <?php echo e(__('Dashboard Admin')); ?>
 
                 </h2>
                 <p class="text-sm text-gray-600 mt-1">Ringkasan performa bisnis hari ini</p>
             </div>
-            
             <div class="text-sm font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200">
                 <?php echo e(now()->format('l, d F Y')); ?>
 
@@ -31,8 +29,6 @@
             
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                
-                
                 <div class="bg-white rounded-xl shadow-sm border-l-4 border-red-600 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
@@ -46,7 +42,6 @@
                     <span class="text-xs text-gray-400 mt-2 block">Total transaksi lunas</span>
                 </div>
 
-                
                 <div class="bg-white rounded-xl shadow-sm border-l-4 border-gray-800 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
@@ -60,11 +55,9 @@
                     <span class="text-xs text-gray-400 mt-2 block">Menunggu konfirmasi</span>
                 </div>
 
-                
                 <div class="bg-white rounded-xl shadow-sm border-l-4 border-red-600 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
-                            
                             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Unit Terjual</h3>
                             <p class="text-2xl font-bold text-gray-900 mt-2"><?php echo e($totalUnitTerjual); ?></p>
                         </div>
@@ -75,7 +68,6 @@
                     <span class="text-xs text-gray-400 mt-2 block">Porsi menu terjual hari ini</span>
                 </div>
 
-                
                 <div class="bg-white rounded-xl shadow-sm border-l-4 border-gray-800 p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
@@ -92,11 +84,8 @@
             
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                
                 <div class="lg:col-span-2 bg-white shadow-sm rounded-xl border border-gray-200 p-6">
                     <div class="flex justify-between items-center mb-6">
-                        
                         <h3 class="text-lg font-bold text-gray-800 border-l-4 border-red-600 pl-3">Monitoring Ketersediaan Harian</h3>
                         <div class="flex items-center bg-red-50 px-3 py-1 rounded-full border border-red-100">
                             <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse mr-2"></div>
@@ -108,9 +97,15 @@
                     </div>
                 </div>
 
-                
                 <div class="space-y-6">
-                    
+                     
+                    <?php if(session('success')): ?>
+                        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
+                            <p class="font-bold">Sukses!</p>
+                            <p class="text-sm"><?php echo e(session('success')); ?></p>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Notifikasi</h3>
                         <div class="space-y-4">
@@ -119,7 +114,6 @@
                                     <div class="w-2 h-2 bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.5)]"></div>
                                 </div>
                                 <div class="ml-3">
-                                    
                                     <p class="text-sm font-bold text-gray-800">Kuota Menipis</p>
                                     <p class="text-xs text-gray-500 mt-0.5"><?php echo e(count($menuHampirHabis)); ?> menu sisa porsi sedikit</p>
                                 </div>
@@ -141,7 +135,6 @@
             
             <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                    
                     <h3 class="text-lg font-bold text-gray-800">Menu Segera Habis</h3>
                 </div>
                 <div class="overflow-x-auto">
@@ -150,7 +143,6 @@
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Nama Menu</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kategori</th>
-                                
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Sisa Porsi</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
@@ -173,7 +165,13 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                     
-                                    <a href="<?php echo e(route('admin.menus.edit', $item->menu->id)); ?>" class="text-red-600 hover:text-red-900 font-semibold">Tambah Kuota</a>
+                                    <a href="<?php echo e(route('admin.menus.editKuota', $item->menu->id)); ?>" 
+                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+                                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                       </svg>
+                                       Tambah Kuota
+                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -189,17 +187,11 @@
     </div>
 
      <?php $__env->slot('scripts', null, []); ?> 
-        
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const chartData = <?php echo json_encode($menuHampirHabis, 15, 512) ?>;
-                
-                // Debugging: Cek data di console browser (tekan F12 -> Console)
-                console.log("Data Grafik:", chartData);
-
-                // Siapkan Label & Data
                 const labels = chartData.length 
                     ? chartData.map(item => item.menu ? item.menu.namaMenu : 'Item Terhapus') 
                     : ['Belum ada data'];
@@ -208,11 +200,10 @@
                     ? chartData.map(item => item.jumlah_saat_ini) 
                     : [0];
                 
-                // 2. PERBAIKAN WARNA: Tambah warna Kuning agar sesuai Tabel
                 const backgroundColors = data.map(val => {
-                    if (val <= 5) return '#DC2626';  // Merah (Kritis)
-                    if (val <= 10) return '#EAB308'; // Kuning (Sedikit - Untuk stok 6 s/d 10)
-                    return '#4B5563';                // Abu-abu (Aman)
+                    if (val <= 5) return '#DC2626'; 
+                    if (val <= 10) return '#EAB308';
+                    return '#4B5563';
                 });
 
                 const ctx = document.getElementById('jumlahChart').getContext('2d');
@@ -226,7 +217,7 @@
                             data: data, 
                             backgroundColor: backgroundColors,
                             borderRadius: 4,
-                            barThickness: chartData.length < 3 ? 50 : 'flex', // Biar batang tidak kegemukan kalau data sedikit
+                            barThickness: chartData.length < 3 ? 50 : 'flex',
                         }]
                     },
                     options: {
@@ -235,16 +226,11 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                suggestedMax: 10, // Agar grafik tetap proporsional walau angka kecil
-                                ticks: {
-                                    stepSize: 1,   // Memaksa angka bulat (1, 2, 3)
-                                    precision: 0   // Hapus desimal (0,1 hilang)
-                                },
+                                suggestedMax: 10,
+                                ticks: { stepSize: 1, precision: 0 },
                                 grid: { drawBorder: false }
                             },
-                            x: {
-                                grid: { display: false }
-                            }
+                            x: { grid: { display: false } }
                         },
                         plugins: {
                             legend: { display: false },

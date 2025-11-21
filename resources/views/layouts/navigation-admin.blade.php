@@ -21,7 +21,7 @@
     <div class="h-20 flex items-center justify-between px-6 border-b border-gray-100 shrink-0">
         <div class="flex flex-col justify-center">
             <span class="text-2xl font-extrabold text-[#E3002B] tracking-wider uppercase leading-none">
-                BURMIN
+                BURJO MINANG
             </span>
             <span class="text-[10px] font-medium text-gray-500 tracking-wide mt-1">
                 Jagonya Warmindo

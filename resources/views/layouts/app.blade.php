@@ -11,41 +11,11 @@
     <script src="//unpkg.com/alpinejs" defer></script>
 
     <style>
-        /* Style Kustom */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .bg-kfc-red { background-color: #E3002B; }
         .text-kfc-red { color: #E3002B; }
-        .focus\:ring-kfc-red:focus { --tw-ring-color: #E3002B; }
-        .text-burmin-red { color: #E3002B; }
         [x-cloak] { display: none !important; }
-
-        /* === CSS UNTUK CETAK NOTA === */
-        .print-this { display: none; }
-        @media print {
-            .no-print { display: none !important; }
-            body * { visibility: hidden; }
-            .print-this, .print-this * { visibility: visible !important; }
-            .print-this {
-                display: block !important;
-                position: absolute;
-                top: 10px; left: 10px; right: 10px;
-            }
-            .nota-wrapper {
-                font-family: 'Courier New', Courier, monospace;
-                color: #000; max-width: 320px; margin: 0 auto; padding: 5px;
-            }
-            .nota-header, .nota-footer { text-align: center; }
-            .nota-header h2 { font-size: 1.1rem; font-weight: bold; margin: 0; }
-            .nota-header p { font-size: 0.8rem; margin: 2px 0; }
-            .nota-separator { border-top: 1px dashed #000; margin: 8px 0; }
-            .nota-details, .nota-items, .nota-total { font-size: 0.85rem; margin-bottom: 8px; }
-            .nota-details p { margin: 2px 0; display: flex; justify-content: space-between; }
-            .nota-items table, .nota-total table { width: 100%; }
-            .nota-items th { text-align: left; border-bottom: 1px solid #000; }
-            .nota-items td:last-child, .nota-total td:last-child { text-align: right; }
-            .nota-footer p { font-size: 0.8rem; margin-top: 5px; }
-        }
     </style>
 </head>
 

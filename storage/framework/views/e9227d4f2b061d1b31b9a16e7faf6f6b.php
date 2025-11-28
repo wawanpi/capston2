@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <!-- <div class="space-y-6">
                      
                     <?php if(session('success')): ?>
                         <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
@@ -128,8 +128,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div> -->
+                <!-- </div> -->
             </div>
             
             

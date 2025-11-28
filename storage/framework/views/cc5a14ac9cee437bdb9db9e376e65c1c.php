@@ -8,277 +8,335 @@
 <?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
+    
+    <?php
+        $categories = [];
+        if(isset($bestSellers) && $bestSellers->isNotEmpty()) {
+            $categories[] = ['id' => 'best-seller', 'name' => 'Paling Laris', 'items' => $bestSellers];
+        }
+        if(isset($allFood) && $allFood->isNotEmpty()) {
+            $categories[] = ['id' => 'makanan', 'name' => 'Makanan', 'items' => $allFood];
+        }
+        if(isset($allDrinks) && $allDrinks->isNotEmpty()) {
+            $categories[] = ['id' => 'minuman', 'name' => 'Minuman', 'items' => $allDrinks];
+        }
+    ?>
 
-    <section class="relative w-full h-[50vh] bg-cover bg-center" style="background-image: url('https://kfcindonesia.com/static/media/monday-deal-web-1.b0f20952.jpg');">
-        <button class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md">
-            <i data-lucide="chevron-left" class="text-gray-800"></i>
-        </button>
-        <button class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md">
-            <i data-lucide="chevron-right" class="text-gray-800"></i>
-        </button>
-    </section>
+    
+    <div x-data="{ 
+            activeSection: '<?php echo e($categories[0]['id'] ?? ''); ?>', 
+            searchQuery: '',
+            
+            // --- MODAL STATE ---
+            modalOpen: false,
+            isLoading: false,
+            selectedItem: { id: null, name: '', price: 0, image: '', desc: '', stok: 0 },
+            quantity: 1,
+            totalPrice: 0,
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            // --- MODAL FUNCTIONS ---
+            openModal(item) {
+                this.selectedItem = item;
+                this.quantity = 1;
+                this.totalPrice = item.price; // Set harga awal
+                this.modalOpen = true;
+                this.isLoading = true;
+                
+                // Simulasi Skeleton Loading (0.8 detik)
+                setTimeout(() => { this.isLoading = false; }, 800);
+            },
+            closeModal() {
+                this.modalOpen = false;
+            },
+            increment() {
+                if (this.quantity < this.selectedItem.stok) {
+                    this.quantity++;
+                    this.updateTotal();
+                }
+            },
+            decrement() {
+                if (this.quantity > 1) {
+                    this.quantity--;
+                    this.updateTotal();
+                }
+            },
+            updateTotal() {
+                this.totalPrice = this.selectedItem.price * this.quantity;
+            },
+            formatPrice(value) {
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+            }
+         }" 
+         x-init="
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) activeSection = entry.target.id;
+                });
+            }, { rootMargin: '-20% 0px -70% 0px' });
+            document.querySelectorAll('.menu-section').forEach(section => observer.observe(section));
+         "
+         class="bg-gray-50 min-h-screen pb-32 relative"> 
 
-        <div class="mb-4">
-            <?php if(session('success')): ?>
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline"><?php echo e(session('success')); ?></span>
+        
+        <div class="bg-white border-b border-gray-200 pt-6 pb-4">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h1 class="text-3xl font-black italic tracking-tighter text-gray-900 uppercase">MENU ORDER</h1>
+                            <div class="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+                                <span class="relative flex h-2 w-2">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                <span class="text-[10px] font-bold text-green-700 uppercase">Open</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-sm">Pilih menu favoritmu sekarang</p>
+                    </div>
+                    <div class="w-full md:w-72 relative">
+                        <input type="text" x-model="searchQuery" placeholder="Cari menu..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-red-500 focus:ring-red-500 rounded-xl text-sm transition-all shadow-sm">
+                        <div class="absolute left-3 top-2.5 text-gray-400">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </div>
+                        <button x-show="searchQuery.length > 0" @click="searchQuery = ''" class="absolute right-3 top-2.5 text-gray-400 hover:text-red-500" x-transition>
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
-            <?php endif; ?>
-            <?php if(session('error')): ?>
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline"><?php echo e(session('error')); ?></span>
-                </div>
-            <?php endif; ?>
+            </div>
         </div>
 
-        <section class="mb-12">
-            <div class="flex items-center gap-2 mb-6">
-                <span class="w-3 h-10 bg-kfc-red"></span>
-                <span class="w-3 h-10 bg-kfc-red"></span>
-                <span class="w-3 h-10 bg-kfc-red"></span>
-            </div>
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 uppercase">Hungry today? Let’s order</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
-                    <img src="https://kfcindonesia.com/static/media/Dine-in.0135d1f8.png" alt="Dine-In" class="h-16 w-16">
-                    <span class="mt-2 font-bold text-lg text-gray-800">Dine-In</span>
-                </a>
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow ring-2 ring-kfc-red">
-                    <img src="https://kfcindonesia.com/static/media/Take-away.299c8f00.png" alt="Take Away" class="h-16 w-16">
-                    <span class="mt-2 font-bold text-lg text-gray-800">Take Away</span>
-                </a>
-                <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
-                    <img src="https://kfcindonesia.com/static/media/Delivery.b1b75356.png" alt="Delivery" class="h-16 w-16">
-                    <span class="mt-2 font-bold text-lg text-gray-800">Delivery</span>
-                </a>
-                 <a href="#" class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow opacity-50 cursor-not-allowed" title="Fitur belum tersedia">
-                    <img src="https://kfcindonesia.com/static/media/Drive-thru.6a1b2496.png" alt="Drive-Thru" class="h-16 w-16">
-                    <span class="mt-2 font-bold text-lg text-gray-800">Drive-Thru</span>
-                </a>
-            </div>
-        </section>
-
-        <section class="mb-12">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                    </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Menu Terlaris (Best Seller)</h3>
-                </div>
-            </div>
-            
-            <?php if(!isset($bestSellers) || $bestSellers->isEmpty()): ?>
-                <p class="text-gray-500">Saat ini belum ada menu terlaris.</p>
-            <?php else: ?>
-                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    <?php $__currentLoopData = $bestSellers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                            <img class="w-full h-48 object-cover" 
-                                 src="<?php echo e(asset($menu->gambar)); ?>" 
-                                 alt="<?php echo e($menu->namaMenu); ?>"
-                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
-                            
-                            <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
-                                
-                                
-                                <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    <?php
-                                        $avgRating = $menu->average_rating;
-                                        $count = $menu->ratings_count;
-                                    ?>
-                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
-                                        </svg>
-                                    <?php endfor; ?>
-                                    <span class="ml-2 text-xs text-gray-600">
-                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
-                                    </span>
-                                </div>
-                                
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
-
-                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
-                                    <?php echo csrf_field(); ?>
-                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
-                                    <input type="hidden" value="1" name="quantity">
-                                    
-                                    
-                                    <?php if($menu->jumlah_saat_ini > 0): ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    <?php else: ?>
-                                        
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
-                                    <?php endif; ?>
-                                </form>
-                            </div>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            <?php endif; ?>
-        </section>
         
-        <section class="mb-12">
-             <div class="flex justify-between items-center mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                    </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Makanan</h3>
-                </div>
+        <div class="sticky top-20 z-30 bg-white shadow-sm border-b border-gray-200">
+            <div class="container mx-auto">
+                <nav class="flex overflow-x-auto no-scrollbar py-3 px-4 gap-3 sm:gap-6 snap-x scroll-pl-4">
+                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <a href="#<?php echo e($cat['id']); ?>" 
+                           @click.prevent="document.getElementById('<?php echo e($cat['id']); ?>').scrollIntoView({behavior: 'smooth'})"
+                           class="whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start border"
+                           :class="activeSection === '<?php echo e($cat['id']); ?>' ? 'bg-black text-white border-black shadow-md scale-105' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'">
+                            <?php echo e($cat['name']); ?>
+
+                        </a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </nav>
             </div>
-            
-            <?php if(!isset($allFood) || $allFood->isEmpty()): ?>
-                <p class="text-gray-500">Saat ini belum ada menu makanan.</p>
-            <?php else: ?>
-                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    <?php $__currentLoopData = $allFood; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                            <img class="w-full h-48 object-cover" 
-                                 src="<?php echo e(asset($menu->gambar)); ?>" 
-                                 alt="<?php echo e($menu->namaMenu); ?>"
-                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+        </div>
+
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <section id="<?php echo e($category['id']); ?>" class="menu-section scroll-mt-40 transition-all duration-500">
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="hidden sm:flex space-x-1 h-8">
+                            <div class="w-2 bg-kfc-red rounded-sm"></div>
+                            <div class="w-2 bg-kfc-red rounded-sm opacity-60"></div>
+                            <div class="w-2 bg-kfc-red rounded-sm opacity-30"></div>
+                        </div>
+                        <h2 class="text-2xl font-black text-gray-900 uppercase tracking-wide border-l-4 border-kfc-red sm:border-0 pl-3 sm:pl-0">
+                            <?php echo e($category['name']); ?>
+
+                        </h2>
+                    </div>
+
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <?php $__currentLoopData = $category['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
+                                // Menyiapkan object data untuk dikirim ke JS
+                                $itemData = [
+                                    'id' => $item->id,
+                                    'name' => $item->namaMenu,
+                                    'price' => $item->harga,
+                                    'image' => asset($item->gambar),
+                                    'desc' => $item->deskripsi,
+                                    'stok' => $item->ketersediaanHariIni->jumlah_saat_ini ?? 0
+                                ];
+                            ?>
+
                             
-                            <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
+                            <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-row sm:flex-col h-36 sm:h-auto cursor-pointer"
+                                 x-show="!searchQuery || '<?php echo e(strtolower($item->namaMenu)); ?>'.includes(searchQuery.toLowerCase())"
+                                 x-transition
+                                 @click="openModal(<?php echo e(json_encode($itemData)); ?>)"> 
                                 
-                                
-                                <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    <?php
-                                        $avgRating = $menu->average_rating;
-                                        $count = $menu->ratings_count;
-                                    ?>
-                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
-                                        </svg>
-                                    <?php endfor; ?>
-                                    <span class="ml-2 text-xs text-gray-600">
-                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
-                                    </span>
+                                <div class="w-1/3 sm:w-full sm:h-52 relative bg-gray-100 overflow-hidden">
+                                    <img src="<?php echo e(asset($item->gambar)); ?>" alt="<?php echo e($item->namaMenu); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300/f3f4f6/a3a3a3?text=No+Image'">
+                                    <?php if(($item->ketersediaanHariIni->jumlah_saat_ini ?? 0) < 10): ?>
+                                        <div class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">Sisa <?php echo e($item->ketersediaanHariIni->jumlah_saat_ini ?? 0); ?></div>
+                                    <?php endif; ?>
                                 </div>
 
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
-
-                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
-                                    <?php echo csrf_field(); ?>
-                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
-                                    <input type="hidden" value="1" name="quantity">
-                                    
-                                    
-                                    <?php if($menu->jumlah_saat_ini > 0): ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    <?php else: ?>
-                                        
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
-                                    <?php endif; ?>
-                                </form>
+                                <div class="w-2/3 sm:w-full p-4 flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="font-bold text-gray-900 text-lg leading-tight mb-1 line-clamp-1"><?php echo e($item->namaMenu); ?></h3>
+                                        <p class="text-xs text-gray-500 line-clamp-2 mb-2 hidden sm:block"><?php echo e($item->deskripsi); ?></p>
+                                    </div>
+                                    <div class="flex items-end justify-between mt-auto">
+                                        <span class="font-black text-gray-900 text-lg">Rp <?php echo e(number_format($item->harga, 0, ',', '.')); ?></span>
+                                        <button class="bg-gray-100 hover:bg-kfc-red text-gray-900 hover:text-white rounded-full w-10 h-10 flex items-center justify-center transition-all shadow-sm active:scale-95">
+                                            <i data-lucide="plus" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            <?php endif; ?>
-        </section>
-
-        <section class="mb-12">
-             <div class="flex justify-between items-center mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
-                        <span class="w-3 h-10 bg-kfc-red"></span>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    <h3 class="text-3xl font-extrabold text-gray-900 uppercase">Semua Minuman</h3>
+                </section>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+
+        
+        <?php if(auth()->guard()->check()): ?>
+        <?php if(\Cart::getTotalQuantity() > 0): ?>
+        <div class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 border-t border-gray-100"
+             x-transition:enter="transform transition ease-out duration-300"
+             x-transition:enter-start="translate-y-full"
+             x-transition:enter-end="translate-y-0">
+            
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+                    
+                    
+                    <div class="hidden sm:flex items-center bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 w-full sm:w-auto">
+                        <div class="bg-green-100 p-1 rounded-full mr-3">
+                            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-800">Order Anda Siap!</span>
+                            <span class="text-[10px] text-gray-500">Silakan lanjutkan ke pembayaran</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                        <div class="flex flex-col text-right">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Pembayaran</span>
+                            <span class="text-xl font-black text-gray-900">Rp <?php echo e(number_format(\Cart::getTotal(), 0, ',', '.')); ?></span>
+                        </div>
+
+                        <a href="<?php echo e(route('cart.list')); ?>" class="flex items-center gap-3 bg-kfc-red hover:bg-red-700 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-red-200 transition-all active:scale-95">
+                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                            <span>Checkout</span>
+                            <span class="bg-white text-kfc-red text-xs font-bold px-2 py-0.5 rounded-full ml-1"><?php echo e(\Cart::getTotalQuantity()); ?> item(s)</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-            
-            <?php if(!isset($allDrinks) || $allDrinks->isEmpty()): ?>
-                <p class="text-gray-500">Saat ini belum ada menu minuman.</p>
-            <?php else: ?>
-                <div class="flex space-x-6 overflow-x-auto pb-4 no-scrollbar">
-                    <?php $__currentLoopData = $allDrinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="bg-white border rounded-lg overflow-hidden shadow-lg flex-shrink-0 w-80">
-                            <img class="w-full h-48 object-cover" 
-                                 src="<?php echo e(asset($menu->gambar)); ?>" 
-                                 alt="<?php echo e($menu->namaMenu); ?>"
-                                 onerror="this.src='https://placehold.co/320x192/e2e8f0/e2e8f0?text=IMG'">
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
+
+        
+        <template x-teleport="body">
+            <div 
+                x-show="modalOpen" 
+                style="display: none;" 
+                class="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-0"
+            >
+                
+                <div 
+                    x-show="modalOpen"
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    @click="closeModal()"
+                    class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                ></div>
+
+                
+                <div 
+                    x-show="modalOpen"
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="relative bg-white rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl transform transition-all w-full max-w-2xl max-h-[90vh] flex flex-col"
+                >
+                    
+                    <div class="flex justify-between items-center p-4 border-b border-gray-100">
+                        <h3 class="text-lg font-black italic uppercase text-gray-800">MENU DETAILS</h3>
+                        <button @click="closeModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    
+                    <div class="flex-1 overflow-y-auto p-0 sm:p-6">
+                        <div class="flex flex-col sm:flex-row gap-6">
                             
-                            <div class="p-4 flex flex-col" style="height: 200px;">
-                                <h4 class="font-bold text-lg mb-1"><?php echo e($menu->namaMenu); ?></h4>
+                            <div class="w-full sm:w-1/2 bg-gray-50 flex items-center justify-center p-4 sm:rounded-xl">
+                                <img :src="selectedItem.image" :alt="selectedItem.name" class="w-full max-w-[200px] sm:max-w-full object-cover rounded-lg shadow-sm">
+                            </div>
+
+                            
+                            <div class="w-full sm:w-1/2 px-4 sm:px-0">
+                                <h2 class="text-2xl font-bold text-gray-900 mb-2" x-text="selectedItem.name"></h2>
+                                <p class="text-gray-500 text-sm leading-relaxed mb-6" x-text="selectedItem.desc"></p>
+
                                 
-                                
-                                <div class="flex items-center text-sm text-yellow-500 mb-1">
-                                    <?php
-                                        $avgRating = $menu->average_rating;
-                                        $count = $menu->ratings_count;
-                                    ?>
-                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                        <svg class="w-4 h-4" fill="<?php echo e($avgRating >= $i ? 'currentColor' : 'none'); ?>" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.91-.01L12 2z"/>
-                                        </svg>
-                                    <?php endfor; ?>
-                                    <span class="ml-2 text-xs text-gray-600">
-                                        <?php echo e($avgRating > 0 ? $avgRating : '0.0'); ?> (<?php echo e($count); ?>)
-                                    </span>
+                                <div x-show="isLoading" class="space-y-3">
+                                    <div class="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                    <div class="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+                                    <div class="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
                                 </div>
 
-                                <p class="text-gray-700 text-lg font-semibold mb-2">Rp <?php echo e(number_format($menu->harga, 0, ',', '.')); ?></p>
-                                <p class="text-sm text-gray-600 mb-4 flex-grow"><?php echo e(Str::limit($menu->deskripsi, 50)); ?></p>
-
-                                <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="mt-auto">
-                                    <?php echo csrf_field(); ?>
-                                    <input type="hidden" value="<?php echo e($menu->id); ?>" name="id">
-                                    <input type="hidden" value="1" name="quantity">
-                                    
-                                    
-                                    <?php if($menu->jumlah_saat_ini > 0): ?>
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-kfc-red rounded-md hover:bg-red-700 transition duration-200">Tambah ke Keranjang</button>
-                                    <?php else: ?>
-                                        
-                                        <button class="w-full px-4 py-2 text-sm text-white bg-gray-400 rounded-md cursor-not-allowed" disabled>Jumlah Habis</button>
-                                    <?php endif; ?>
-                                </form>
+                                
+                                <div x-show="!isLoading">
+                                    <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-3 mb-4">
+                                        <span class="text-xs text-yellow-800 font-semibold flex items-center gap-2">
+                                            <i data-lucide="info" class="w-4 h-4"></i>
+                                            Note: Makanan dimasak dadakan (fresh).
+                                        </span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-2xl font-black text-gray-900" x-text="formatPrice(totalPrice)"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            <?php endif; ?>
-        </section>
+                    </div>
 
-        <section class="my-16 bg-white p-8 rounded-xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
-            <div class="text-center md:text-left">
-                <div class="flex justify-center md:justify-start items-center gap-2 mb-4">
-                    <span class="w-3 h-10 bg-kfc-red"></span>
-                    <span class="w-3 h-10 bg-kfc-red"></span>
-                    <span class="w-3 h-10 bg-kfc-red"></span>
-                </div>
-                <h2 class="text-4xl font-extrabold text-gray-900 mb-4 uppercase">Unlock More Finger Lickin' Good Benefits</h2>
-                <p class="text-gray-600 mb-8">
-                    Create an account to get access to exclusive promos and rewards,
-                    and reorder your favorites.
-                </p>
-                <div class="flex justify-center md:justify-start gap-4">
-                    <a href="#"><img src="https://kfcindonesia.com/static/media/app_store.e23d24be.png" alt="App Store" class="h-12"></a>
-                    <a href="#"><img src="https://kfcindonesia.com/static/media/google_play.d51c76c0.png" alt="Google Play" class="h-12"></a>
+                    
+                    <div class="p-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row items-center gap-4">
+                        
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-4 border border-gray-300 rounded-full px-4 py-2">
+                            <button @click="decrement()" class="text-gray-500 hover:text-red-600 disabled:opacity-50 transition" :disabled="quantity <= 1">
+                                <i data-lucide="minus" class="w-5 h-5"></i>
+                            </button>
+                            <span class="font-bold text-lg w-8 text-center" x-text="quantity"></span>
+                            <button @click="increment()" class="text-red-600 hover:text-red-800 disabled:opacity-50 transition" :disabled="quantity >= selectedItem.stok">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        
+                        <form action="<?php echo e(route('cart.store')); ?>" method="POST" class="w-full">
+                            <?php echo csrf_field(); ?>
+                            <input type="hidden" name="id" :value="selectedItem.id">
+                            <input type="hidden" name="quantity" :value="quantity">
+                            
+                            <button type="submit" 
+                                    class="w-full bg-kfc-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-red-200 transition-all active:scale-95 flex justify-between items-center"
+                                    :disabled="selectedItem.stok <= 0">
+                                <span>Add to Cart</span>
+                                <span x-text="formatPrice(totalPrice)"></span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="hidden md:block">
-                <img src="https://kfcindonesia.com/static/media/KFC-App-Landscape.a9e0364c.png" alt="BURMIN App" class="max-w-md w-full mx-auto">
-            </div>
-        </section>
+        </template>
 
-    </div>  <?php echo $__env->renderComponent(); ?>
+    </div>
+ <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>

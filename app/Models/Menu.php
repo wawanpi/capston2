@@ -20,6 +20,7 @@ class Menu extends Model
         // REVISI: Menggunakan KAPASITAS (lebih simpel dari patokan_harian)
         'kapasitas', 
         'gambar',
+        'bukti_bayar',
     ];
 
     // --- Relasi yang sudah Anda miliki (Tidak Berubah) ---

@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// --- TAMBAHAN PENTING: Import Model Menu ---
+use App\Models\Menu; 
+
 // 1. Tambahkan "use" untuk semua Controller yang digunakan
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
@@ -13,7 +16,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\OrderController; 
-use App\Http\Controllers\Customer\ReviewController; // <-- DITAMBAHKAN
+use App\Http\Controllers\Customer\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +24,13 @@ use App\Http\Controllers\Customer\ReviewController; // <-- DITAMBAHKAN
 |--------------------------------------------------------------------------
 */
 
-// Rute Landing Page (untuk tamu)
+// Rute Landing Page (untuk tamu) - SUDAH DIUPDATE
 Route::get('/', function () {
-    return view('welcome');
+    // Ambil semua menu dari database, urutkan terbaru, dan load relasi reviews
+    $menus = Menu::with('reviews')->latest()->get();
+    
+    // Kirim variabel $menus ke view welcome
+    return view('welcome', compact('menus'));
 })->name('welcome');
 
 
@@ -68,11 +75,10 @@ Route::middleware(['auth', 'verified', 'role.admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // --- BARIS INI DIUBAH ---
+        
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('menus/{menu}/tambah-kuota', [MenuController::class, 'editKuota'])->name('menus.editKuota');
         Route::put('menus/{menu}/update-kuota', [MenuController::class, 'updateKuota'])->name('menus.updateKuota');
-        // -----------------------
         
         Route::resource('users', UserController::class);
         Route::resource('menus', MenuController::class);

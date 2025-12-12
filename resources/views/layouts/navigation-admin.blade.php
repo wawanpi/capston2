@@ -124,15 +124,17 @@
     </div>
 
     {{-- 5. FOOTER SIDEBAR (Download App) --}}
-    <div class="p-6 bg-gray-50 border-t border-gray-200 shrink-0">
-        <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase text-center tracking-widest">Download App</p>
-        <div class="flex justify-center gap-3">
-            <a href="#" class="opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-300">
-                <img src="https://kfcindonesia.com/static/media/app_store.e23d24be.png" alt="App Store" class="h-7 w-auto grayscale hover:grayscale-0">
-            </a>
-            <a href="#" class="opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-300">
-                <img src="https://kfcindonesia.com/static/media/google_play.d51c76c0.png" alt="Google Play" class="h-7 w-auto grayscale hover:grayscale-0">
-            </a>
+    <div class="p-4 border-t border-gray-100 bg-gray-50/50 shrink-0">
+        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase text-center tracking-widest">Available On</p>
+            <div class="flex flex-col gap-2">
+                <a href="#" class="opacity-80 hover:opacity-100 hover:scale-[1.02] transition-all duration-300">
+                    <img src="{{ asset('img/google-play.png') }}" alt="Get it on Google Play" class="h-10 w-auto mx-auto object-contain">
+                </a>
+                <a href="#" class="opacity-80 hover:opacity-100 hover:scale-[1.02] transition-all duration-300">
+                    <img src="{{ asset('img/app-store.png') }}" alt="Download on the App Store" class="h-9 w-auto mx-auto object-contain">
+                </a>
+            </div>
         </div>
     </div>
 </div>

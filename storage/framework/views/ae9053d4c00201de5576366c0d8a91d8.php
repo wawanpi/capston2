@@ -9,14 +9,13 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
-        
         <h2 class="font-bold text-xl text-gray-800 leading-tight">
             <?php echo e(__('Manajemen Menu')); ?>
 
         </h2>
      <?php $__env->endSlot(); ?>
 
-    <div class="py-12 bg-gray-50"> 
+    <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-between items-center mb-4">
                 
@@ -26,21 +25,23 @@
                     Tambah Menu
                 </a>
                 
-                <form method="GET" action="<?php echo e(route('admin.menus.index')); ?>">
+                
+                <form method="GET" action="<?php echo e(route('admin.menus.index')); ?>" id="searchForm">
                     <div class="flex">
-                        
-                        <input type="text" name="search" placeholder="Cari nama menu..." 
-                               class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" 
-                               value="<?php echo e(request('search')); ?>">
-                        
-                        
-                        <button type="submit" 
-                                class="ml-2 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition-colors">
-                            Cari
-                        </button>
+                        <input 
+                            type="text"
+                            name="search"
+                            placeholder="Cari nama menu..."
+                            class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm"
+                            value="<?php echo e(request('search')); ?>"
+                            id="searchInput"
+                        >
+                    </div>
                     </div>
                 </form>
             </div>
+
+
 
             
             <?php if($message = Session::get('success')): ?>
@@ -175,6 +176,12 @@
             </div>
         </div>
     </div>
+<script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+        document.getElementById('searchForm').submit();
+    });
+</script>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

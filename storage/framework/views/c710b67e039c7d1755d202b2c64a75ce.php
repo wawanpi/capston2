@@ -32,53 +32,58 @@
     </main>
     
     
-    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 mt-auto no-print <?php echo e(Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : ''); ?> transition-all duration-300">
+    
+    
+    <footer class="bg-gray-900 text-gray-300 py-6 mt-auto no-print <?php echo e(Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : ''); ?> transition-all duration-300">
         <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-4">PT FAST FOOD INDONESIA TBK</h4>
-                    <p class="text-sm mb-2">Address: Jl. Bunga, Geblagan, Tamantirto, Kec. Kasihan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55184</p>
-                    <p class="text-sm mb-2">Operating hours: <br> Weekday: 08.00 - 20.00 <br> Weekend: 10.00 - 19.00</p>
-                    <p class="text-sm mb-2">Telephone: 14022</p>
-                    <p class="text-sm">E-mail: info@kfcindonesia.com</p>
+                    <h4 class="text-sm font-bold text-white mb-3">BURJO MINANG</h4>
+                    <p class="text-xs leading-relaxed mb-2">Jl. Bunga, Geblagan, Tamantirto, Kec. Kasihan, Kab. Bantul, DIY 55184</p>
+                    <p class="text-xs leading-relaxed">Open: 08.00 - 20.00 (Weekday)<br>10.00 - 19.00 (Weekend)</p>
                 </div>
+
+                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-4">SERVICES</h4>
-                    <ul class="space-y-2 text-sm">
+                    <h4 class="text-sm font-bold text-white mb-3">SERVICES</h4>
+                    <ul class="space-y-1 text-xs">
                         <li><a href="#" class="hover:text-white">Dine-In</a></li>
                         <li><a href="#" class="hover:text-white">Take Away</a></li>
                         <li><a href="#" class="hover:text-white">Delivery</a></li>
-                        <li><a href="#" class="hover:text-white">Drive-Thru</a></li>
-                        <li><a href="#" class="hover:text-white">Catering</a></li>
-                        <li><a href="#" class="hover:text-white">B'day Party</a></li>
                     </ul>
                 </div>
+
+                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-4">INFO</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Terms & Conditions</a></li>
-                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    <h4 class="text-sm font-bold text-white mb-3">INFO</h4>
+                    <ul class="space-y-1 text-xs">
                         <li><a href="#" class="hover:text-white">Contact Us</a></li>
                         <li><a href="#" class="hover:text-white">About Us</a></li>
-                        <li><a href="#" class="hover:text-white">FAQ</a></li>
-                        <li><a href="#" class="hover:text-white">Allergen Information</a></li>
                     </ul>
                 </div>
+
+                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-4">DOWNLOAD APP</h4>
-                    <div class="flex flex-col gap-4">
-                        <a href="#"><img src="https://kfcindonesia.com/static/media/app_store.e23d24be.png" alt="App Store" class="h-12"></a>
-                        <a href="#"><img src="https://kfcindonesia.com/static/media/google_play.d51c76c0.png" alt="Google Play" class="h-12"></a>
+                    <h4 class="text-sm font-bold text-white mb-3">AVAILABLE ON</h4>
+                    <div class="flex flex-col gap-2">
+                        <a href="#" class="opacity-90 hover:opacity-100 transition-opacity">
+                            <img src="<?php echo e(asset('img/google-play.png')); ?>" alt="Get it on Google Play" class="h-10 w-auto object-contain">
+                        </a>
+                        <a href="#" class="opacity-90 hover:opacity-100 transition-opacity">
+                            <img src="<?php echo e(asset('img/app-store.png')); ?>" alt="Download on the App Store" class="h-9 w-auto object-contain">
+                        </a>
                     </div>
                 </div>
             </div>
+
+            
             <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-                <p class="mb-4 md:mb-0">&copy; <?php echo e(date('Y')); ?> kfc.com by PT FASTFOOD INDONESIA Tbk. | All rights reserved.</p>
+                <p class="mb-4 md:mb-0">&copy; <?php echo e(date('Y')); ?> Burjo Minang. All rights reserved.</p>
                 <div class="flex gap-4">
                     <a href="#" class="hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
                     <a href="https://www.instagram.com/burjominang/" class="hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
                     <a href="#" class="hover:text-white"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-                    <a href="#" class="hover:text-white"><i data-lucide="youtube" class="w-5 h-5"></i></a>
                 </div>
             </div>
         </div>

@@ -4,106 +4,118 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Burjo Minang') }}</title>
 
+    {{-- Script Tailwind dengan Konfigurasi Warna BURMIN --}}
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        burmin: {
+                            red: '#D40000',    // Merah Minang
+                            yellow: '#FFD700', // Kuning Emas
+                            black: '#1a1a1a',  // Hitam Elegan
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
 
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .bg-kfc-red { background-color: #E3002B; }
-        .text-kfc-red { color: #E3002B; }
         [x-cloak] { display: none !important; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans flex flex-col min-h-screen" x-data="{ sidebarOpen: false, profileOpen: false }">
+<body class="bg-gray-50 font-sans text-gray-900 antialiased flex flex-col min-h-screen" 
+      x-data="{ sidebarOpen: false, profileOpen: false }">
 
     {{-- NAVIGASI --}}
-    <div class="no-print">
+    <div class="no-print relative z-50">
         @include('layouts.navigation')
     </div>
 
-    <main class="pt-20 flex-grow {{ Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : '' }} transition-all duration-300"> 
+    {{-- MAIN CONTENT --}}
+    <main class="flex-grow transition-all duration-300 
+        {{ Auth::check() && Auth::user()->hasRole('admin') ? 'pt-20 lg:pl-64' : 'pt-24 pb-20' }}"> 
         {{ $slot }}
     </main>
     
-    {{-- === FOOTER UTAMA (Digunakan Oleh Semua Role) === --}}
-    {{-- === FOOTER UTAMA === --}}
-    {{-- === FOOTER UTAMA === --}}
-    <footer class="bg-gray-900 text-gray-300 py-6 mt-auto no-print {{ Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : '' }} transition-all duration-300">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                {{-- KOLOM 1: IDENTITAS --}}
-                <div>
-                    <h4 class="text-sm font-bold text-white mb-3">BURJO MINANG</h4>
-                    <p class="text-xs leading-relaxed mb-2">Jl. Bunga, Geblagan, Tamantirto, Kec. Kasihan, Kab. Bantul, DIY 55184</p>
-                    <p class="text-xs leading-relaxed">Open: 08.00 - 20.00 (Weekday)<br>10.00 - 19.00 (Weekend)</p>
+    {{-- FOOTER --}}
+    <footer class="bg-burmin-black text-gray-400 py-10 mt-auto no-print border-t border-gray-800 transition-all duration-300
+        {{ Auth::check() && Auth::user()->hasRole('admin') ? 'lg:pl-64' : '' }}">
+        
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+                {{-- Brand --}}
+                <div class="space-y-4">
+                    {{-- Logo Placeholder --}}
+                    <div class="bg-white p-2 rounded w-fit">
+                         <img src="{{ asset('img/burmin_logo.jpg') }}" alt="Burmin Logo" class="h-12 w-auto object-contain">
+                    </div>
+                    <p class="text-sm leading-relaxed mt-4">
+                        Cita rasa otentik Minang dalam setiap sajian warmindo.
+                        <br><span class="block mt-2 text-gray-500">Jl. Bunga, Geblagan, Bantul, DIY</span>
+                    </p>
                 </div>
 
-                {{-- KOLOM 2: LAYANAN WARUNG --}}
+                {{-- Services --}}
                 <div>
-                    <h4 class="text-sm font-bold text-white mb-3">SERVICES</h4>
-                    <ul class="space-y-1 text-xs">
-                        <li><a href="#" class="hover:text-white">Dine-In</a></li>
-                        <li><a href="#" class="hover:text-white">Take Away</a></li>
-                        <li><a href="#" class="hover:text-white">Delivery</a></li>
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b-2 border-burmin-red inline-block pb-1">Layanan</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Dine-In</a></li>
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Take Away</a></li>
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Delivery</a></li>
                     </ul>
                 </div>
 
-                {{-- KOLOM 3: INFO --}}
+                {{-- Info --}}
                 <div>
-                    <h4 class="text-sm font-bold text-white mb-3">INFO</h4>
-                    <ul class="space-y-1 text-xs">
-                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b-2 border-burmin-red inline-block pb-1">Informasi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Tentang Kami</a></li>
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Hubungi Kami</a></li>
+                        <li><a href="#" class="hover:text-burmin-red transition-colors">Syarat & Ketentuan</a></li>
                     </ul>
                 </div>
 
-                {{-- KOLOM 4: DOWNLOAD APP --}}
+                {{-- Apps --}}
                 <div>
-                    <h4 class="text-sm font-bold text-white mb-3">AVAILABLE ON</h4>
-                    <div class="flex flex-col gap-2">
-                        <a href="#" class="opacity-90 hover:opacity-100 transition-opacity">
-                            <img src="{{ asset('img/google-play.png') }}" alt="Get it on Google Play" class="h-10 w-auto object-contain">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b-2 border-burmin-red inline-block pb-1">Download App</h4>
+                    <div class="flex flex-col gap-3">
+                        <a href="#" class="opacity-80 hover:opacity-100 transition-opacity w-36">
+                            <img src="{{ asset('img/google-play.png') }}" alt="Google Play" class="w-full h-auto object-contain">
                         </a>
-                        <a href="#" class="opacity-90 hover:opacity-100 transition-opacity">
-                            <img src="{{ asset('img/app-store.png') }}" alt="Download on the App Store" class="h-9 w-auto object-contain">
+                        <a href="#" class="opacity-80 hover:opacity-100 transition-opacity w-36">
+                            <img src="{{ asset('img/app-store.png') }}" alt="App Store" class="w-full h-auto object-contain">
                         </a>
                     </div>
                 </div>
             </div>
 
-            {{-- COPYRIGHT --}}
-            <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-                <p class="mb-4 md:mb-0">&copy; {{ date('Y') }} Burjo Minang. All rights reserved.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    <a href="https://www.instagram.com/burjominang/" class="hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                    <a href="#" class="hover:text-white"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
+                <p>&copy; {{ date('Y') }} Burjo Minang. All rights reserved.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="https://www.instagram.com/burjominang/" class="hover:text-white transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
-    @auth
-        @if(!Auth::user()->hasRole('admin'))
-            <a href="{{ route('cart.list') }}" class="fixed bottom-16 right-4 z-30 bg-kfc-red p-4 rounded-full shadow-lg group no-print hover:scale-105 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.023.828l1.25 5.001A2.25 2.25 0 0 0 6.095 12H17.25a2.25 2.25 0 0 0 2.22-1.87l.46-4.885A1.125 1.125 0 0 0 18.72 4.125H5.111M7.5 18a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm10.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
-                </svg>
-                @if (\Cart::getTotalQuantity() > 0)
-                    <span class="absolute -top-2 -right-2 bg-white text-kfc-red text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{{ \Cart::getTotalQuantity() }}</span>
-                @endif
-            </a>
-            <button class="fixed bottom-4 right-4 z-30 no-print hover:scale-105 transition-transform">
-                <img src="https://kfcindonesia.com/static/media/bucket-list-icon.1139e8c3.png" alt="Prize" class="w-16 h-16">
-            </button>
-        @endif
-    @endauth
-    
     <script>
         lucide.createIcons();
     </script>

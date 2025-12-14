@@ -43,7 +43,7 @@ class RegisteredUserController extends Controller
 
         // PERBAIKAN: Ganti role 'user' menjadi 'pelanggan'
         // agar sesuai dengan DatabaseSeeder Anda
-        $user->assignRole('pelanggan');
+        $user->assignRole('user');
 
         event(new Registered($user));
 

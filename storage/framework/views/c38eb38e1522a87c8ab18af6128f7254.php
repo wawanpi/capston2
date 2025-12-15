@@ -45,64 +45,16 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <div class="md:col-span-2">
+                
+                <div class="md:col-span-2 space-y-6">
                     
                     
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200">
-                         <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Ringkasan Pesanan</h3>
-                            <div class="text-sm space-y-2">
-                                <p><strong>Pelanggan:</strong> <?php echo e($pesanan->user->name); ?></p>
-                                <p><strong>Email:</strong> <?php echo e($pesanan->user->email); ?></p>
-                                <p><strong>Tanggal Pesan:</strong> <?php echo e($pesanan->created_at->format('d M Y, H:i')); ?></p>
-                                <p><strong>Tipe Layanan:</strong> <?php echo e($pesanan->tipe_layanan); ?></p>
-                                
-                                
-                                <p><strong>Metode Pembayaran Pilihan:</strong> 
-                                    <?php if($pesanan->metode_pembayaran): ?>
-                                        <span class="font-semibold text-blue-600"><?php echo e($pesanan->metode_pembayaran); ?></span>
-                                    <?php else: ?>
-                                        <span class="text-gray-400 italic">-</span>
-                                    <?php endif; ?>
-                                </p>
-
-                                <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
-                                    <p><strong>Jumlah Tamu:</strong> <?php echo e($pesanan->jumlah_tamu); ?> orang</p>
-                                <?php endif; ?>
-                                <p class="text-lg mt-4 border-t pt-2"><strong>Total Bayar:</strong> <span class="font-bold text-gray-900 text-xl">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></span></p>
-                                <div class="mt-4">
-                                    <p class="text-sm font-semibold mb-1">Status Saat Ini:</p>
-                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-gray-800 text-white">
-                                        <?php echo e(ucfirst($pesanan->status)); ?>
-
-                                    </span>
-                                </div>
-                            </div>
-                         </div>
-                        
-                        
-                        <?php if($pesanan->status == 'pending' || $pesanan->status == 'processing'): ?>
-                         <div class="p-6 border-b border-gray-200 bg-gray-50">
-                                <h3 class="text-sm font-bold text-gray-800 mb-2">Ubah Status Pesanan</h3>
-                                <form action="<?php echo e(route('admin.pesanan.updateStatus', $pesanan->id)); ?>" method="POST" class="flex gap-3 items-center">
-                                    <?php echo csrf_field(); ?>
-                                    <?php echo method_field('PUT'); ?>
-                                    <select name="status" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm flex-1 text-sm">
-                                        <option value="pending" <?php echo e($pesanan->status == 'pending' ? 'selected' : ''); ?>>Pending (Menunggu)</option>
-                                        <option value="processing" <?php echo e($pesanan->status == 'processing' ? 'selected' : ''); ?>>Processing (Diproses)</option>
-                                        <option value="completed" <?php echo e($pesanan->status == 'completed' ? 'selected' : ''); ?>>Completed (Selesai)</option>
-                                        <option value="cancelled" <?php echo e($pesanan->status == 'cancelled' ? 'selected' : ''); ?>>Cancelled (Batal)</option>
-                                    </select>
-                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md text-xs font-bold hover:bg-gray-900 transition-colors">UPDATE</button>
-                                </form>
-                         </div>
-                         <?php endif; ?>
-                    </div>
-
-                    
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200">
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                         <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Bukti Pembayaran</h3>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <span class="bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">1</span>
+                                Cek Bukti Pembayaran
+                            </h3>
                             
                             <?php if($pesanan->bukti_bayar): ?>
                                 
@@ -122,13 +74,12 @@
                                     <div>
                                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-3">
                                             <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                         </div>
                                         <h4 class="text-lg font-bold text-gray-900">Verifikasi Visual (Tatap Muka)</h4>
                                         <p class="text-sm text-gray-600 mt-1 max-w-xs mx-auto">
-                                            Ini adalah pesanan <strong>Offline</strong>. Silakan cek bukti transfer di layar HP pelanggan atau terima uang tunai secara langsung.
+                                            Ini adalah pesanan <strong>Offline</strong>. Terima uang tunai atau cek HP pelanggan langsung.
                                         </p>
                                     </div>
                                 </div>
@@ -137,8 +88,8 @@
                                 
                                 <div class="flex items-center justify-center p-6 bg-red-50 rounded-lg border-2 border-dashed border-red-200">
                                     <p class="text-red-500 italic flex items-center">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                        Pelanggan Online belum mengupload bukti bayar.
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Pelanggan belum mengupload bukti bayar.
                                     </p>
                                 </div>
                             <?php endif; ?>
@@ -148,7 +99,10 @@
                     
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                          <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Verifikasi Pembayaran</h3>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <span class="bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">2</span>
+                                Tindakan Pembayaran
+                            </h3>
                             
                             <?php if($pesanan->transaksi): ?>
                                 <div class="p-4 bg-green-100 text-green-800 rounded-lg font-semibold flex items-center border border-green-200">
@@ -156,35 +110,18 @@
                                     Pesanan ini sudah LUNAS via <?php echo e($pesanan->transaksi->metode_pembayaran); ?>.
                                 </div>
                             <?php else: ?>
-                                
                                 <form action="<?php echo e(route('admin.transaksi.verifikasi', $pesanan->id)); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
-                                    
                                     <div class="mb-4">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
 
-                                        
                                         <?php if($pesanan->metode_pembayaran): ?>
                                             <div class="w-full bg-gray-100 border border-gray-300 text-gray-800 text-sm rounded-md shadow-sm p-2.5 font-bold flex items-center gap-2">
-                                                <?php if(str_contains($pesanan->metode_pembayaran, 'QRIS')): ?>
-                                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                                                <?php else: ?>
-                                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                                <?php endif; ?>
-                                                
                                                 <?php echo e($pesanan->metode_pembayaran); ?>
 
                                             </div>
-
-                                            
                                             <input type="hidden" name="metode_pembayaran" value="<?php echo e($pesanan->metode_pembayaran); ?>">
-                                            
-                                            <p class="text-[11px] text-gray-500 mt-1 ml-1">
-                                                *Metode dipilih oleh pelanggan saat checkout.
-                                            </p>
-
                                         <?php else: ?>
-                                            
                                             <select name="metode_pembayaran" class="mt-1 block w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" required>
                                                 <option value="Tunai di Tempat">Tunai di Tempat</option>
                                                 <option value="Transfer Bank">Transfer Bank (BCA)</option>
@@ -193,22 +130,59 @@
                                         <?php endif; ?>
                                     </div>
                                     
-                                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-                                        <div class="flex">
-                                            <div class="ml-3">
-                                                <p class="text-sm text-blue-700">
-                                                    Pastikan Anda sudah mengecek <strong>Bukti Transfer</strong> (Gambar) di atas sebelum menekan tombol verifikasi.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
                                     <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-3 bg-green-600 border border-transparent rounded-lg font-bold text-sm text-white uppercase tracking-widest hover:bg-green-700 transition-colors shadow-lg shadow-green-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        Verifikasi Pembayaran Valid
+                                        BUKTI VALID - VERIFIKASI SEKARANG
                                     </button>
                                 </form>
                             <?php endif; ?>
+                         </div>
+                    </div>
+
+                    
+                    <?php if($pesanan->status == 'pending' || $pesanan->status == 'processing'): ?>
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
+                         <div class="p-6 bg-gray-50">
+                                <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center">
+                                    <span class="bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">3</span>
+                                    Ubah Status Manual (Jika Perlu)
+                                </h3>
+                                <p class="text-xs text-gray-500 mb-3">
+                                    Jika bukti pembayaran <strong>TIDAK VALID</strong> atau palsu, silakan ubah status menjadi <strong>Cancelled</strong> di sini.
+                                </p>
+                                <form action="<?php echo e(route('admin.pesanan.updateStatus', $pesanan->id)); ?>" method="POST" class="flex gap-3 items-center">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('PUT'); ?>
+                                    <select name="status" class="border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm flex-1 text-sm">
+                                        <option value="pending" <?php echo e($pesanan->status == 'pending' ? 'selected' : ''); ?>>Pending (Menunggu)</option>
+                                        <option value="processing" <?php echo e($pesanan->status == 'processing' ? 'selected' : ''); ?>>Processing (Diproses)</option>
+                                        <option value="completed" <?php echo e($pesanan->status == 'completed' ? 'selected' : ''); ?>>Completed (Selesai)</option>
+                                        <option value="cancelled" <?php echo e($pesanan->status == 'cancelled' ? 'selected' : ''); ?>>Cancelled (Batalkan Pesanan)</option>
+                                    </select>
+                                    <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-md text-xs font-bold hover:bg-gray-900 transition-colors">UPDATE</button>
+                                </form>
+                         </div>
+                    </div>
+                    <?php endif; ?>
+
+                    
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
+                         <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Informasi Pesanan</h3>
+                            <div class="text-sm space-y-2">
+                                <p><strong>Pelanggan:</strong> <?php echo e($pesanan->user->name); ?></p>
+                                <p><strong>Tipe Layanan:</strong> <?php echo e($pesanan->tipe_layanan); ?></p>
+                                
+                                <p><strong>Metode Pilihan:</strong> 
+                                    <?php if($pesanan->metode_pembayaran): ?>
+                                        <span class="font-semibold text-blue-600"><?php echo e($pesanan->metode_pembayaran); ?></span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 italic">-</span>
+                                    <?php endif; ?>
+                                </p>
+
+                                <p class="text-lg mt-4 border-t pt-2"><strong>Total Tagihan:</strong> <span class="font-bold text-gray-900 text-xl">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></span></p>
+                            </div>
                          </div>
                     </div>
 
@@ -216,6 +190,7 @@
 
                 
                 <div class="md:col-span-1 space-y-6">
+                    
                     
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                         <div class="p-6">
@@ -240,7 +215,7 @@
                     <?php if($pesanan->status == 'pending' || $pesanan->status == 'processing'): ?>
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                         <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Tambah Item ke Pesanan</h3>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Tambah Item</h3>
                             <form action="<?php echo e(route('admin.pesanan.addItem', $pesanan->id)); ?>" method="POST">
                                 <?php echo csrf_field(); ?>
                                 <div class="space-y-4">
@@ -260,7 +235,7 @@
                                         <label for="jumlah" class="block text-sm font-medium text-gray-700">Jumlah</label>
                                         <input type="number" name="jumlah" id="jumlah" value="1" min="1" class="mt-1 block w-full text-sm border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" required>
                                     </div>
-                                    <button type="submit" class="w-full justify-center inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">TAMBAH ITEM</button>
+                                    <button type="submit" class="w-full justify-center inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">TAMBAH</button>
                                 </div>
                             </form>
                         </div>
@@ -293,7 +268,16 @@
             <div class="nota-details" style="font-size: 11px; margin-bottom: 10px;">
                 <p style="margin: 2px 0;">No: #<?php echo e($pesanan->id); ?></p>
                 <p style="margin: 2px 0;">Kasir: <?php echo e(Auth::user()->name); ?></p> 
-                <p style="margin: 2px 0;">Pelanggan: <?php echo e($pesanan->user->name); ?></p>
+                
+                <p style="margin: 2px 0;">Pelanggan: 
+                    <?php if(str_contains($pesanan->catatan_pelanggan, 'OFFLINE')): ?>
+                        <?php echo e(str_replace('OFFLINE - ', '', $pesanan->catatan_pelanggan)); ?>
+
+                    <?php else: ?>
+                        <?php echo e($pesanan->user->name); ?>
+
+                    <?php endif; ?>
+                </p>
                 <p style="margin: 2px 0;">Tgl: <?php echo e($pesanan->created_at->format('d/m/Y H:i')); ?></p>
                 <p style="margin: 2px 0;">Tipe: <?php echo e($pesanan->tipe_layanan); ?></p>
             </div>

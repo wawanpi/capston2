@@ -24,7 +24,7 @@ use App\Http\Controllers\Customer\ReviewController;
 |--------------------------------------------------------------------------
 */
 
-// Rute Landing Page (untuk tamu) - SUDAH DIUPDATE
+// Rute Landing Page (untuk tamu)
 Route::get('/', function () {
     // Ambil semua menu dari database, urutkan terbaru, dan load relasi reviews
     $menus = Menu::with('reviews')->latest()->get();
@@ -87,6 +87,9 @@ Route::middleware(['auth', 'verified', 'role.admin'])
         Route::get('pesanan', [PesananController::class, 'index'])->name('pesanan.index');
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
+
+        // [BARU] Rute untuk Membuat Pesanan Offline (Admin)
+        Route::post('pesanan/store-offline', [PesananController::class, 'storeOffline'])->name('pesanan.storeOffline');
 
         // Rute untuk Admin menambah item ke pesanan yang ada
         Route::post('pesanan/{pesanan}/tambah-item', [PesananController::class, 'addItem'])->name('pesanan.addItem');

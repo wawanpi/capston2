@@ -19,14 +19,13 @@
                 {{-- === KOLOM KIRI: FORMULIR INPUT === --}}
                 <div class="w-full lg:w-7/12 space-y-8">
                     
-                    {{-- 1. Pilih Tipe Layanan (Card Selection) --}}
+                    {{-- 1. Pilih Tipe Layanan --}}
                     <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-[#E3002B] flex items-center justify-center text-xs">1</span>
                             Pilih Tipe Layanan
                         </h3>
                         
-                        {{-- GRID PILIHAN LAYANAN (FIXED) --}}
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative">
                                 <input type="radio" name="tipe_layanan" id="tipe_take_away" value="Take Away" class="peer sr-only" {{ old('tipe_layanan', 'Take Away') == 'Take Away' ? 'checked' : '' }}>
@@ -46,7 +45,7 @@
                         </div>
                         @error('tipe_layanan') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
 
-                        {{-- Input Jumlah Tamu (Conditional) --}}
+                        {{-- Input Jumlah Tamu --}}
                         <div id="jumlah_tamu_wrapper" class="mt-4 animate-fade-in-down" style="display: {{ old('tipe_layanan') == 'Dine-in' ? 'block' : 'none' }};">
                             <label for="jumlah_tamu" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Orang</label>
                             <input type="number" name="jumlah_tamu" id="jumlah_tamu" value="{{ old('jumlah_tamu', '1') }}" min="1" 
@@ -67,16 +66,54 @@
                         @error('catatan_pelanggan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </section>
 
-                    {{-- 3. Pembayaran --}}
+                    {{-- 3. Pembayaran (REVISI UI) --}}
                     <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-[#E3002B] flex items-center justify-center text-xs">3</span>
                             Metode Pembayaran
                         </h3>
 
-                        <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-6">
-                            <div class="flex flex-col gap-4">
-                                {{-- Transfer Bank --}}
+                        {{-- A. Pilihan Metode (Radio Button) --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            {{-- Opsi Transfer --}}
+                            <div class="relative">
+                                <input type="radio" name="metode_pembayaran" id="pilih_transfer" value="Transfer Bank" class="peer sr-only" {{ old('metode_pembayaran') == 'Transfer Bank' ? 'checked' : '' }}>
+                                <label for="pilih_transfer" class="block p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-blue-300 peer-checked:border-blue-600 peer-checked:bg-blue-50">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                                            <i data-lucide="landmark" class="w-5 h-5"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-700 peer-checked:text-blue-800">Transfer Bank</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {{-- Opsi QRIS --}}
+                            <div class="relative">
+                                <input type="radio" name="metode_pembayaran" id="pilih_qris" value="QRIS" class="peer sr-only" {{ old('metode_pembayaran') == 'QRIS' ? 'checked' : '' }}>
+                                <label for="pilih_qris" class="block p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-blue-300 peer-checked:border-blue-600 peer-checked:bg-blue-50">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                                            <i data-lucide="qr-code" class="w-5 h-5"></i>
+                                        </div>
+                                        <span class="font-bold text-gray-700 peer-checked:text-blue-800">QRIS (E-Wallet)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        @error('metode_pembayaran') <p class="text-red-500 text-xs mb-4">{{ $message }}</p> @enderror
+
+                        {{-- B. Area Detail Informasi (Dinamis) --}}
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-6 transition-all duration-300">
+                            
+                            {{-- Placeholder jika belum ada yang dipilih --}}
+                            <div id="detail_placeholder" class="text-center text-gray-500 text-sm py-4">
+                                <i data-lucide="arrow-up-circle" class="w-6 h-6 mx-auto mb-2 text-gray-400"></i>
+                                Silakan pilih metode pembayaran di atas.
+                            </div>
+
+                            {{-- Detail Transfer Bank (Hidden by default) --}}
+                            <div id="detail_transfer" class="hidden animate-fade-in-down">
                                 <div class="flex items-start gap-3">
                                     <div class="bg-white p-2 rounded border border-gray-200 shrink-0">
                                         <i data-lucide="landmark" class="w-5 h-5 text-blue-600"></i>
@@ -85,26 +122,30 @@
                                         <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Transfer Bank</p>
                                         <p class="text-lg font-black text-gray-900 tracking-tight">BCA 1234567890</p>
                                         <p class="text-xs text-gray-600">a.n Burmin Official</p>
+                                        <p class="text-[10px] text-blue-600 mt-2 bg-blue-100 inline-block px-2 py-1 rounded">
+                                            Silakan transfer sesuai total tagihan, lalu upload bukti di bawah.
+                                        </p>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="border-t border-blue-200/50"></div>
-
-                                {{-- QRIS --}}
-                                <div>
-                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Scan QRIS (Semua E-Wallet)</p>
+                            {{-- Detail QRIS (Hidden by default) --}}
+                            <div id="detail_qris" class="hidden animate-fade-in-down">
+                                <div class="text-center">
+                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Scan QRIS</p>
                                     <div class="group relative inline-block cursor-pointer bg-white p-2 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all" onclick="openModal('qrisModal')">
-                                        <img src="{{ asset('menu-images/qris.jpg') }}" alt="QRIS Code" class="w-32 h-auto rounded opacity-90 group-hover:opacity-100 transition-opacity">
+                                        <img src="{{ asset('menu-images/qris.jpg') }}" alt="QRIS Code" class="w-32 h-auto rounded opacity-90 group-hover:opacity-100 transition-opacity mx-auto">
                                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 bg-black/10 rounded-xl backdrop-blur-[1px]">
                                             <i data-lucide="zoom-in" class="w-6 h-6 text-white drop-shadow-md"></i>
                                         </div>
                                     </div>
-                                    <p class="text-[10px] text-blue-600 mt-1 italic">Klik QRIS untuk memperbesar</p>
+                                    <p class="text-[10px] text-blue-600 mt-2 italic">Klik QRIS untuk memperbesar</p>
+                                    <p class="text-[10px] text-gray-500 mt-1">Support: GoPay, OVO, Dana, M-Banking</p>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Upload Bukti (Dropzone Style) --}}
+                        {{-- C. Upload Bukti (Dropzone Style) - Tetap Ada --}}
                         <div class="relative">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Upload Bukti Transfer <span class="text-red-500">*</span></label>
                             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:bg-gray-50 hover:border-red-300 transition-colors cursor-pointer relative">
@@ -203,15 +244,16 @@
     <script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent scroll
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto'; // Restore scroll
+            document.body.style.overflow = 'auto'; 
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Logic Dine-In vs Take-Away
             const radioDineIn = document.getElementById('tipe_dine_in');
             const radioTakeAway = document.getElementById('tipe_take_away');
             const jumlahTamuWrapper = document.getElementById('jumlah_tamu_wrapper');
@@ -219,7 +261,6 @@
             function toggleJumlahTamu() {
                 if (radioDineIn.checked) {
                     jumlahTamuWrapper.style.display = 'block';
-                    // Optional: Tambahkan animasi fade-in class
                     jumlahTamuWrapper.classList.remove('hidden');
                 } else {
                     jumlahTamuWrapper.style.display = 'none';
@@ -228,12 +269,42 @@
             }
 
             if(radioDineIn && radioTakeAway){
-                // Initial Check
-                toggleJumlahTamu();
-
-                // Listener (Gunakan 'change' pada elemen input radio)
+                toggleJumlahTamu(); 
                 radioDineIn.addEventListener('change', toggleJumlahTamu);
                 radioTakeAway.addEventListener('change', toggleJumlahTamu);
+            }
+
+            // --- LOGIC METODE PEMBAYARAN (Baru) ---
+            const radioTransfer = document.getElementById('pilih_transfer');
+            const radioQRIS = document.getElementById('pilih_qris');
+            
+            const detailPlaceholder = document.getElementById('detail_placeholder');
+            const detailTransfer = document.getElementById('detail_transfer');
+            const detailQRIS = document.getElementById('detail_qris');
+
+            function toggleMetodePembayaran() {
+                // Sembunyikan semua dulu
+                detailPlaceholder.classList.add('hidden');
+                detailTransfer.classList.add('hidden');
+                detailQRIS.classList.add('hidden');
+
+                if (radioTransfer.checked) {
+                    detailTransfer.classList.remove('hidden');
+                } else if (radioQRIS.checked) {
+                    detailQRIS.classList.remove('hidden');
+                } else {
+                    // Jika belum ada yang dipilih (saat load pertama kali dan tidak ada old input)
+                    detailPlaceholder.classList.remove('hidden');
+                }
+            }
+
+            if(radioTransfer && radioQRIS) {
+                // Jalankan saat load (untuk handle old input validation error)
+                toggleMetodePembayaran();
+
+                // Listener change
+                radioTransfer.addEventListener('change', toggleMetodePembayaran);
+                radioQRIS.addEventListener('change', toggleMetodePembayaran);
             }
         });
     </script>

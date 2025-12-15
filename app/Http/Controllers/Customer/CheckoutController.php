@@ -32,7 +32,6 @@ class CheckoutController extends Controller
 
     /**
      * Menyimpan pesanan ke database.
-     * MODIFIKASI: Menambahkan logika upload bukti bayar.
      */
     public function store(Request $request)
     {
@@ -47,9 +46,13 @@ class CheckoutController extends Controller
             'tipe_layanan' => 'required|in:Take Away,Dine-in', 
             'catatan_pelanggan' => 'nullable|string|max:255',
             'jumlah_tamu' => 'required_if:tipe_layanan,Dine-in|nullable|numeric|min:1',
-            // [MODIFIKASI] Validasi Bukti Bayar
+            
+            // [BARU] Validasi Metode Pembayaran
+            'metode_pembayaran' => 'required|in:Transfer Bank,QRIS',
+            
             'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
         ], [
+            'metode_pembayaran.required' => 'Silakan pilih metode pembayaran.',
             'bukti_bayar.required' => 'Anda wajib mengupload bukti transfer.',
             'bukti_bayar.image' => 'File harus berupa gambar.',
             'bukti_bayar.max' => 'Ukuran file maksimal 2MB.',
@@ -59,11 +62,8 @@ class CheckoutController extends Controller
         $buktiBayarPath = null;
         if ($request->hasFile('bukti_bayar')) {
             $file = $request->file('bukti_bayar');
-            // Generate nama unik: time_namafileoriginal
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Pindahkan ke folder public/payment_proofs
             $file->move(public_path('payment_proofs'), $filename);
-            // Simpan path relatif untuk database
             $buktiBayarPath = 'payment_proofs/' . $filename;
         }
 
@@ -79,21 +79,21 @@ class CheckoutController extends Controller
                 'catatan_pelanggan' => $validatedData['catatan_pelanggan'],
                 'tipe_layanan' => $validatedData['tipe_layanan'],
                 'jumlah_tamu' => $validatedData['jumlah_tamu'] ?? 1,
-                // [MODIFIKASI] Simpan path bukti bayar
+                
+                // [BARU] Simpan Metode Pembayaran
+                'metode_pembayaran' => $validatedData['metode_pembayaran'],
+                
                 'bukti_bayar' => $buktiBayarPath, 
             ]);
 
             // Loop semua item di keranjang
             foreach ($cartItems as $item) {
-                // Cari menu di database
                 $menu = Menu::findOrFail($item->id);
 
-                // --- LOGIKA KETERSEDIAAN (TIDAK BERUBAH) ---
                 if ($menu->jumlah_saat_ini < $item->quantity) {
                     throw new \Exception('Jumlah untuk menu ' . $menu->namaMenu . ' tidak mencukupi (sisa ' . $menu->jumlah_saat_ini . ').');
                 }
 
-                // Simpan setiap item ke 'pesanan_details'
                 PesananDetail::create([
                     'pesanan_id' => $pesanan->id,
                     'menu_id' => $item->id,
@@ -107,20 +107,14 @@ class CheckoutController extends Controller
                 $ketersediaanHariIni->decrement('jumlah_saat_ini', $item->quantity);
             }
 
-            // Jika semua berhasil, kosongkan keranjang belanja
             Cart::clear();
-
-            // Konfirmasi transaksi database
             DB::commit();
 
-            // Arahkan ke halaman riwayat pesanan
             return redirect()->route('orders.index')->with('success', 'Pesanan Anda (#'.$pesanan->id.') berhasil dibuat! Mohon tunggu verifikasi admin.');
 
         } catch (\Exception $e) {
-            // Jika ada kegagalan, batalkan semua
             DB::rollBack();
 
-            // Hapus file gambar jika sudah terlanjur terupload tapi DB gagal
             if ($buktiBayarPath && file_exists(public_path($buktiBayarPath))) {
                 unlink(public_path($buktiBayarPath));
             }

@@ -17,7 +17,7 @@ class PesananController extends Controller
      * Menampilkan halaman daftar semua pesanan dengan PRIORITAS KERJA.
      * Urutan: Pending -> Processing -> Completed -> Cancelled.
      */
-public function index(Request $request)
+    public function index(Request $request)
     {
         // Ambil input pencarian dari URL (?search=...)
         $search = $request->input('search');
@@ -29,9 +29,11 @@ public function index(Request $request)
                     // Cari berdasarkan ID Pesanan
                     $q->where('id', 'like', "%{$search}%")
                       // ATAU Cari berdasarkan Nama User (Relasi)
+                      // ATAU Cari berdasarkan Catatan Pelanggan (untuk pesanan Offline)
                       ->orWhereHas('user', function ($subQ) use ($search) {
                           $subQ->where('name', 'like', "%{$search}%");
-                      });
+                      })
+                      ->orWhere('catatan_pelanggan', 'like', "%{$search}%");
                 });
             })
             
@@ -75,6 +77,48 @@ public function index(Request $request)
 
         return redirect()->route('admin.pesanan.show', $pesanan)
                          ->with('success', 'Status pesanan berhasil diperbarui.');
+    }
+
+    /**
+     * === METHOD BARU: STORE OFFLINE (PESANAN DI TEMPAT) ===
+     * Membuat pesanan kosong baru untuk pelanggan offline (Walk-in).
+     */
+    public function storeOffline(Request $request)
+    {
+        $request->validate([
+            'nama_pelanggan' => 'nullable|string|max:100',
+            'tipe_layanan' => 'required|in:Dine-in,Take Away'
+        ]);
+
+        // Gunakan nama pelanggan di catatan agar mudah dikenali
+        // Karena user_id wajib (not null), kita gunakan ID Admin yang sedang login
+        $nama = $request->nama_pelanggan ? $request->nama_pelanggan : 'Pelanggan Offline';
+        $catatan = "OFFLINE - " . $nama;
+
+        try {
+            DB::beginTransaction();
+
+            $pesanan = Pesanan::create([
+                'user_id' => auth()->id(), // Menggunakan ID Admin
+                'total_bayar' => 0, // Awalnya 0, akan bertambah saat add item
+                'status' => 'pending',
+                'tipe_layanan' => $request->tipe_layanan,
+                'catatan_pelanggan' => $catatan,
+                'metode_pembayaran' => null, // Belum bayar (nanti diisi saat verifikasi)
+                'jumlah_tamu' => 1, // Default
+                'bukti_bayar' => null // Tidak ada upload bukti
+            ]);
+
+            DB::commit();
+
+            // Redirect langsung ke halaman detail agar Admin bisa langsung input menu
+            return redirect()->route('admin.pesanan.show', $pesanan->id)
+                             ->with('success', 'Pesanan Offline berhasil dibuat. Silakan tambahkan menu.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal membuat pesanan: ' . $e->getMessage());
+        }
     }
 
     /**

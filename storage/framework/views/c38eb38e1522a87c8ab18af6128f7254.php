@@ -222,6 +222,13 @@
                                 <span class="text-gray-500">Layanan</span>
                                 <span class="font-semibold"><?php echo e($pesanan->tipe_layanan); ?></span>
                             </div>
+                            
+                            <?php if($pesanan->jumlah_tamu > 0): ?>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Jumlah Orang</span>
+                                <span class="font-semibold"><?php echo e($pesanan->jumlah_tamu); ?> Orang</span>
+                            </div>
+                            <?php endif; ?>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Meja/Info</span>
                                 <span class="font-semibold"><?php echo e($pesanan->catatan_pelanggan ?? '-'); ?></span>
@@ -308,6 +315,10 @@
                 <div class="flex justify-between"><span>Tgl:</span> <span><?php echo e($pesanan->created_at->format('d/m/y H:i')); ?></span></div>
                 <div class="flex justify-between"><span>Cust:</span> <span><?php echo e(substr($pesanan->user->name, 0, 15)); ?></span></div>
                 <div class="flex justify-between"><span>Tipe:</span> <span><?php echo e($pesanan->tipe_layanan); ?></span></div>
+                
+                <?php if($pesanan->jumlah_tamu > 0): ?>
+                    <div class="flex justify-between"><span>Jml:</span> <span><?php echo e($pesanan->jumlah_tamu); ?> Org</span></div>
+                <?php endif; ?>
             </div>
 
             <div class="border-b-2 border-dashed border-black my-2"></div>

@@ -210,6 +210,13 @@
                                 <span class="text-gray-500">Layanan</span>
                                 <span class="font-semibold">{{ $pesanan->tipe_layanan }}</span>
                             </div>
+                            {{-- MENAMPILKAN JUMLAH TAMU --}}
+                            @if($pesanan->jumlah_tamu > 0)
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Jumlah Orang</span>
+                                <span class="font-semibold">{{ $pesanan->jumlah_tamu }} Orang</span>
+                            </div>
+                            @endif
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Meja/Info</span>
                                 <span class="font-semibold">{{ $pesanan->catatan_pelanggan ?? '-' }}</span>
@@ -295,6 +302,10 @@
                 <div class="flex justify-between"><span>Tgl:</span> <span>{{ $pesanan->created_at->format('d/m/y H:i') }}</span></div>
                 <div class="flex justify-between"><span>Cust:</span> <span>{{ substr($pesanan->user->name, 0, 15) }}</span></div>
                 <div class="flex justify-between"><span>Tipe:</span> <span>{{ $pesanan->tipe_layanan }}</span></div>
+                {{-- JUMLAH TAMU DI NOTA --}}
+                @if($pesanan->jumlah_tamu > 0)
+                    <div class="flex justify-between"><span>Jml:</span> <span>{{ $pesanan->jumlah_tamu }} Org</span></div>
+                @endif
             </div>
 
             <div class="border-b-2 border-dashed border-black my-2"></div>

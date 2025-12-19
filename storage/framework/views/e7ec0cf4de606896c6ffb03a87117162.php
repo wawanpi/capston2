@@ -1,217 +1,296 @@
 
-<div 
-    x-show="sidebarOpen" 
-    @click="sidebarOpen = false"
-    x-transition:enter="ease-out duration-300"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black/60 z-40 lg:hidden"
-    x-cloak
-></div>
 
 
-<div 
-    class="fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-xl transition-transform duration-300 border-r border-gray-100 flex flex-col font-sans"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
->
+<?php
+    $notifOrders = collect([]);
+    $notifCount = 0;
+    try {
+        if (class_exists(\App\Models\Pesanan::class)) {
+            $notifOrders = \App\Models\Pesanan::where('status', 'pending')
+                            ->latest()
+                            // ->take(5)  <-- BAGIAN INI SUDAH DIHAPUS AGAR SEMUA MUNCUL
+                            ->get();
+            $notifCount = $notifOrders->count();
+        }
+    } catch (\Exception $e) {
+        // Silent fail jika tabel belum siap
+    }
+?>
+
+
+<div x-show="sidebarOpen" 
+     @click="sidebarOpen = false"
+     x-transition:enter="transition-opacity ease-linear duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition-opacity ease-linear duration-300"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 bg-gray-900/50 z-40 lg:hidden backdrop-blur-sm"
+     x-cloak>
+</div>
+
+
+<div class="fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-2xl border-r border-gray-100 flex flex-col transition-transform duration-300 ease-in-out font-sans"
+     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+
     
-    <div class="h-20 flex items-center justify-between px-6 border-b border-gray-100 shrink-0">
-        <div class="flex flex-col justify-center">
-            <span class="text-2xl font-extrabold text-[#E3002B] tracking-wider uppercase leading-none">
-                BURJO MINANG
-            </span>
-            <span class="text-[10px] font-medium text-gray-500 tracking-wide mt-1">
-                Jagonya Warmindo
-            </span>
+    <div class="h-16 flex items-center justify-between px-6 border-b border-gray-100 shrink-0">
+        <div class="flex flex-col">
+            <span class="text-2xl font-black text-[#D40000] uppercase tracking-tighter leading-none">BURMIN</span>
+            <span class="text-[10px] font-bold text-gray-400 tracking-[0.2em] uppercase mt-0.5">Admin Panel</span>
         </div>
         
-        <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded-md hover:bg-red-50 text-gray-500 hover:text-[#E3002B] transition-colors">
-            <i data-lucide="x" class="w-5 h-5"></i>
+        <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-[#D40000] transition-colors">
+            <i data-lucide="x" class="w-6 h-6"></i>
         </button>
     </div>
 
     
-    <div class="px-6 py-6 shrink-0">
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 shadow-sm">
-            <div class="w-10 h-10 shrink-0 rounded-full bg-red-100 flex items-center justify-center text-[#E3002B]">
-                <i data-lucide="user" class="w-5 h-5"></i>
+    <div class="p-5 border-b border-gray-50 bg-gray-50/30">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#D40000] text-white flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white">
+                <?php echo e(substr(Auth::user()->name ?? 'A', 0, 1)); ?>
+
             </div>
             <div class="overflow-hidden">
-                <?php if(auth()->guard()->check()): ?>
-                    <p class="text-sm font-bold text-gray-800 truncate leading-tight"><?php echo e(Auth::user()->name); ?></p>
-                    <p class="text-[11px] font-medium text-gray-500 uppercase tracking-wide mt-0.5">Administrator</p>
-                <?php else: ?>
-                    <a href="<?php echo e(route('login')); ?>" class="text-sm font-bold text-gray-800 hover:text-[#E3002B]">Login</a>
-                <?php endif; ?>
+                <p class="text-sm font-bold text-gray-900 truncate"><?php echo e(Auth::user()->name ?? 'Administrator'); ?></p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-medium text-green-600">Online</span>
+                </div>
             </div>
         </div>
     </div>
 
     
-    <nav class="flex-grow px-4 space-y-1 overflow-y-auto custom-scrollbar">
+    <nav class="flex-grow px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
         
+        
+        <div class="mb-2 px-3">
+            <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Utama</p>
+        </div>
+
         <a href="<?php echo e(route('admin.dashboard')); ?>" 
-           class="group relative flex items-center gap-3 px-4 py-3 rounded-l-lg text-sm font-medium transition-all duration-200
+           class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
            <?php echo e(request()->routeIs('admin.dashboard') 
-              ? 'bg-red-50 text-[#E3002B] border-r-4 border-[#E3002B]' 
+              ? 'bg-red-50 text-[#D40000]' 
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
+            
+            <?php if(request()->routeIs('admin.dashboard')): ?>
+                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#D40000] rounded-r-full"></span>
+            <?php endif; ?>
+
+            <i data-lucide="layout-dashboard" class="w-5 h-5 <?php echo e(request()->routeIs('admin.dashboard') ? 'text-[#D40000]' : 'text-gray-400 group-hover:text-gray-600'); ?>"></i>
             <span>Dashboard</span>
         </a>
+
         
-        
+        <div class="mt-6 mb-2 px-3">
+            <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Operasional</p>
+        </div>
+
+        <a href="<?php echo e(route('admin.pesanan.index')); ?>" 
+           class="group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+           <?php echo e(request()->routeIs('admin.pesanan.*') ? 'bg-red-50 text-[#D40000]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
+            
+            <?php if(request()->routeIs('admin.pesanan.*')): ?>
+                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#D40000] rounded-r-full"></span>
+            <?php endif; ?>
+
+            <div class="flex items-center gap-3">
+                <i data-lucide="shopping-bag" class="w-5 h-5 <?php echo e(request()->routeIs('admin.pesanan.*') ? 'text-[#D40000]' : 'text-gray-400 group-hover:text-gray-600'); ?>"></i>
+                <span>Pesanan Masuk</span>
+            </div>
+            
+            <?php if($notifCount > 0): ?>
+                <span class="bg-[#D40000] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm shadow-red-200"><?php echo e($notifCount); ?></span>
+            <?php endif; ?>
+        </a>
+
+        <a href="<?php echo e(route('admin.transaksi.index')); ?>" 
+           class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+           <?php echo e(request()->routeIs('admin.transaksi.*') ? 'bg-red-50 text-[#D40000]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
+            <?php if(request()->routeIs('admin.transaksi.*')): ?>
+                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#D40000] rounded-r-full"></span>
+            <?php endif; ?>
+            <i data-lucide="receipt" class="w-5 h-5 <?php echo e(request()->routeIs('admin.transaksi.*') ? 'text-[#D40000]' : 'text-gray-400 group-hover:text-gray-600'); ?>"></i>
+            <span>Laporan Transaksi</span>
+        </a>
+
         <a href="<?php echo e(route('admin.menus.index')); ?>" 
-           class="group relative flex items-center gap-3 px-4 py-3 rounded-l-lg text-sm font-medium transition-all duration-200
-           <?php echo e(request()->routeIs('admin.menus.*') 
-              ? 'bg-red-50 text-[#E3002B] border-r-4 border-[#E3002B]' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
-            <i data-lucide="utensils-crossed" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
+           class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+           <?php echo e(request()->routeIs('admin.menus.*') ? 'bg-red-50 text-[#D40000]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
+            <?php if(request()->routeIs('admin.menus.*')): ?>
+                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#D40000] rounded-r-full"></span>
+            <?php endif; ?>
+            <i data-lucide="utensils-crossed" class="w-5 h-5 <?php echo e(request()->routeIs('admin.menus.*') ? 'text-[#D40000]' : 'text-gray-400 group-hover:text-gray-600'); ?>"></i>
             <span>Manajemen Menu</span>
         </a>
 
         
-        <a href="<?php echo e(route('admin.pesanan.index')); ?>" 
-           class="group relative flex items-center gap-3 px-4 py-3 rounded-l-lg text-sm font-medium transition-all duration-200
-           <?php echo e(request()->routeIs('admin.pesanan.*') 
-              ? 'bg-red-50 text-[#E3002B] border-r-4 border-[#E3002B]' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
-            <i data-lucide="shopping-bag" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-            <span>Kelola Pesanan</span>
-        </a>
+        <div class="mt-6 mb-2 px-3">
+            <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Sistem</p>
+        </div>
 
-        
-        <a href="<?php echo e(route('admin.transaksi.index')); ?>" 
-           class="group relative flex items-center gap-3 px-4 py-3 rounded-l-lg text-sm font-medium transition-all duration-200
-           <?php echo e(request()->routeIs('admin.transaksi.*') 
-              ? 'bg-red-50 text-[#E3002B] border-r-4 border-[#E3002B]' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
-            <i data-lucide="receipt" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-            <span>Kelola Transaksi</span>
-        </a>
-
-        
         <a href="<?php echo e(route('admin.users.index')); ?>" 
-           class="group relative flex items-center gap-3 px-4 py-3 rounded-l-lg text-sm font-medium transition-all duration-200
-           <?php echo e(request()->routeIs('admin.users.*') 
-              ? 'bg-red-50 text-[#E3002B] border-r-4 border-[#E3002B]' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
-            <i data-lucide="users" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
-            <span>Manajemen User</span>
+           class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+           <?php echo e(request()->routeIs('admin.users.*') ? 'bg-red-50 text-[#D40000]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'); ?>">
+            <?php if(request()->routeIs('admin.users.*')): ?>
+                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#D40000] rounded-r-full"></span>
+            <?php endif; ?>
+            <i data-lucide="users" class="w-5 h-5 <?php echo e(request()->routeIs('admin.users.*') ? 'text-[#D40000]' : 'text-gray-400 group-hover:text-gray-600'); ?>"></i>
+            <span>Data Pengguna</span>
         </a>
     </nav>
 
     
-    <div class="px-4 pt-2 pb-2">
-        <div class="border-t border-gray-100 pt-2">
-            <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
-                <?php echo csrf_field(); ?>
-                <a href="<?php echo e(route('logout')); ?>" 
-                   onclick="event.preventDefault(); this.closest('form').submit();" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 w-full transition-all duration-200 group">
-                    <i data-lucide="log-out" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i>
-                    <span class="font-semibold">Logout</span>
-                </a>
-            </form>
-        </div>
-    </div>
-
-    
-    <div class="p-4 border-t border-gray-100 bg-gray-50/50 shrink-0">
-        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase text-center tracking-widest">Available On</p>
-            <div class="flex flex-col gap-2">
-                <a href="#" class="opacity-80 hover:opacity-100 hover:scale-[1.02] transition-all duration-300">
-                    <img src="<?php echo e(asset('img/google-play.png')); ?>" alt="Get it on Google Play" class="h-10 w-auto mx-auto object-contain">
-                </a>
-                <a href="#" class="opacity-80 hover:opacity-100 hover:scale-[1.02] transition-all duration-300">
-                    <img src="<?php echo e(asset('img/app-store.png')); ?>" alt="Download on the App Store" class="h-9 w-auto mx-auto object-contain">
-                </a>
-            </div>
-        </div>
+    <div class="p-4 border-t border-gray-100 bg-white">
+        <form method="POST" action="<?php echo e(route('logout')); ?>">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-white border border-gray-200 text-red-600 text-sm font-bold rounded-xl hover:bg-red-50 hover:border-red-100 transition-all shadow-sm group">
+                <i data-lucide="log-out" class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform"></i>
+                <span>Keluar</span>
+            </button>
+        </form>
     </div>
 </div>
 
 
 
-<header class="bg-[#E3002B] text-white shadow-lg fixed w-full top-0 z-40 transition-all duration-300 h-16 lg:pl-64">
-    <div class="container mx-auto px-4 h-full flex justify-between items-center">
+<header class="fixed top-0 left-0 w-full z-30 bg-white/90 backdrop-blur-sm border-b border-gray-200 h-16 transition-all duration-300 lg:pl-64">
+    <div class="container mx-auto px-4 h-full flex items-center justify-between">
+        
         
         <div class="flex items-center gap-4">
-            
-            <button @click="sidebarOpen = true" class="lg:hidden focus:outline-none p-1 rounded hover:bg-white/10 transition">
+            <button @click="sidebarOpen = true" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
-
-            
-            <a href="<?php echo e(route('admin.dashboard')); ?>" class="flex flex-col lg:hidden">
-                <span class="text-xl font-bold tracking-wider uppercase leading-none">BURMIN</span>
-            </a>
-            
-            
-            <h1 class="hidden lg:block text-lg font-semibold opacity-90">
-                <?php if(request()->routeIs('admin.dashboard')): ?>
-                    Dashboard
-                <?php elseif(request()->routeIs('admin.menus.*')): ?>
-                    Manajemen Menu
-                <?php elseif(request()->routeIs('admin.pesanan.*')): ?>
-                    Kelola Pesanan
-                <?php elseif(request()->routeIs('admin.transaksi.*')): ?>
-                    Kelola Transaksi
-                <?php elseif(request()->routeIs('admin.users.*')): ?>
-                    Manajemen User
-                <?php else: ?>
-                    Admin Portal
-                <?php endif; ?>
-            </h1>
         </div>
 
-        <div class="flex items-center gap-4 md:gap-6">
-            <div class="relative hidden md:block">
-                <button class="flex items-center gap-1 font-medium text-sm opacity-80 hover:opacity-100 transition">
-                    ID <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                </button>
-            </div>
+        
+        <div class="flex items-center gap-3 sm:gap-5">
             
-            <div class="relative">
-                <button @click="profileOpen = !profileOpen" class="w-9 h-9 bg-white text-[#E3002B] rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-transform active:scale-95">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+            
+            <div class="relative" x-data="{ notifOpen: false }">
+                <button @click="notifOpen = !notifOpen" 
+                        class="relative p-2.5 rounded-full transition-all duration-200 outline-none"
+                        :class="notifOpen ? 'bg-red-50 text-[#D40000]' : 'text-gray-400 hover:text-[#D40000] hover:bg-gray-50'">
+                    
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    
+                    
+                    <?php if($notifCount > 0): ?>
+                        <span class="absolute top-2 right-2 flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#D40000] border-2 border-white"></span>
+                        </span>
+                    <?php endif; ?>
                 </button>
 
                 
-                <div 
-                    x-show="profileOpen"
-                    @click.outside="profileOpen = false"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
-                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                    x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                    x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
-                    class="absolute right-0 top-12 z-50 w-64 bg-white rounded-xl shadow-xl border border-gray-100 text-gray-800 ring-1 ring-black/5"
-                    x-cloak
-                >
-                    <div class="p-4 border-b border-gray-100 bg-gray-50 rounded-t-xl">
-                        <p class="font-bold text-gray-800 text-sm"><?php echo e(Auth::user()->name ?? 'Admin'); ?></p>
-                        <p class="text-xs text-gray-500 mt-0.5">Administrator</p>
-                    </div>
+                <div x-show="notifOpen" 
+                     @click.outside="notifOpen = false"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                     class="absolute right-0 top-14 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden ring-1 ring-black/5"
+                     x-cloak>
                     
-                    <nav class="p-2 text-gray-700 text-sm">
-                        <a href="<?php echo e(route('profile.edit')); ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-                            <i data-lucide="settings" class="w-4 h-4 text-gray-400"></i> Pengaturan Akun
-                        </a>
-                        <div class="border-t border-gray-100 my-1"></div>
-                        <form method="POST" action="<?php echo e(route('logout')); ?>">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit" class="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-                                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
-                            </button>
-                        </form>
-                    </nav>
+                    <div class="px-4 py-3 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Notifikasi</span>
+                        <?php if($notifCount > 0): ?>
+                            <span class="bg-red-100 text-[#D40000] text-[10px] font-bold px-2 py-0.5 rounded-full"><?php echo e($notifCount); ?> Baru</span>
+                        <?php endif; ?>
+                    </div>
+
+                    
+                    <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
+                        <?php $__empty_1 = true; $__currentLoopData = $notifOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="block px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 group">
+                                <div class="flex gap-3">
+                                    <div class="mt-1 bg-yellow-100 text-yellow-600 w-9 h-9 rounded-full flex items-center justify-center shrink-0 group-hover:bg-[#D40000] group-hover:text-white transition-colors">
+                                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="flex-grow overflow-hidden">
+                                        <div class="flex justify-between items-start mb-0.5">
+                                            <p class="text-sm font-bold text-gray-800 truncate">Pesanan #<?php echo e($order->id); ?></p>
+                                            <span class="text-[10px] text-gray-400 whitespace-nowrap"><?php echo e($order->created_at->diffForHumans(null, true)); ?></span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 truncate">
+                                            Menunggu konfirmasi <span class="font-bold text-gray-700">Rp <?php echo e(number_format($order->total_bayar, 0, ',', '.')); ?></span>
+                                        </p>
+                                        <p class="text-[10px] font-bold text-[#D40000] mt-1 uppercase tracking-wide">Pending</p>
+                                    </div>
+                                </div>
+                            </a>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <div class="px-4 py-8 text-center flex flex-col items-center">
+                                <div class="bg-gray-50 w-12 h-12 rounded-full flex items-center justify-center mb-3 text-gray-300">
+                                    <i data-lucide="bell-off" class="w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm font-bold text-gray-700">Tidak ada notifikasi</p>
+                                <p class="text-xs text-gray-400">Semua aman terkendali.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if($notifCount > 0): ?>
+                        <div class="border-t border-gray-100 bg-gray-50 p-2">
+                            <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="flex items-center justify-center gap-1 w-full py-2 text-xs font-bold text-[#D40000] hover:bg-white rounded-lg transition-colors border border-transparent hover:border-gray-200">
+                                Lihat Semua Pesanan <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
+            
+            
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center gap-2 hover:bg-gray-50 rounded-full p-1 pr-3 transition border border-transparent hover:border-gray-200">
+                    <div class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 text-xs font-bold border border-gray-200">
+                        <?php echo e(substr(Auth::user()->name ?? 'A', 0, 1)); ?>
+
+                    </div>
+                    <span class="hidden md:block text-sm font-bold text-gray-700">Hi, Admin</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+
+                <div x-show="open" @click.outside="open = false" 
+                     class="absolute right-0 top-14 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 ring-1 ring-black/5" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                     x-cloak>
+                    
+                    <div class="px-4 py-3 border-b border-gray-50">
+                        <p class="text-xs text-gray-400 font-bold uppercase">Masuk sebagai</p>
+                        <p class="text-sm font-bold text-gray-900 truncate"><?php echo e(Auth::user()->email ?? ''); ?></p>
+                    </div>
+
+                    <div class="py-1">
+                        <a href="<?php echo e(route('profile.edit')); ?>" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#D40000] transition-colors">
+                            <i data-lucide="settings" class="w-4 h-4"></i> Pengaturan
+                        </a>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-1"></div>
+                    
+                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                        <?php echo csrf_field(); ?>
+                        <button class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </header><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/layouts/navigation-admin.blade.php ENDPATH**/ ?>

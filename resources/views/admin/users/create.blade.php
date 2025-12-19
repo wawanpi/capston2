@@ -1,82 +1,135 @@
 <x-app-layout>
     <x-slot name="header">
-        {{-- Tipografi Header: Dibuat lebih tebal dan tegas --}}
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
-            {{ __('Tambah User Baru') }}
-        </h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.users.index') }}" class="p-2 bg-white rounded-full text-gray-500 hover:text-gray-900 shadow-sm border border-gray-100 transition">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div>
+                <h2 class="font-black text-xl text-gray-800 leading-tight">
+                    Tambah User Baru
+                </h2>
+                <p class="text-sm text-gray-500">Mendaftarkan akun pengguna atau admin baru.</p>
+            </div>
+        </div>
     </x-slot>
 
-    {{-- Latar belakang abu-abu agar kartu putih menonjol --}}
-    <div class="py-12 bg-gray-50">
+    <div class="py-8 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Kontainer Form: Diberi border agar rapi (konsisten) --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-                <div class="p-6 text-gray-900">
-                    {{-- Tampilkan Error Validasi (Sudah On-Brand) --}}
-                    @if ($errors->any())
-                        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">Oops!</strong>
-                            <span class="block sm:inline">Ada beberapa masalah dengan input Anda.</span>
-                            <ul class="mt-3 list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('admin.users.store') }}">
-                        @csrf
-
-                        {{-- Nama: Menambahkan class untuk override focus color --}}
-                        <div>
-                            <x-input-label for="name" :value="__('Nama')" />
-                            <x-text-input id="name" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                        </div>
-
-                        {{-- Email: Menambahkan class untuk override focus color --}}
-                        <div class="mt-4">
-                            <x-input-label for="email" :value="__('Email')" />
-                            <x-text-input id="email" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" type="email" name="email" :value="old('email')" required autocomplete="username" />
-                        </div>
-
-                        {{-- Password: Menambahkan class untuk override focus color --}}
-                        <div class="mt-4">
-                            <x-input-label for="password" :value="__('Password')" />
-                            <x-text-input id="password" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" type="password" name="password" required autocomplete="new-password" />
-                        </div>
-
-                        {{-- Confirm Password: Menambahkan class untuk override focus color --}}
-                        <div class="mt-4">
-                            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                            <x-text-input id="password_confirmation" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" type="password" name="password_confirmation" required autocomplete="new-password" />
-                        </div>
-
-                        {{-- Roles: Mengganti focus color --}}
-                        <div class="mt-4">
-                             <x-input-label for="roles" :value="__('Role')" />
-                             <select name="roles" id="roles" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm" required>
-                                 <option value="">-- Pilih Role --</option>
-                                 @foreach($roles as $role)
-                                     <option value="{{ $role }}" {{ old('roles') == $role ? 'selected' : '' }}>{{ $role }}</option>
-                                 @endforeach
-                             </select>
-                        </div>
-
-                        <div class="flex items-center justify-end mt-6">
-                            {{-- Tombol Batal: Mengganti focus color --}}
-                             <a href="{{ route('admin.users.index') }}" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mr-4">
-                                Batal
-                            </a>
-                            
-                            {{-- Tombol Simpan: Diubah dari <x-primary-button> menjadi <button> Merah --}}
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
-                                {{ __('Simpan User') }}
-                            </button>
-                        </div>
-                    </form>
+            
+            {{-- Notifikasi Error --}}
+            @if ($errors->any())
+                <div class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r shadow-sm">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        <strong class="font-bold">Gagal Menyimpan!</strong>
+                    </div>
+                    <ul class="list-disc list-inside text-sm ml-7">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-            </div>
+            @endif
+
+            <form method="POST" action="{{ route('admin.users.store') }}">
+                @csrf
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    {{-- KOLOM KIRI: INFORMASI PROFIL --}}
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                            <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <i data-lucide="user-plus" class="w-5 h-5 text-gray-400"></i> Informasi Akun
+                            </h3>
+
+                            <div class="space-y-5">
+                                {{-- Nama --}}
+                                <div>
+                                    <x-input-label for="name" :value="__('Nama Lengkap')" />
+                                    <div class="relative mt-1">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
+                                        </div>
+                                        <x-text-input id="name" class="block w-full pl-10" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="Contoh: Budi Santoso" />
+                                    </div>
+                                </div>
+
+                                {{-- Email --}}
+                                <div>
+                                    <x-input-label for="email" :value="__('Alamat Email')" />
+                                    <div class="relative mt-1">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                                        </div>
+                                        <x-text-input id="email" class="block w-full pl-10" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="budi@example.com" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- KOLOM KANAN: KEAMANAN & AKSES --}}
+                    <div class="space-y-6">
+                        
+                        {{-- Role --}}
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i> Hak Akses (Role)
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                @foreach($roles as $role)
+                                    <label class="cursor-pointer relative">
+                                        <input type="radio" name="roles" value="{{ $role }}" class="peer sr-only" {{ old('roles') == $role ? 'checked' : '' }}>
+                                        <div class="p-3 rounded-xl border-2 border-gray-100 bg-gray-50 peer-checked:border-red-500 peer-checked:bg-red-50 hover:bg-white transition-all text-center">
+                                            <div class="mx-auto w-8 h-8 bg-white rounded-full flex items-center justify-center mb-2 shadow-sm">
+                                                @if($role == 'admin')
+                                                    <i data-lucide="shield-check" class="w-4 h-4 text-red-600"></i>
+                                                @else
+                                                    <i data-lucide="user" class="w-4 h-4 text-gray-600"></i>
+                                                @endif
+                                            </div>
+                                            <span class="text-xs font-bold text-gray-700 block uppercase">{{ $role }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Password --}}
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                            <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i> Keamanan
+                            </h3>
+                            
+                            <div class="space-y-5">
+                                <div>
+                                    <x-input-label for="password" :value="__('Password')" />
+                                    <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
+                                </div>
+
+                                <div>
+                                    <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
+                                    <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- TOMBOL AKSI STICKY --}}
+                <div class="mt-8 flex justify-end gap-4 border-t border-gray-200 pt-6">
+                    <a href="{{ route('admin.users.index') }}" class="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-gray-900 text-white font-bold text-sm shadow-lg hover:bg-black transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i> Simpan User
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
 </x-app-layout>

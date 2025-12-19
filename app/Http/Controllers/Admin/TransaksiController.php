@@ -16,21 +16,33 @@ class TransaksiController extends Controller
      */
     public function index(Request $request)
     {
-        // ... (Kode index sama persis, tidak perlu diubah) ...
+        // Ambil parameter range, default ke 'daily'
         $range = $request->query('range', 'daily'); 
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
-        $filterLabel = "Hari Ini";
+        
+        // Ambil tanggal dari request
+        $reqStartDate = $request->query('start_date');
+        $reqEndDate = $request->query('end_date');
 
+        // LOGIKA PERBAIKAN:
+        // Jika range BUKAN custom, kita abaikan start_date/end_date dari URL
+        // Ini mencegah filter 'stuck' di tanggal kustom
+        if ($range !== 'custom') {
+            $reqStartDate = null;
+            $reqEndDate = null;
+        }
+
+        $filterLabel = "Hari Ini";
         $query = Transaksi::query();
 
-        if ($startDate && $endDate) {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
+        // Kondisi 1: Filter Custom Tanggal (Hanya jika range == custom DAN tanggal diisi)
+        if ($range == 'custom' && $reqStartDate && $reqEndDate) {
+            $startDate = Carbon::parse($reqStartDate)->startOfDay();
+            $endDate = Carbon::parse($reqEndDate)->endOfDay();
             $filterLabel = "Periode " . $startDate->format('d M Y') . " - " . $endDate->format('d M Y');
             $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
-
-        } else {
+        } 
+        // Kondisi 2: Filter Preset (Daily, Weekly, Monthly)
+        else {
             if ($range == 'weekly') {
                 $startDate = Carbon::now()->startOfWeek();
                 $endDate = Carbon::now()->endOfWeek();
@@ -63,8 +75,6 @@ class TransaksiController extends Controller
      */
     public function verifikasi(Request $request, Pesanan $pesanan)
     {
-        // 1. Validasi request
-        // [UPDATE] Menambahkan 'Transfer Bank' ke dalam daftar validasi agar sesuai dengan select option di View
         $validated = $request->validate([
             'metode_pembayaran' => 'required|string|in:Tunai di Tempat,QRIS,Transfer Bank,Transfer Bank (BCA)'
         ]);
@@ -76,16 +86,14 @@ class TransaksiController extends Controller
         try {
             DB::beginTransaction();
 
-            // 2. Buat data transaksi baru
             Transaksi::create([
                 'pesanan_id' => $pesanan->id,
                 'total_bayar' => $pesanan->total_bayar,
                 'status_pembayaran' => 'paid',
-                'metode_pembayaran' => $request->metode_pembayaran, // Simpan sesuai yang dipilih Admin
+                'metode_pembayaran' => $request->metode_pembayaran,
                 'tanggal_transaksi' => now(),
             ]);
 
-            // 3. Update status pesanan menjadi 'processing'
             $pesanan->update(['status' => 'processing']);
 
             DB::commit();
@@ -99,33 +107,42 @@ class TransaksiController extends Controller
 
     public function cetakLaporan(Request $request)
     {
-        // ... (Kode cetakLaporan sama persis, tidak perlu diubah) ...
+        // Terapkan logika perbaikan yang SAMA untuk fungsi cetak
         $range = $request->query('range', 'daily');
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
+        $reqStartDate = $request->query('start_date');
+        $reqEndDate = $request->query('end_date');
+
+        if ($range !== 'custom') {
+            $reqStartDate = null;
+            $reqEndDate = null;
+        }
+
         $filterLabel = "Hari Ini";
+        $startDateObj = null; // Variabel objek Carbon untuk view
+        $endDateObj = null;
+
         $query = Transaksi::query();
 
-        if ($startDate && $endDate) {
-            $startDate = Carbon::parse($startDate)->startOfDay();
-            $endDate = Carbon::parse($endDate)->endOfDay();
-            $filterLabel = "Periode " . $startDate->format('d M Y') . " - " . $endDate->format('d M Y');
-            $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
+        if ($range == 'custom' && $reqStartDate && $reqEndDate) {
+            $startDateObj = Carbon::parse($reqStartDate)->startOfDay();
+            $endDateObj = Carbon::parse($reqEndDate)->endOfDay();
+            $filterLabel = "Periode " . $startDateObj->format('d M Y') . " - " . $endDateObj->format('d M Y');
+            $query->whereBetween('tanggal_transaksi', [$startDateObj, $endDateObj]);
         } else {
             if ($range == 'weekly') {
-                $startDate = Carbon::now()->startOfWeek();
-                $endDate = Carbon::now()->endOfWeek();
+                $startDateObj = Carbon::now()->startOfWeek();
+                $endDateObj = Carbon::now()->endOfWeek();
                 $filterLabel = "Minggu Ini";
             } elseif ($range == 'monthly') {
-                $startDate = Carbon::now()->startOfMonth();
-                $endDate = Carbon::now()->endOfMonth();
+                $startDateObj = Carbon::now()->startOfMonth();
+                $endDateObj = Carbon::now()->endOfMonth();
                 $filterLabel = "Bulan Ini";
             } else {
-                $startDate = Carbon::now()->startOfDay();
-                $endDate = Carbon::now()->endOfDay();
+                $startDateObj = Carbon::now()->startOfDay();
+                $endDateObj = Carbon::now()->endOfDay();
                 $filterLabel = "Hari Ini";
             }
-            $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
+            $query->whereBetween('tanggal_transaksi', [$startDateObj, $endDateObj]);
         }
 
         $totalQuery = clone $query;
@@ -135,6 +152,13 @@ class TransaksiController extends Controller
                             ->latest()
                             ->get();
 
-        return view('admin.transaksi.cetak', compact('transaksis', 'totalPendapatan', 'filterLabel', 'startDate', 'endDate'));
+        // Mengirim variable dengan nama yang konsisten ke view (startDate & endDate)
+        return view('admin.transaksi.cetak', [
+            'transaksis' => $transaksis,
+            'totalPendapatan' => $totalPendapatan,
+            'filterLabel' => $filterLabel,
+            'startDate' => $startDateObj, 
+            'endDate' => $endDateObj
+        ]);
     }
 }

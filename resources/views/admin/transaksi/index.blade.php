@@ -1,187 +1,266 @@
-<x-app-layout> <x-slot name="header"> {{-- Tipografi Header: Dibuat lebih tebal dan tegas --}} <h2 class="font-bold text-xl text-gray-800 leading-tight"> {{ __('Riwayat Transaksi') }} </h2> </x-slot> {{-- Latar belakang abu-abu agar kartu putih menonjol --}}    <div class="py-12 bg-gray-50">
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-red-100 rounded-lg text-[#D40000]">
+                <i data-lucide="receipt" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="font-black text-xl text-gray-800 leading-tight">
+                    {{ __('Riwayat Transaksi') }}
+                </h2>
+                <p class="text-sm text-gray-500">Laporan keuangan dan histori pembayaran.</p>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="py-8 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {{-- === KOLOM KIRI: FILTER === --}}
-                <div class="lg:col-span-1">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-                        <div class="p-4 text-gray-900" x-data="{
-                            range: '{{ request('range', 'daily') }}',
-                            startDate: '{{ request('start_date') }}',
-                            endDate: '{{ request('end_date') }}',
-                            updateFilter() {
-                                if (this.range !== 'custom') {
-                                    this.$refs.filterForm.submit();
-                                } else if (this.startDate && this.endDate) {
-                                    this.$refs.filterForm.submit();
-                                }
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8" 
+                 x-data="{
+                    range: '{{ request('range', 'daily') }}',
+                    startDate: '{{ request('start_date') }}',
+                    endDate: '{{ request('end_date') }}',
+                    setRange(val) {
+                        this.range = val;
+                        // Tunggu sebentar agar x-model update, lalu submit
+                        this.$nextTick(() => {
+                            if (val !== 'custom') {
+                                this.$refs.filterForm.submit();
                             }
-                        }">
-                            <h3 class="text-md font-bold text-gray-800 mb-3">Filter Laporan</h3>
+                        });
+                    },
+                    checkCustomDate() {
+                        if (this.startDate && this.endDate) {
+                            this.$refs.filterForm.submit();
+                        }
+                    }
+                }">
 
-                            <form x-ref="filterForm" action="{{ route('admin.transaksi.index') }}" method="GET">
-                                <div class="space-y-3">
-                                    {{-- Radio Options --}}
-                                    <div class="space-y-2">
-                                        {{-- Hari Ini --}}
-                                        <label class="flex items-center justify-between cursor-pointer group hover:bg-gray-50 p-2 rounded-md transition-colors">
-                                            <span class="text-gray-700 text-sm font-medium group-hover:text-gray-900">Hari Ini</span>
-                                            <input type="radio" name="range" value="daily" x-model="range" @change="updateFilter()"
-                                                class="text-red-600 focus:ring-red-500 border-gray-300">
-                                        </label>
-                                        <hr class="border-gray-100">
+                {{-- === KOLOM KIRI: FILTER SIDEBAR === --}}
+                <div class="lg:col-span-1 space-y-6">
+                    
+                    {{-- Filter Card --}}
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-5 border-b border-gray-50 bg-gray-50/50">
+                            <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                                <i data-lucide="filter" class="w-4 h-4 text-gray-400"></i> Filter Periode
+                            </h3>
+                        </div>
+                        
+                        <form x-ref="filterForm" action="{{ route('admin.transaksi.index') }}" method="GET" class="p-3">
+                            <div class="space-y-1">
+                                
+                                {{-- Hari Ini --}}
+                                <div @click="setRange('daily')" 
+                                     class="cursor-pointer group flex items-center justify-between p-3 rounded-xl transition-all"
+                                     :class="range === 'daily' ? 'bg-red-50 text-[#D40000] border border-red-100' : 'hover:bg-gray-50 text-gray-600 border border-transparent'">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                                        <span class="text-sm font-semibold">Hari Ini</span>
+                                    </div>
+                                    <input type="radio" name="range" value="daily" x-model="range" class="hidden">
+                                    <div x-show="range === 'daily'" class="w-2 h-2 rounded-full bg-[#D40000]"></div>
+                                </div>
 
-                                        {{-- Minggu Ini --}}
-                                        <label class="flex items-center justify-between cursor-pointer group hover:bg-gray-50 p-2 rounded-md transition-colors">
-                                            <span class="text-gray-700 text-sm font-medium group-hover:text-gray-900">1 Minggu</span>
-                                            <input type="radio" name="range" value="weekly" x-model="range" @change="updateFilter()"
-                                                class="text-red-600 focus:ring-red-500 border-gray-300">
-                                        </label>
-                                        <hr class="border-gray-100">
+                                {{-- Minggu Ini --}}
+                                <div @click="setRange('weekly')"
+                                     class="cursor-pointer group flex items-center justify-between p-3 rounded-xl transition-all"
+                                     :class="range === 'weekly' ? 'bg-red-50 text-[#D40000] border border-red-100' : 'hover:bg-gray-50 text-gray-600 border border-transparent'">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="calendar-range" class="w-4 h-4"></i>
+                                        <span class="text-sm font-semibold">1 Minggu Terakhir</span>
+                                    </div>
+                                    <input type="radio" name="range" value="weekly" x-model="range" class="hidden">
+                                    <div x-show="range === 'weekly'" class="w-2 h-2 rounded-full bg-[#D40000]"></div>
+                                </div>
 
-                                        {{-- Bulan Ini --}}
-                                        <label class="flex items-center justify-between cursor-pointer group hover:bg-gray-50 p-2 rounded-md transition-colors">
-                                            <span class="text-gray-700 text-sm font-medium group-hover:text-gray-900">1 Bulan</span>
-                                            <input type="radio" name="range" value="monthly" x-model="range" @change="updateFilter()"
-                                                class="text-red-600 focus:ring-red-500 border-gray-300">
-                                        </label>
-                                        <hr class="border-gray-100">
+                                {{-- Bulan Ini --}}
+                                <div @click="setRange('monthly')"
+                                     class="cursor-pointer group flex items-center justify-between p-3 rounded-xl transition-all"
+                                     :class="range === 'monthly' ? 'bg-red-50 text-[#D40000] border border-red-100' : 'hover:bg-gray-50 text-gray-600 border border-transparent'">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        <span class="text-sm font-semibold">1 Bulan Terakhir</span>
+                                    </div>
+                                    <input type="radio" name="range" value="monthly" x-model="range" class="hidden">
+                                    <div x-show="range === 'monthly'" class="w-2 h-2 rounded-full bg-[#D40000]"></div>
+                                </div>
 
-                                        {{-- Custom Date --}}
-                                        <div>
-                                            <label class="flex items-center justify-between cursor-pointer group hover:bg-gray-50 p-2 rounded-md transition-colors mb-2">
-                                                <span class="text-gray-700 text-sm font-medium group-hover:text-gray-900">Pilih Tanggal</span>
-                                                <input type="radio" name="range" value="custom" x-model="range" @change="updateFilter()"
-                                                    class="text-red-600 focus:ring-red-500 border-gray-300">
-                                            </label>
-
-                                            {{-- Custom Date Inputs --}}
-                                            <div x-show="range === 'custom'" x-transition class="px-2 pb-2">
-                                                <div class="space-y-3">
-                                                    {{-- Tanggal Awal --}}
-                                                    <div>
-                                                        <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1 font-semibold">Dari</p>
-                                                        <div class="relative">
-                                                            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                                                <svg class="h-3.5 w-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                            </div>
-                                                            <input type="date" name="start_date" id="start_date" x-model="startDate" @change="updateFilter()"
-                                                                class="pl-7 block w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm text-xs text-gray-700 py-1.5">
-                                                        </div>
-                                                    </div>
-
-                                                    {{-- Tanggal Akhir --}}
-                                                    <div>
-                                                        <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1 font-semibold">Sampai</p>
-                                                        <div class="relative">
-                                                            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                                                <svg class="h-3.5 w-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                            </div>
-                                                            <input type="date" name="end_date" id="end_date" x-model="endDate" @change="updateFilter()"
-                                                                class="pl-7 block w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm text-xs text-gray-700 py-1.5">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                {{-- Custom Date --}}
+                                <div class="pt-2">
+                                    <div @click="setRange('custom')"
+                                         class="cursor-pointer group flex items-center justify-between p-3 rounded-xl transition-all mb-2"
+                                         :class="range === 'custom' ? 'bg-red-50 text-[#D40000] border border-red-100' : 'hover:bg-gray-50 text-gray-600 border border-transparent'">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+                                            <span class="text-sm font-semibold">Pilih Tanggal</span>
                                         </div>
+                                        <input type="radio" name="range" value="custom" x-model="range" class="hidden">
+                                        <div x-show="range === 'custom'" class="w-2 h-2 rounded-full bg-[#D40000]"></div>
                                     </div>
 
-                                    <div class="pt-3 border-t border-gray-100">
-                                        {{-- === TOMBOL CETAK LAPORAN === --}}
-                                        <a href="{{ route('admin.transaksi.cetak', request()->query()) }}" target="_blank"
-                                            class="flex w-full justify-center items-center px-4 py-2 bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                            </svg>
-                                            Cetak Laporan
-                                        </a>
+                                    <div x-show="range === 'custom'" x-transition class="bg-gray-50 rounded-xl p-3 space-y-3 border border-gray-200 ml-1 mr-1">
+                                        <div>
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Dari</span>
+                                            <input type="date" name="start_date" x-model="startDate" @change="checkCustomDate()"
+                                                   class="mt-1 block w-full rounded-lg border-gray-300 text-xs shadow-sm focus:border-red-500 focus:ring-red-500">
+                                        </div>
+                                        <div>
+                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Sampai</span>
+                                            <input type="date" name="end_date" x-model="endDate" @change="checkCustomDate()"
+                                                   class="mt-1 block w-full rounded-lg border-gray-300 text-xs shadow-sm focus:border-red-500 focus:ring-red-500">
+                                        </div>
+                                        {{-- Tombol Terapkan Manual (Opsional, jika auto-submit gagal) --}}
+                                        <button type="submit" class="w-full bg-white border border-gray-300 text-gray-700 text-xs font-bold py-2 rounded-lg hover:bg-gray-100">
+                                            Terapkan Filter
+                                        </button>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
+
+                    {{-- Tombol Cetak --}}
+                    <a href="{{ route('admin.transaksi.cetak', request()->query()) }}" target="_blank"
+                       class="flex items-center justify-center gap-2 w-full py-3 bg-gray-900 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-black transition-all transform hover:-translate-y-0.5">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        Cetak Laporan PDF
+                    </a>
+
                 </div>
 
                 {{-- === KOLOM KANAN: KONTEN UTAMA === --}}
                 <div class="lg:col-span-3 space-y-6">
-                    {{-- === BLOK TOTAL PENDAPATAN === --}}
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-gray-800">
-                        <div class="p-6 text-gray-900 flex justify-between items-center">
+                    
+                    {{-- TOTAL PENDAPATAN CARD --}}
+                    <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-5">
+                            <i data-lucide="coins" class="w-32 h-32"></i>
+                        </div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between md:items-end gap-4">
                             <div>
-                                <h3 class="text-sm font-semibold text-gray-500 mb-1">Total Pendapatan</h3>
-                                <p class="text-3xl font-bold text-gray-800">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+                                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pendapatan</h3>
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-4xl font-black text-gray-800 tracking-tight">
+                                        Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2 font-medium bg-white px-2 py-1 rounded-md border border-gray-100 inline-block shadow-sm">
+                                    Periode: <span class="text-[#D40000]">{{ ucfirst($filterLabel ?? 'Semua Waktu') }}</span>
+                                </p>
                             </div>
-                            <div class="text-right">
-                                <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2.5 py-0.5 rounded border border-gray-200 uppercase tracking-wide">
-                                    {{ $filterLabel }}
-                                </span>
+                            
+                            {{-- Decorative Icon --}}
+                            <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 shadow-sm">
+                                <i data-lucide="trending-up" class="w-6 h-6"></i>
                             </div>
                         </div>
                     </div>
 
-                    {{-- === TABEL RIWAYAT TRANSAKSI === --}}
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-                        <div class="p-6 text-gray-900">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Daftar Transaksi</h3>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    {{-- Header Tabel --}}
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Transaksi</th>
-                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pelanggan</th>
-                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tgl. Transaksi</th>
-                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Bayar</th>
-                                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @forelse ($transaksis as $transaksi)
-                                        <tr class="hover:bg-gray-50 transition-colors">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                <a href="{{ route('admin.pesanan.show', $transaksi->pesanan_id) }}" class="text-red-600 hover:text-red-800 font-bold hover:underline">
+                    {{-- TABEL DAFTAR TRANSAKSI --}}
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-50 bg-white flex justify-between items-center">
+                            <h3 class="text-lg font-bold text-gray-800">Daftar Transaksi</h3>
+                            <div class="text-xs text-gray-400 font-medium">
+                                Menampilkan {{ $transaksis->count() }} data terbaru
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-50">
+                                <thead class="bg-gray-50/50">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Pelanggan</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Waktu</th>
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Nominal</th>
+                                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-50">
+                                    @forelse ($transaksis as $transaksi)
+                                        <tr class="hover:bg-gray-50 transition-colors group">
+                                            {{-- ID --}}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <a href="{{ route('admin.pesanan.show', $transaksi->pesanan_id) }}" 
+                                                   class="font-mono text-sm font-bold text-[#D40000] bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition-colors">
                                                     #{{ $transaksi->id }}
                                                 </a>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $transaksi->pesanan->user->name ?? 'N/A' }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('d M Y') }} <span class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('H:i') }}</span></td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-700">Rp {{ number_format($transaksi->total_bayar, 0, ',', '.') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+
+                                            {{-- Pelanggan --}}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                                                        {{ substr($transaksi->pesanan->user->name ?? '?', 0, 1) }}
+                                                    </div>
+                                                    <span class="text-sm font-bold text-gray-700">
+                                                        {{ $transaksi->pesanan->user->name ?? 'Guest / Offline' }}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {{-- Waktu --}}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-medium text-gray-900">
+                                                        {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('d M Y') }}
+                                                    </span>
+                                                    <span class="text-xs text-gray-400">
+                                                        {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('H:i') }} WIB
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {{-- Nominal --}}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="text-sm font-bold text-gray-900">
+                                                    Rp {{ number_format($transaksi->total_bayar, 0, ',', '.') }}
+                                                </span>
+                                            </td>
+
+                                            {{-- Status --}}
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
                                                 @if($transaksi->status_pembayaran == 'paid')
-                                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-50 text-green-700 border border-green-200">
-                                                        Lunas
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-100">
+                                                        <i data-lucide="check-circle-2" class="w-3 h-3"></i> Lunas
                                                     </span>
                                                 @else
-                                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-50 text-red-700 border border-red-200">
-                                                        {{ ucfirst($transaksi->status_pembayaran) }}
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-100">
+                                                        <i data-lucide="x-circle" class="w-3 h-3"></i> {{ ucfirst($transaksi->status_pembayaran) }}
                                                     </span>
                                                 @endif
                                             </td>
                                         </tr>
-                                        @empty
+                                    @empty
                                         <tr>
-                                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                            <td colspan="5" class="px-6 py-12 text-center">
                                                 <div class="flex flex-col items-center justify-center">
-                                                    <svg class="h-10 w-10 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
-                                                    <p class="text-sm">Tidak ada transaksi untuk periode ini.</p>
+                                                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-gray-300">
+                                                        <i data-lucide="file-x" class="w-8 h-8"></i>
+                                                    </div>
+                                                    <p class="text-sm font-medium text-gray-500">Tidak ada transaksi ditemukan.</p>
+                                                    <p class="text-xs text-gray-400 mt-1">Coba ubah filter periode waktu Anda.</p>
                                                 </div>
                                             </td>
                                         </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="mt-4">
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Pagination --}}
+                        @if($transaksis->hasPages())
+                            <div class="p-4 border-t border-gray-50 bg-gray-50/50">
                                 {{ $transaksis->withQueryString()->links() }}
                             </div>
-                        </div>
+                        @endif
                     </div>
+
                 </div>
             </div>
         </div>
-    </div> </x-app-layout>
+    </div>
+</x-app-layout>

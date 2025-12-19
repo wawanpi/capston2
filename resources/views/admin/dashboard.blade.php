@@ -1,14 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                    {{ __('Dashboard Admin') }}
+                <h2 class="font-black text-2xl text-gray-800 tracking-tight flex items-center gap-2">
+                    Dashboard <span class="text-[#D40000]">Overview</span>
                 </h2>
-                <p class="text-sm text-gray-600 mt-1">Ringkasan performa bisnis hari ini</p>
+                <p class="text-sm text-gray-500 mt-1">Pantau performa bisnis Burjo Minang secara real-time.</p>
             </div>
-            <div class="text-sm font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200">
-                {{ now()->format('l, d F Y') }}
+            
+            <div class="flex items-center gap-3">
+                <div class="hidden md:flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wide">Live Data</span>
+                </div>
+                <div class="text-sm font-medium text-gray-600 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-4 h-4 text-[#D40000]"></i>
+                    {{ now()->format('d M Y') }}
+                </div>
             </div>
         </div>
     </x-slot>
@@ -16,160 +24,148 @@
     <div class="py-8 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
-            {{-- BAGIAN 1: STAT CARDS (Sama seperti kode Anda sebelumnya) --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-red-600 p-5 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pendapatan Hari Ini</h3>
-                            <p class="text-2xl font-bold text-gray-900 mt-2">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+            {{-- BAGIAN 1: MODERN STAT CARDS --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                {{-- Card 1: Pendapatan --}}
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-red-100 text-[#D40000] rounded-2xl">
+                                <i data-lucide="wallet" class="w-6 h-6"></i>
+                            </div>
                         </div>
-                        <div class="p-2 bg-red-50 rounded-lg text-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
+                        <p class="text-sm font-medium text-gray-500">Pendapatan Hari Ini</p>
+                        <h3 class="text-2xl font-black text-gray-800 mt-1">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Total transaksi lunas</span>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-gray-800 p-5 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pesanan Baru</h3>
-                            <p class="text-2xl font-bold text-gray-900 mt-2">{{ $jumlahPesananBaru }}</p>
+                {{-- Card 2: Pesanan Baru --}}
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-yellow-100 text-yellow-700 rounded-2xl">
+                                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                            </div>
+                            @if($jumlahPesananBaru > 0)
+                                <span class="flex items-center text-xs font-bold text-white bg-red-500 px-2 py-1 rounded-lg animate-pulse shadow-sm shadow-red-200">
+                                    New
+                                </span>
+                            @endif
                         </div>
-                        <div class="p-2 bg-gray-100 rounded-lg text-gray-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                        </div>
+                        <p class="text-sm font-medium text-gray-500">Pesanan Baru</p>
+                        <h3 class="text-2xl font-black text-gray-800 mt-1">{{ $jumlahPesananBaru }}</h3>
+                        <p class="text-xs text-gray-400 mt-1">Perlu konfirmasi segera</p>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Menunggu konfirmasi</span>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-red-600 p-5 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Unit Terjual</h3>
-                            <p class="text-2xl font-bold text-gray-900 mt-2">{{ $totalUnitTerjual }}</p>
+                {{-- Card 3: Unit Terjual --}}
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl">
+                                <i data-lucide="package-check" class="w-6 h-6"></i>
+                            </div>
                         </div>
-                        <div class="p-2 bg-red-50 rounded-lg text-red-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                        </div>
+                        <p class="text-sm font-medium text-gray-500">Total Porsi Terjual</p>
+                        <h3 class="text-2xl font-black text-gray-800 mt-1">{{ $totalUnitTerjual }} <span class="text-sm font-normal text-gray-400">Porsi</span></h3>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Porsi menu terjual hari ini</span>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border-l-4 border-gray-800 p-5 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pengguna Baru</h3>
-                            <p class="text-2xl font-bold text-gray-900 mt-2">{{ $jumlahPenggunaBaru }}</p>
+                {{-- Card 4: Pengguna Baru --}}
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-purple-100 text-purple-600 rounded-2xl">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
                         </div>
-                        <div class="p-2 bg-gray-100 rounded-lg text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                        </div>
+                        <p class="text-sm font-medium text-gray-500">Pengguna Baru</p>
+                        <h3 class="text-2xl font-black text-gray-800 mt-1">{{ $jumlahPenggunaBaru }}</h3>
                     </div>
-                    <span class="text-xs text-gray-400 mt-2 block">Registrasi hari ini</span>
                 </div>
             </div>
             
-            {{-- BAGIAN 2: CHART & QUICK ACTIONS (Sama seperti kode Anda) --}}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white shadow-sm rounded-xl border border-gray-200 p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold text-gray-800 border-l-4 border-red-600 pl-3">Monitoring Ketersediaan Harian</h3>
-                        <div class="flex items-center bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                            <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse mr-2"></div>
-                            <span class="text-xs font-bold text-red-700">Hampir Habis</span>
+            {{-- BAGIAN 2: CHART & STOCK ALERT --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                {{-- CHART SECTION --}}
+                <div class="lg:col-span-2 bg-white shadow-sm rounded-3xl border border-gray-100 p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-gray-400"></i>
+                                Stok Menipis
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">Monitoring real-time ketersediaan menu harian</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">
+                            <div class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+                            <span class="text-xs font-bold text-red-700">Perlu Restock</span>
                         </div>
                     </div>
-                    <div class="relative h-72">
+                    <div class="relative h-80 w-full">
                         <canvas id="jumlahChart"></canvas>
                     </div>
                 </div>
 
-                <!-- <div class="space-y-6">
-                     {{-- Notifikasi Succes jika ada --}}
-                    @if(session('success'))
-                        <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
-                            <p class="font-bold">Sukses!</p>
-                            <p class="text-sm">{{ session('success') }}</p>
-                        </div>
-                    @endif
-
-                    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Notifikasi</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 mt-1">
-                                    <div class="w-2 h-2 bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.5)]"></div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-800">Kuota Menipis</p>
-                                    <p class="text-xs text-gray-500 mt-0.5">{{ count($menuHampirHabis) }} menu sisa porsi sedikit</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 mt-1">
-                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-800">Pesanan Masuk</p>
-                                    <p class="text-xs text-gray-500 mt-0.5">{{ $jumlahPesananBaru }} pesanan baru</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                <!-- </div> -->
-            </div>
-            
-            {{-- BAGIAN 3: TABEL --}}
-            <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-gray-800">Menu Segera Habis</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-900 text-white">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Nama Menu</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kategori</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Sisa Porsi</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                {{-- MENU SEGERA HABIS (SIDEBAR WIDGET) --}}
+                <div class="bg-white shadow-sm rounded-3xl border border-gray-100 flex flex-col h-full overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50/30">
+                        <h3 class="text-lg font-bold text-gray-800">Menu Segera Habis</h3>
+                        <p class="text-sm text-gray-500">Prioritas restock hari ini</p>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto max-h-[400px] p-4">
+                        <div class="space-y-3">
                             @forelse($menuHampirHabis->take(5) as $item)
-                            <tr class="hover:bg-red-50 transition-colors">
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $item->menu->namaMenu }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $item->menu->kategori ?? '-' }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-800">{{ $item->jumlah_saat_ini }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    @if($item->jumlah_saat_ini <= 5)
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">Kritis</span>
-                                    @elseif($item->jumlah_saat_ini <= 10)
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Sedikit</span>
-                                    @else
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">Aman</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                                    {{-- PERUBAHAN LINK DI SINI: Mengarah ke route editKuota --}}
+                                <div class="flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-100 hover:border-red-100 hover:shadow-sm transition-all group">
+                                    <div class="flex items-center gap-4">
+                                        {{-- Icon Kategori --}}
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg
+                                            {{ strtolower($item->menu->kategori) == 'makanan' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600' }}">
+                                            {{ substr($item->menu->namaMenu, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-[#D40000] transition-colors">{{ $item->menu->namaMenu }}</h4>
+                                            <p class="text-xs text-gray-500">{{ $item->menu->kategori ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-right">
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Sisa</p>
+                                        <p class="text-xl font-black {{ $item->jumlah_saat_ini <= 5 ? 'text-[#D40000]' : 'text-yellow-500' }}">
+                                            {{ $item->jumlah_saat_ini }}
+                                        </p>
+                                    </div>
+                                    
                                     <a href="{{ route('admin.menus.editKuota', $item->menu->id) }}" 
-                                       class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
-                                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                       </svg>
-                                       Tambah Kuota
+                                       class="ml-2 p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-[#D40000] hover:text-white transition-colors"
+                                       title="Tambah Kuota">
+                                        <i data-lucide="plus" class="w-5 h-5"></i>
                                     </a>
-                                </td>
-                            </tr>
+                                </div>
                             @empty
-                            <tr>
-                                <td colspan="5" class="px-4 py-4 text-center text-sm text-gray-500">Ketersediaan menu aman</td>
-                            </tr>
+                                <div class="flex flex-col items-center justify-center h-64 text-center p-6">
+                                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-4 animate-bounce">
+                                        <i data-lucide="check-circle" class="w-8 h-8"></i>
+                                    </div>
+                                    <p class="text-base font-bold text-gray-800">Stok Aman!</p>
+                                    <p class="text-sm text-gray-500 mt-1">Tidak ada menu yang menipis saat ini.</p>
+                                </div>
                             @endforelse
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border-t border-gray-100 bg-gray-50/50">
+                        <a href="{{ route('admin.menus.index') }}" class="flex items-center justify-center gap-2 w-full py-3 text-sm font-bold text-gray-600 hover:text-[#D40000] bg-white rounded-xl border border-gray-200 hover:border-red-100 transition-all shadow-sm">
+                            Lihat Semua Menu <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -180,6 +176,8 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                lucide.createIcons();
+
                 const chartData = @json($menuHampirHabis);
                 const labels = chartData.length 
                     ? chartData.map(item => item.menu ? item.menu.namaMenu : 'Item Terhapus') 
@@ -189,10 +187,11 @@
                     ? chartData.map(item => item.jumlah_saat_ini) 
                     : [0];
                 
+                // Palette Warna Modern
                 const backgroundColors = data.map(val => {
-                    if (val <= 5) return '#DC2626'; 
-                    if (val <= 10) return '#EAB308';
-                    return '#4B5563';
+                    if (val <= 5) return '#EF4444'; // Red-500
+                    if (val <= 10) return '#F59E0B'; // Amber-500
+                    return '#10B981'; // Emerald-500
                 });
 
                 const ctx = document.getElementById('jumlahChart').getContext('2d');
@@ -205,30 +204,46 @@
                             label: 'Sisa Porsi',
                             data: data, 
                             backgroundColor: backgroundColors,
-                            borderRadius: 4,
-                            barThickness: chartData.length < 3 ? 50 : 'flex',
+                            borderRadius: 8, // Bar lebih bulat
+                            borderSkipped: false,
+                            barThickness: 40,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                suggestedMax: 10,
-                                ticks: { stepSize: 1, precision: 0 },
-                                grid: { drawBorder: false }
-                            },
-                            x: { grid: { display: false } }
-                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: '#111827',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                padding: 10,
-                                cornerRadius: 6
+                                backgroundColor: '#1F2937',
+                                titleColor: '#F3F4F6',
+                                bodyColor: '#F3F4F6',
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: 15,
+                                grid: {
+                                    color: '#F3F4F6',
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    font: { family: "'Inter', sans-serif", size: 11 },
+                                    color: '#6B7280'
+                                },
+                                border: { display: false }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { family: "'Inter', sans-serif", size: 11, weight: 'bold' },
+                                    color: '#374151'
+                                },
+                                border: { display: false }
                             }
                         }
                     }

@@ -14,36 +14,41 @@ use Illuminate\Support\Carbon;
 class PesananController extends Controller
 {
     /**
-     * Menampilkan halaman daftar semua pesanan dengan PRIORITAS KERJA.
-     * Urutan: Pending -> Processing -> Completed -> Cancelled.
+     * Menampilkan halaman daftar semua pesanan dengan FILTER & SEARCH.
+     * Mendukung pencarian ID, Nama, Catatan, dan Filter Status.
      */
     public function index(Request $request)
     {
-        // Ambil input pencarian dari URL (?search=...)
-        $search = $request->input('search');
+        // 1. Inisialisasi Query dasar dengan relasi
+        $query = Pesanan::with(['user', 'details.menu', 'transaksi']);
 
-        $pesanans = Pesanan::with(['user', 'details.menu', 'transaksi'])
-            // LOGIKA PENCARIAN (Tambahan)
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    // Cari berdasarkan ID Pesanan
-                    $q->where('id', 'like', "%{$search}%")
-                      // ATAU Cari berdasarkan Nama User (Relasi)
-                      // ATAU Cari berdasarkan Catatan Pelanggan (untuk pesanan Offline)
-                      ->orWhereHas('user', function ($subQ) use ($search) {
-                          $subQ->where('name', 'like', "%{$search}%");
-                      })
-                      ->orWhere('catatan_pelanggan', 'like', "%{$search}%");
-                });
-            })
-            
-            // Sorting Prioritas (Tetap sama)
+        // 2. LOGIKA PENCARIAN (Search Bar)
+        // Mencari berdasarkan ID Pesanan, Nama User, atau Catatan Pelanggan (Offline)
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($subQ) use ($search) {
+                      $subQ->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhere('catatan_pelanggan', 'like', "%{$search}%");
+            });
+        }
+
+        // 3. LOGIKA FILTER STATUS (Dropdown)
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        // 4. SORTING & PAGINATION
+        $pesanans = $query
+            // Urutkan status: Pending -> Processing -> Completed -> Cancelled
             ->orderByRaw("FIELD(status, 'pending', 'processing', 'completed', 'cancelled')")
+            // Lalu urutkan berdasarkan waktu terbaru
             ->latest()
-            
-            // Pagination dengan withQueryString agar parameter search tidak hilang saat pindah halaman
             ->paginate(10)
-            ->withQueryString();
+            // Pastikan parameter search & status tetap ada di link pagination
+            ->withQueryString(); 
         
         return view('admin.pesanan.index', compact('pesanans'));
     }

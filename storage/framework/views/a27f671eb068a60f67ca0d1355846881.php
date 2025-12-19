@@ -9,248 +9,267 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
-            <?php echo e(__('Kelola Pesanan')); ?> 📋
-        </h2>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-red-100 rounded-lg text-[#D40000]">
+                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="font-black text-2xl text-gray-800 tracking-tight">
+                        <?php echo e(__('Kelola Pesanan')); ?>
+
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Pantau transaksi dan status pesanan masuk.</p>
+                </div>
+            </div>
+            
+            
+            <button onclick="document.getElementById('modalOffline').classList.remove('hidden')" 
+                    class="inline-flex items-center px-5 py-2.5 bg-[#D40000] hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-200 transition-all transform hover:-translate-y-0.5 group">
+                <i data-lucide="plus-circle" class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform"></i>
+                Pesanan Offline Baru
+            </button>
+        </div>
      <?php $__env->endSlot(); ?>
 
-    <div class="py-12 bg-gray-50">
+    
+    <div class="py-8 bg-gray-50 min-h-screen" x-data="{ searchQuery: '' }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-                <div class="p-6 text-gray-900">
+            
+            
+            <div class="bg-white p-4 rounded-t-3xl border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm mt-6">
+                
+                
+                <div class="relative w-full md:w-96">
+                    <input type="text" 
+                           x-model="searchQuery"
+                           placeholder="Cari ID / Nama Pelanggan..." 
+                           class="w-full pl-10 pr-10 py-2.5 rounded-xl border-gray-200 focus:border-red-500 focus:ring-red-500 text-sm bg-gray-50 focus:bg-white transition-colors shadow-inner">
                     
-                    
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <div class="flex gap-2 w-full md:w-1/2">
-                            <form method="GET" action="<?php echo e(route('admin.pesanan.index')); ?>" class="flex gap-2 w-full">
-                                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari ID Pesanan atau Nama Pelanggan..." class="w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm text-sm">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition-colors">Cari</button>
-                                <?php if(request('search')): ?>
-                                    <a href="<?php echo e(route('admin.pesanan.index')); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition-colors">Reset</a>
-                                <?php endif; ?>
-                            </form>
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            
-                            <button onclick="document.getElementById('modalOffline').classList.remove('hidden')" 
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap">
-                                + Pesanan Baru (Offline)
-                            </button>
-
-                            <div class="hidden md:flex gap-4 text-xs md:text-sm text-gray-600 border-l pl-4 border-gray-300">
-                                <div class="flex items-center"><span class="w-3 h-3 bg-yellow-100 border border-yellow-400 rounded-full mr-1.5"></span> Pending</div>
-                                <div class="flex items-center"><span class="w-3 h-3 bg-blue-100 border border-blue-400 rounded-full mr-1.5"></span> Processing</div>
-                            </div>
-                        </div>
+                    <div class="absolute left-3 top-3 text-gray-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
                     </div>
 
                     
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-800">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Pelanggan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Layanan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Bukti</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Pembayaran</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <?php $__empty_1 = true; $__currentLoopData = $pesanans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pesanan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <tr class="<?php echo e($pesanan->status == 'pending' ? 'bg-yellow-50' : ($pesanan->status == 'processing' ? 'bg-blue-50' : 'hover:bg-gray-50')); ?> transition-colors duration-150">
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            #<?php echo e($pesanan->id); ?>
+                    <button x-show="searchQuery.length > 0" 
+                            @click="searchQuery = ''" 
+                            class="absolute right-3 top-2.5 text-gray-400 hover:text-red-500 transition-colors"
+                            style="display: none;">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                
+                
+                <form method="GET" action="<?php echo e(route('admin.pesanan.index')); ?>">
+                    <select name="status" onchange="this.form.submit()" class="rounded-xl border-gray-200 text-sm focus:border-red-500 focus:ring-red-500 bg-gray-50 w-full md:w-auto">
+                        <option value="">Semua Status</option>
+                        <option value="pending" <?php echo e(request('status') == 'pending' ? 'selected' : ''); ?>>Pending</option>
+                        <option value="processing" <?php echo e(request('status') == 'processing' ? 'selected' : ''); ?>>Processing</option>
+                        <option value="completed" <?php echo e(request('status') == 'completed' ? 'selected' : ''); ?>>Completed</option>
+                        <option value="cancelled" <?php echo e(request('status') == 'cancelled' ? 'selected' : ''); ?>>Cancelled</option>
+                    </select>
+                </form>
 
-                                        </td>
+                
+                <div class="hidden md:flex items-center gap-4 text-xs font-medium text-gray-500 border-l border-gray-200 pl-4">
+                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Pending</div>
+                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-blue-400 rounded-full"></div> Proses</div>
+                    <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-green-400 rounded-full"></div> Selesai</div>
+                </div>
+            </div>
 
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            <?php if(str_contains($pesanan->catatan_pelanggan, 'OFFLINE')): ?>
-                                                
-                                                
-                                                <div class="font-bold text-blue-700">
-                                                    <?php echo e(str_replace('OFFLINE - ', '', $pesanan->catatan_pelanggan)); ?>
+            <div class="bg-white overflow-hidden shadow-sm rounded-b-3xl border border-gray-100 border-t-0">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-100">
+                        <thead class="bg-gray-50/50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">ID & Waktu</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Pelanggan</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Layanan</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Total</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-100">
+                            <?php $__empty_1 = true; $__currentLoopData = $pesanans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pesanan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <?php
+                                    // Siapkan data string untuk pencarian
+                                    $searchString = strtolower($pesanan->id . ' ' . ($pesanan->user->name ?? '') . ' ' . $pesanan->catatan_pelanggan);
+                                ?>
 
-                                                </div>
-                                                <div class="text-xs text-gray-400">
-                                                    <span class="bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-[10px]">OFFLINE</span>
-                                                    via Kasir
-                                                </div>
-                                            <?php else: ?>
-                                                
-                                                <div class="font-medium text-gray-900"><?php echo e($pesanan->user->name); ?></div>
-                                                <div class="text-xs text-gray-500"><?php echo e($pesanan->created_at->diffForHumans()); ?></div>
-                                            <?php endif; ?>
-                                        </td>
-                                        
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <div class="font-bold">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></div>
-                                            <div class="text-xs text-gray-500"><?php echo e($pesanan->details->count()); ?> Menu</div>
-                                        </td>
-                                        
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
-                                                <div class="flex flex-col items-start gap-1">
-                                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-800 text-white border border-gray-600 shadow-sm">
-                                                        🍽️ Dine-in
-                                                    </span>
-                                                    <div class="flex items-center text-xs font-semibold text-gray-700 ml-0.5">
-                                                        <?php echo e($pesanan->jumlah_tamu); ?> Orang
-                                                    </div>
-                                                </div>
-                                            <?php else: ?>
-                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-300 shadow-sm">
-                                                    🥡 Take Away
-                                                </span>
-                                            <?php endif; ?>
-                                        </td>
-                                        
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm
-                                                <?php if($pesanan->status == 'pending'): ?> bg-yellow-100 text-yellow-800 border border-yellow-400
-                                                <?php elseif($pesanan->status == 'processing'): ?> bg-blue-100 text-blue-800 border border-blue-400
-                                                <?php elseif($pesanan->status == 'completed'): ?> bg-green-100 text-green-800 border border-green-400
-                                                <?php elseif($pesanan->status == 'cancelled'): ?> bg-red-100 text-red-800 border border-red-400
-                                                <?php endif; ?>">
-                                                <?php echo e(strtoupper($pesanan->status)); ?>
+                                
+                                <tr class="hover:bg-gray-50/80 transition-colors group"
+                                    x-show="!searchQuery || '<?php echo e($searchString); ?>'.includes(searchQuery.toLowerCase())"
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="opacity-0 transform scale-95"
+                                    x-transition:enter-end="opacity-100 transform scale-100">
+                                    
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex flex-col">
+                                            <span class="font-mono text-sm font-bold text-gray-900">#<?php echo e($pesanan->id); ?></span>
+                                            <span class="text-xs text-gray-400 mt-0.5"><?php echo e($pesanan->created_at->format('d M, H:i')); ?></span>
+                                        </div>
+                                    </td>
 
-                                            </span>
-                                        </td>
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-9 w-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-xs mr-3 shadow-sm border border-gray-100">
+                                                <?php if(str_contains($pesanan->catatan_pelanggan, 'OFFLINE')): ?>
+                                                    <i data-lucide="store" class="w-4 h-4 text-blue-600"></i>
+                                                <?php else: ?>
+                                                    <?php echo e(substr($pesanan->user->name ?? 'G', 0, 1)); ?>
 
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <?php if($pesanan->bukti_bayar): ?>
-                                                <a href="<?php echo e(asset($pesanan->bukti_bayar)); ?>" target="_blank" class="group relative block w-10 h-10">
-                                                    <img src="<?php echo e(asset($pesanan->bukti_bayar)); ?>" 
-                                                         alt="Bukti" 
-                                                         class="w-full h-full object-cover rounded-md border border-gray-300 shadow-sm group-hover:scale-150 transition-transform duration-200 z-10 relative">
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="text-xs text-gray-400 italic">No File</span>
-                                            <?php endif; ?>
-                                        </td>
-
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <?php if($pesanan->transaksi): ?>
-                                                
-                                                <span class="px-2 inline-flex text-xs leading-5 font-bold rounded-full bg-green-100 text-green-800 border border-green-300">
-                                                    LUNAS ✅
-                                                </span>
-                                                <div class="text-xs text-gray-500 mt-0.5"><?php echo e($pesanan->transaksi->metode_pembayaran); ?></div>
-                                            <?php else: ?>
-                                                
-                                                <span class="px-2 inline-flex text-xs leading-5 font-bold rounded-full bg-orange-100 text-orange-800 border border-orange-300 whitespace-nowrap">
-                                                    PERLU VERIFIKASI ⏳
-                                                </span>
-                                                
-                                                
-                                                <?php if($pesanan->metode_pembayaran): ?>
-                                                    <div class="mt-1">
-                                                        <span class="text-[10px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 inline-block">
-                                                            Via: <?php echo e($pesanan->metode_pembayaran); ?>
-
-                                                        </span>
-                                                    </div>
                                                 <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-                                        
-                                        
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="<?php echo e(route('admin.pesanan.show', $pesanan->id)); ?>" class="inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 transition ease-in-out duration-150">
-                                                Detail
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <tr>
-                                        <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                                            <div class="flex flex-col items-center justify-center">
-                                                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                                                <p class="text-lg font-medium">Belum ada pesanan masuk.</p>
                                             </div>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                        
-                        <div class="mt-4">
-                            <?php echo e($pesanans->links()); ?>
+                                            <div>
+                                                <?php if(str_contains($pesanan->catatan_pelanggan, 'OFFLINE')): ?>
+                                                    <div class="text-sm font-bold text-gray-900"><?php echo e(str_replace('OFFLINE - ', '', $pesanan->catatan_pelanggan)); ?></div>
+                                                    <div class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded inline-block mt-0.5">OFFLINE</div>
+                                                <?php else: ?>
+                                                    <div class="text-sm font-bold text-gray-900"><?php echo e($pesanan->user->name); ?></div>
+                                                    <div class="text-xs text-gray-400">Online Order</div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td>
 
-                        </div>
-                    </div>
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?php if($pesanan->tipe_layanan == 'Dine-in'): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-100">
+                                                <i data-lucide="utensils" class="w-3 h-3"></i> Dine-in
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-50 text-orange-700 border border-orange-100">
+                                                <i data-lucide="shopping-bag" class="w-3 h-3"></i> Take Away
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-black text-gray-900">Rp <?php echo e(number_format($pesanan->total_bayar, 0, ',', '.')); ?></div>
+                                        <div class="text-xs text-gray-400"><?php echo e($pesanan->details->count()); ?> Item</div>
+                                    </td>
+                                    
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?php if($pesanan->status == 'pending'): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Pending
+                                            </span>
+                                        <?php elseif($pesanan->status == 'processing'): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                                                <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Proses
+                                            </span>
+                                        <?php elseif($pesanan->status == 'completed'): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+                                                <i data-lucide="check-circle" class="w-3 h-3"></i> Selesai
+                                            </span>
+                                        <?php elseif($pesanan->status == 'cancelled'): ?>
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                                <i data-lucide="x-circle" class="w-3 h-3"></i> Batal
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="<?php echo e(route('admin.pesanan.show', $pesanan->id)); ?>" 
+                                           class="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full text-gray-400 hover:text-[#D40000] hover:border-red-200 hover:bg-red-50 transition-all shadow-sm group/btn">
+                                            <i data-lucide="chevron-right" class="w-5 h-5 group-hover/btn:translate-x-0.5 transition-transform"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <tr>
+                                    <td colspan="6" class="px-6 py-16 text-center">
+                                        <div class="mx-auto w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                            <i data-lucide="inbox" class="w-10 h-10 text-gray-300"></i>
+                                        </div>
+                                        <h3 class="text-gray-900 font-bold text-lg">Belum ada pesanan</h3>
+                                        <p class="text-gray-500 text-sm mt-1">Pesanan masuk akan muncul di sini.</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+                
+                
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                    <?php echo e($pesanans->appends(request()->query())->links()); ?>
+
                 </div>
             </div>
         </div>
     </div>
 
     
-    <div id="modalOffline" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('modalOffline').classList.add('hidden')"></div>
-            
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form action="<?php echo e(route('admin.pesanan.storeOffline')); ?>" method="POST">
-                    <?php echo csrf_field(); ?>
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
+    <div id="modalOffline" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('modalOffline').classList.add('hidden')"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100">
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <div class="bg-red-100 p-1.5 rounded-lg">
+                                <i data-lucide="store" class="w-5 h-5 text-[#D40000]"></i>
                             </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Buat Pesanan Offline</h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-500 mb-4">
-                                        Masukkan nama pelanggan (opsional) untuk memulai pesanan baru di tempat.
-                                    </p>
-                                    
-                                    <div class="mb-4">
-                                        <label for="nama_pelanggan" class="block text-sm font-medium text-gray-700 mb-1">Nama Pelanggan / Nomor Meja</label>
-                                        <input type="text" name="nama_pelanggan" id="nama_pelanggan" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Contoh: Budi (Meja 5)">
+                            Pesanan Offline Baru
+                        </h3>
+                        <button onclick="document.getElementById('modalOffline').classList.add('hidden')" class="text-gray-400 hover:text-red-500 transition rounded-full p-1 hover:bg-red-50">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <form action="<?php echo e(route('admin.pesanan.storeOffline')); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <div class="px-6 py-6 space-y-6">
+                            <div>
+                                <label for="nama_pelanggan" class="block text-sm font-bold text-gray-700 mb-1">Nama Pelanggan / Meja</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
                                     </div>
-
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Layanan</label>
-                                        <div class="flex gap-6">
-                                            <div class="flex items-center">
-                                                <input id="offline_dine_in" name="tipe_layanan" type="radio" value="Dine-in" class="focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300" checked>
-                                                <label for="offline_dine_in" class="ml-2 block text-sm text-gray-700">Makan di Tempat</label>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <input id="offline_take_away" name="tipe_layanan" type="radio" value="Take Away" class="focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300">
-                                                <label for="offline_take_away" class="ml-2 block text-sm text-gray-700">Bungkus</label>
-                                            </div>
+                                    <input type="text" name="nama_pelanggan" id="nama_pelanggan" 
+                                           class="pl-10 w-full rounded-xl border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm shadow-sm transition-colors" 
+                                           placeholder="Contoh: Budi (Meja 5)">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-3">Tipe Layanan</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="cursor-pointer relative">
+                                        <input type="radio" name="tipe_layanan" value="Dine-in" class="peer sr-only" checked>
+                                        <div class="p-4 rounded-xl border-2 border-gray-100 bg-white peer-checked:border-[#D40000] peer-checked:bg-red-50 transition-all hover:border-red-200 h-full flex flex-col items-center justify-center gap-2 text-center">
+                                            <i data-lucide="utensils" class="w-6 h-6 text-gray-400 peer-checked:text-[#D40000]"></i>
+                                            <span class="text-sm font-bold text-gray-600 peer-checked:text-[#D40000]">Makan di Tempat</span>
                                         </div>
-                                    </div>
+                                    </label>
+                                    <label class="cursor-pointer relative">
+                                        <input type="radio" name="tipe_layanan" value="Take Away" class="peer sr-only">
+                                        <div class="p-4 rounded-xl border-2 border-gray-100 bg-white peer-checked:border-[#D40000] peer-checked:bg-red-50 transition-all hover:border-red-200 h-full flex flex-col items-center justify-center gap-2 text-center">
+                                            <i data-lucide="shopping-bag" class="w-6 h-6 text-gray-400 peer-checked:text-[#D40000]"></i>
+                                            <span class="text-sm font-bold text-gray-600 peer-checked:text-[#D40000]">Bungkus</span>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                            Buat Pesanan
-                        </button>
-                        <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('modalOffline').classList.add('hidden')">
-                            Batal
-                        </button>
-                    </div>
-                </form>
+                        <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-b-2xl">
+                            <button type="button" class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors" onclick="document.getElementById('modalOffline').classList.add('hidden')">
+                                Batal
+                            </button>
+                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-xl border border-transparent bg-[#D40000] px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all transform active:scale-95">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                Buat Pesanan
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -1,94 +1,153 @@
-<x-app-layout> {{-- Sesuaikan dengan layout admin Anda jika berbeda --}}
+<x-app-layout>
     <x-slot name="header">
-        {{-- Tipografi Header: Dibuat lebih tebal dan tegas --}}
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
-            {{ __('Manajemen User') }}
-        </h2>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-red-100 rounded-lg text-[#D40000]">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="font-black text-xl text-gray-800 leading-tight">
+                        {{ __('Manajemen User') }}
+                    </h2>
+                    <p class="text-sm text-gray-500">Kelola data pengguna dan hak akses sistem.</p>
+                </div>
+            </div>
+            
+            <a href="{{ route('admin.users.create') }}" 
+               class="inline-flex items-center justify-center px-5 py-2.5 bg-[#D40000] text-white font-bold text-sm rounded-xl shadow-lg shadow-red-200 hover:bg-red-700 hover:-translate-y-0.5 transition-all gap-2">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                Tambah User Baru
+            </a>
+        </div>
     </x-slot>
 
-    {{-- Latar belakang abu-abu agar kartu putih menonjol --}}
-    <div class="py-12 bg-gray-50">
+    <div class="py-8 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Tombol Tambah User: Diubah dari Hijau ke Merah (Primary Action) --}}
-            <div class="mb-4">
-                <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition-colors">
-                    Tambah User Baru
-                </a>
-            </div>
-
-            {{-- Pesan Sukses: Diubah dari Hijau ke Merah-muda (Brand) --}}
+            
+            {{-- Notifikasi Sukses --}}
             @if ($message = Session::get('success'))
-                <div class="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ $message }}</span>
-                </div>
-            @endif
-             {{-- Pesan Error: Sudah Merah (On-Brand) --}}
-             @if ($message = Session::get('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ $message }}</span>
+                <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-r shadow-sm mb-6 flex justify-between items-center" role="alert">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        <span>{{ $message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-green-500 hover:text-green-700"><i data-lucide="x" class="w-4 h-4"></i></button>
                 </div>
             @endif
 
-            {{-- Tabel User: Kontainer diberi border agar konsisten --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
-                <div class="p-6 text-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            {{-- Header Tabel: Diubah menjadi Hitam (Sesuai Footer) --}}
-                            <thead class="bg-gray-800">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">No</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Nama</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Email</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider">Role</th>
-                                    <th scope="col" class="px-6 py-3 text-center text-xs font-semibold text-gray-200 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse ($users as $key => $user)
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $users->firstItem() + $key }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $user->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @if(!empty($user->getRoleNames()))
-                                                @foreach($user->getRoleNames() as $roleName)
-                                                    {{-- Tag Role: Diubah dari Biru ke Monokrom (Hitam/Abu-abu) --}}
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                        @if($roleName == 'admin') bg-gray-800 text-white 
-                                                        @else bg-gray-200 text-gray-800 @endif">
-                                                        {{ $roleName }}
+            {{-- Notifikasi Error --}}
+            @if ($message = Session::get('error'))
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r shadow-sm mb-6 flex justify-between items-center" role="alert">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        <span>{{ $message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+            @endif
+
+            {{-- Tabel User --}}
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-50 bg-white flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="list" class="w-4 h-4 text-gray-400"></i> Daftar Pengguna
+                    </h3>
+                    <div class="text-xs text-gray-400 font-medium">
+                        Total: {{ $users->total() }} User
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-50">
+                        <thead class="bg-gray-50/50">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Pengguna</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Role / Hak Akses</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-50">
+                            @forelse ($users as $key => $user)
+                                <tr class="hover:bg-gray-50 transition-colors group">
+                                    
+                                    {{-- Kolom Pengguna (Avatar + Nama + Email) --}}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-4">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-sm font-bold text-gray-600 border border-gray-200">
+                                                {{ substr($user->name, 0, 1) }}
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900">{{ $user->name }}</div>
+                                                <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    {{-- Kolom Role --}}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if(!empty($user->getRoleNames()))
+                                            @foreach($user->getRoleNames() as $roleName)
+                                                @if($roleName == 'admin')
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-900 text-white border border-gray-700">
+                                                        <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
                                                     </span>
-                                                @endforeach
-                                            @endif
-                                        </td>
-                                        {{-- Aksi: Dirapikan dengan flex dan style tombol disamakan dengan halaman Menu --}}
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex space-x-2 items-center justify-center">
-                                            {{-- Tombol Edit: Diubah dari link Indigo ke tombol Merah (Primary Action) --}}
-                                            <a href="{{ route('admin.users.edit', $user->id) }}" class="text-red-600 hover:text-red-800 border border-gray-300 p-1 rounded-md text-xs font-semibold">Edit</a>
-                                            
-                                            {{-- Tombol Hapus: Style dirapikan (dihapus display:inline) dan diberi class m-0 --}}
-                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');" class="m-0">
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                                                        <i data-lucide="user" class="w-3 h-3"></i> {{ ucfirst($roleName) }}
+                                                    </span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <span class="text-xs text-gray-400 italic">Tidak ada role</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- Kolom Aksi --}}
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            {{-- Edit --}}
+                                            <a href="{{ route('admin.users.edit', $user->id) }}" 
+                                               class="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                               title="Edit User">
+                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            </a>
+
+                                            {{-- Hapus --}}
+                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');" 
+                                                  class="m-0 block">
                                                 @csrf
                                                 @method('DELETE')
-                                                {{-- Tombol Hapus: Dibuat Netral (Abu-abu -> Merah) konsisten dengan halaman Menu --}}
-                                                <button type="submit" class="text-gray-600 hover:text-red-600 border border-gray-300 p-1 rounded-md text-xs font-semibold">Hapus</button>
+                                                <button type="submit" 
+                                                        class="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                        title="Hapus User">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
                                             </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada user.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                     {{-- Pagination --}}
-                     <div class="mt-4">
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-6 py-12 text-center">
+                                        <div class="mx-auto w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                            <i data-lucide="users" class="w-8 h-8 text-gray-300"></i>
+                                        </div>
+                                        <p class="text-sm font-bold text-gray-900">Belum ada user.</p>
+                                        <p class="text-xs text-gray-500 mt-1">Silakan tambahkan user baru.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                @if($users->hasPages())
+                    <div class="p-4 border-t border-gray-50 bg-gray-50/50">
                         {{ $users->links() }}
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>

@@ -3,10 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// --- TAMBAHAN PENTING: Import Model Menu ---
+// --- Import Model ---
 use App\Models\Menu; 
 
-// 1. Tambahkan "use" untuk semua Controller yang digunakan
+// --- Import Semua Controller ---
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PesananController;
@@ -24,90 +24,94 @@ use App\Http\Controllers\Customer\ReviewController;
 |--------------------------------------------------------------------------
 */
 
-// Rute Landing Page (untuk tamu)
+// ==========================================
+// RUTE PUBLIK (BISA DIAKSES TAMU)
+// ==========================================
+
+// Landing Page
 Route::get('/', function () {
-    // Ambil semua menu dari database, urutkan terbaru, dan load relasi reviews
+    // Ambil menu terbaru beserta review-nya
     $menus = Menu::with('reviews')->latest()->get();
-    
-    // Kirim variabel $menus ke view welcome
     return view('welcome', compact('menus'));
 })->name('welcome');
 
-// ==========================================
-// RUTE BARU: HALAMAN ABOUT (TENTANG KAMI)
-// ==========================================
+// Halaman About
 Route::get('/about', function () {
     return view('about');
 })->name('about');
 
 
-// Rute untuk semua user yang SUDAH LOGIN
+// ==========================================
+// RUTE USER / PELANGGAN (LOGIN & TERVERIFIKASI)
+// ==========================================
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // Rute Dashboard (Menampilkan Menu)
+    // Dashboard User (Menampilkan Menu)
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
-    // Rute Profil
+    // Profil User
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rute Keranjang Belanja
+    // Keranjang Belanja (Cart)
     Route::get('/cart', [CartController::class, 'cartList'])->name('cart.list');
     Route::post('/cart', [CartController::class, 'addToCart'])->name('cart.store');
     Route::post('/update-cart', [CartController::class, 'updateCart'])->name('cart.update');
     Route::post('/remove-cart', [CartController::class, 'removeCart'])->name('cart.remove');
     Route::post('/clear-cart', [CartController::class, 'clearAllCart'])->name('cart.clear');
 
-    // Rute Checkout
+    // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-    // Rute Riwayat Pesanan
+    // Riwayat Pesanan
     Route::get('/riwayat-pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/riwayat-pesanan/{pesanan}', [OrderController::class, 'show'])->name('orders.show');
 
-    // Rute "Pesan Lagi" (Pelanggan)
+    // Fitur Pesan Lagi (Reorder)
     Route::post('/riwayat-pesanan/{pesanan}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
 
-    // === RUTE BARU UNTUK REVIEW/ULASAN ===
+    // Review / Ulasan Produk
     Route::get('/riwayat-pesanan/{pesanan}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/riwayat-pesanan/{pesanan}/review', [ReviewController::class, 'store'])->name('reviews.store');
-    // =====================================
 });
 
 
-// Grup Rute KHUSUS ADMIN
-Route::middleware(['auth', 'verified', 'role.admin'])
+// ==========================================
+// RUTE KHUSUS ADMIN (LOGIN, VERIFIED, ROLE:ADMIN)
+// ==========================================
+// Perbaikan: Menggunakan 'role:admin' (titik dua) sesuai standar Spatie
+Route::middleware(['auth', 'verified', 'role:admin']) 
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         
+        // Dashboard Admin
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Manajemen Menu & Kuota
         Route::get('menus/{menu}/tambah-kuota', [MenuController::class, 'editKuota'])->name('menus.editKuota');
         Route::put('menus/{menu}/update-kuota', [MenuController::class, 'updateKuota'])->name('menus.updateKuota');
-        
-        Route::resource('users', UserController::class);
         Route::resource('menus', MenuController::class);
 
-        // Rute Kelola Pesanan
+        // Manajemen User
+        Route::resource('users', UserController::class);
+
+        // Manajemen Pesanan
         Route::get('pesanan', [PesananController::class, 'index'])->name('pesanan.index');
         Route::get('pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 
-        // [BARU] Rute untuk Membuat Pesanan Offline (Admin)
+        // Pesanan Offline & Tambah Item (Fitur Admin)
         Route::post('pesanan/store-offline', [PesananController::class, 'storeOffline'])->name('pesanan.storeOffline');
-
-        // Rute untuk Admin menambah item ke pesanan yang ada
         Route::post('pesanan/{pesanan}/tambah-item', [PesananController::class, 'addItem'])->name('pesanan.addItem');
 
-        // Rute Kelola Transaksi
+        // Laporan & Transaksi
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::post('transaksi/verifikasi/{pesanan}', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
         Route::get('transaksi/cetak', [TransaksiController::class, 'cetakLaporan'])->name('transaksi.cetak');
-
 });
 
-
-// Rute Autentikasi
+// Rute Autentikasi (Breeze)
 require __DIR__.'/auth.php';

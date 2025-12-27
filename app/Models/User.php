@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail; // <-- SUDAH DIAKTIFKAN
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany; // <-- DITAMBAHKAN
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles; // <-- Impor trait
-class User extends Authenticatable
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable implements MustVerifyEmail // <-- DITAMBAHKAN IMPLEMENTS
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -21,7 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'phone_number', // <--- TAMBAHKAN INI
+        'phone_number', // <--- Kolom No HP
         'password',
     ];
 

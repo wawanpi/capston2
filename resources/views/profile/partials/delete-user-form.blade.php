@@ -1,30 +1,42 @@
 <section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Delete Account') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
+    <header class="flex items-start gap-4 mb-6">
+        <div class="p-2 bg-red-50 rounded-lg text-red-600">
+            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <div>
+            <h2 class="text-lg font-bold text-gray-900">
+                {{ __('Hapus Akun') }}
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Setelah akun dihapus, semua data dan sumber daya akan dihapus secara permanen. Harap unduh data penting sebelum melanjutkan.') }}
+            </p>
+        </div>
     </header>
 
-    <x-danger-button
+    <button
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+    >
+        {{ __('Hapus Akun') }}
+    </button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-red-100 rounded-full text-red-600">
+                    <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900">
+                    {{ __('Apakah Anda yakin ingin menghapus akun?') }}
+                </h2>
+            </div>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Setelah akun dihapus, semua data akan hilang permanen. Masukkan password Anda untuk konfirmasi.') }}
             </p>
 
             <div class="mt-6">
@@ -34,21 +46,21 @@
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
+                    class="mt-1 block w-3/4 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-xl shadow-sm"
                     placeholder="{{ __('Password') }}"
                 />
 
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
+            <div class="mt-6 flex justify-end gap-3">
+                <x-secondary-button x-on:click="$dispatch('close')" class="rounded-xl">
+                    {{ __('Batal') }}
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                    {{ __('Hapus Akun') }}
+                </button>
             </div>
         </form>
     </x-modal>

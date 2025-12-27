@@ -1,35 +1,28 @@
 <section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            <?php echo e(__('Delete Account')); ?>
+    <header class="flex items-start gap-4 mb-6">
+        <div class="p-2 bg-red-50 rounded-lg text-red-600">
+            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <div>
+            <h2 class="text-lg font-bold text-gray-900">
+                <?php echo e(__('Hapus Akun')); ?>
 
-        </h2>
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                <?php echo e(__('Setelah akun dihapus, semua data dan sumber daya akan dihapus secara permanen. Harap unduh data penting sebelum melanjutkan.')); ?>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            <?php echo e(__('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.')); ?>
-
-        </p>
+            </p>
+        </div>
     </header>
 
-    <?php if (isset($component)) { $__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.danger-button','data' => ['xData' => '','xOn:click.prevent' => '$dispatch(\'open-modal\', \'confirm-user-deletion\')']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('danger-button'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['x-data' => '','x-on:click.prevent' => '$dispatch(\'open-modal\', \'confirm-user-deletion\')']); ?><?php echo e(__('Delete Account')); ?> <?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11)): ?>
-<?php $attributes = $__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11; ?>
-<?php unset($__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11)): ?>
-<?php $component = $__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11; ?>
-<?php unset($__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11); ?>
-<?php endif; ?>
+    <button
+        x-data=""
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+    >
+        <?php echo e(__('Hapus Akun')); ?>
+
+    </button>
 
     <?php if (isset($component)) { $__componentOriginal9f64f32e90b9102968f2bc548315018c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal9f64f32e90b9102968f2bc548315018c = $attributes; } ?>
@@ -45,13 +38,18 @@
             <?php echo csrf_field(); ?>
             <?php echo method_field('delete'); ?>
 
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                <?php echo e(__('Are you sure you want to delete your account?')); ?>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-red-100 rounded-full text-red-600">
+                    <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900">
+                    <?php echo e(__('Apakah Anda yakin ingin menghapus akun?')); ?>
 
-            </h2>
+                </h2>
+            </div>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                <?php echo e(__('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.')); ?>
+            <p class="mt-1 text-sm text-gray-600">
+                <?php echo e(__('Setelah akun dihapus, semua data akan hilang permanen. Masukkan password Anda untuk konfirmasi.')); ?>
 
             </p>
 
@@ -79,14 +77,14 @@
 
                 <?php if (isset($component)) { $__componentOriginal18c21970322f9e5c938bc954620c12bb = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal18c21970322f9e5c938bc954620c12bb = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'password','name' => 'password','type' => 'password','class' => 'mt-1 block w-3/4','placeholder' => ''.e(__('Password')).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.text-input','data' => ['id' => 'password','name' => 'password','type' => 'password','class' => 'mt-1 block w-3/4 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-xl shadow-sm','placeholder' => ''.e(__('Password')).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('text-input'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['id' => 'password','name' => 'password','type' => 'password','class' => 'mt-1 block w-3/4','placeholder' => ''.e(__('Password')).'']); ?>
+<?php $component->withAttributes(['id' => 'password','name' => 'password','type' => 'password','class' => 'mt-1 block w-3/4 border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-xl shadow-sm','placeholder' => ''.e(__('Password')).'']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal18c21970322f9e5c938bc954620c12bb)): ?>
@@ -120,18 +118,18 @@
 <?php endif; ?>
             </div>
 
-            <div class="mt-6 flex justify-end">
+            <div class="mt-6 flex justify-end gap-3">
                 <?php if (isset($component)) { $__componentOriginal3b0e04e43cf890250cc4d85cff4d94af = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3b0e04e43cf890250cc4d85cff4d94af = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.secondary-button','data' => ['xOn:click' => '$dispatch(\'close\')']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.secondary-button','data' => ['xOn:click' => '$dispatch(\'close\')','class' => 'rounded-xl']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('secondary-button'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['x-on:click' => '$dispatch(\'close\')']); ?>
-                    <?php echo e(__('Cancel')); ?>
+<?php $component->withAttributes(['x-on:click' => '$dispatch(\'close\')','class' => 'rounded-xl']); ?>
+                    <?php echo e(__('Batal')); ?>
 
                  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
@@ -144,28 +142,10 @@
 <?php unset($__componentOriginal3b0e04e43cf890250cc4d85cff4d94af); ?>
 <?php endif; ?>
 
-                <?php if (isset($component)) { $__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.danger-button','data' => ['class' => 'ms-3']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('danger-button'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['class' => 'ms-3']); ?>
-                    <?php echo e(__('Delete Account')); ?>
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                    <?php echo e(__('Hapus Akun')); ?>
 
-                 <?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11)): ?>
-<?php $attributes = $__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11; ?>
-<?php unset($__attributesOriginal656e8c5ea4d9a4fa173298297bfe3f11); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11)): ?>
-<?php $component = $__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11; ?>
-<?php unset($__componentOriginal656e8c5ea4d9a4fa173298297bfe3f11); ?>
-<?php endif; ?>
+                </button>
             </div>
         </form>
      <?php echo $__env->renderComponent(); ?>
@@ -178,5 +158,4 @@
 <?php $component = $__componentOriginal9f64f32e90b9102968f2bc548315018c; ?>
 <?php unset($__componentOriginal9f64f32e90b9102968f2bc548315018c); ?>
 <?php endif; ?>
-</section>
-<?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/profile/partials/delete-user-form.blade.php ENDPATH**/ ?>
+</section><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/profile/partials/delete-user-form.blade.php ENDPATH**/ ?>

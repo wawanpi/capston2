@@ -9,27 +9,39 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            <?php echo e(__('Profile')); ?>
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-red-100 rounded-lg text-[#D40000]">
+                <i data-lucide="user-circle" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="font-black text-xl text-gray-800 leading-tight">
+                    <?php echo e(__('Profil Saya')); ?>
 
-        </h2>
+                </h2>
+                <p class="text-sm text-gray-500">Kelola informasi akun dan keamanan.</p>
+            </div>
+        </div>
      <?php $__env->endSlot(); ?>
 
-    <div class="py-12">
+    <div class="py-12 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            
+            
+            <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-3xl border border-gray-100">
                 <div class="max-w-xl">
                     <?php echo $__env->make('profile.partials.update-profile-information-form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            
+            <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-3xl border border-gray-100">
                 <div class="max-w-xl">
                     <?php echo $__env->make('profile.partials.update-password-form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            
+            <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-3xl border border-gray-100">
                 <div class="max-w-xl">
                     <?php echo $__env->make('profile.partials.delete-user-form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 </div>
@@ -45,5 +57,4 @@
 <?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
 <?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
 <?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
-<?php endif; ?>
-<?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/profile/edit.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php /**PATH D:\Kuliah\S7\capstonne\CapstoneProject\resources\views/profile/edit.blade.php ENDPATH**/ ?>

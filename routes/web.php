@@ -33,6 +33,13 @@ Route::get('/', function () {
     return view('welcome', compact('menus'));
 })->name('welcome');
 
+// ==========================================
+// RUTE BARU: HALAMAN ABOUT (TENTANG KAMI)
+// ==========================================
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
 
 // Rute untuk semua user yang SUDAH LOGIN
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -31,18 +31,29 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            // Validasi Email Unik
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            
+            // PERBAIKAN DI SINI:
+            // Tambahkan 'unique:'.User::class agar No HP tidak boleh sama
+            'phone_number' => [
+                'required', 
+                'numeric', 
+                'digits_between:10,15', 
+                'regex:/^[0-9]+$/', 
+                'unique:'.User::class
+            ],            
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
         ]);
 
-        // PERBAIKAN: Ganti role 'user' menjadi 'pelanggan'
-        // agar sesuai dengan DatabaseSeeder Anda
+        // Pastikan role sesuai ('user' atau 'pelanggan')
         $user->assignRole('user');
 
         event(new Registered($user));

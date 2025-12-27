@@ -52,7 +52,16 @@
                                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                             <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
                                         </div>
-                                        <x-text-input id="name" class="block w-full pl-10" type="text" name="name" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+                                        <x-text-input id="phone_number" 
+                                    class="block w-full pl-10" 
+                                    type="text" 
+                                    name="phone_number" 
+                                    :value="old('phone_number')" 
+                                    required 
+                                    placeholder="08xxxxxxxxxx" 
+                                    inputmode="numeric" 
+                                    pattern="[0-9]*"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                     </div>
                                 </div>
 
@@ -66,6 +75,18 @@
                                         <x-text-input id="email" class="block w-full pl-10" type="email" name="email" :value="old('email', $user->email)" required autocomplete="username" />
                                     </div>
                                 </div>
+
+                                {{-- No HP / WhatsApp (BARU) --}}
+                                <div>
+                                    <x-input-label for="phone_number" :value="__('No HP / WhatsApp')" />
+                                    <div class="relative mt-1">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                                        </div>
+                                        <x-text-input id="phone_number" class="block w-full pl-10" type="text" name="phone_number" :value="old('phone_number', $user->phone_number)" required placeholder="08xxxxxxxxxx" />
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>

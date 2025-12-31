@@ -14,16 +14,13 @@ use Illuminate\Support\Carbon;
 class PesananController extends Controller
 {
     /**
-     * Menampilkan halaman daftar semua pesanan dengan FILTER & SEARCH.
-     * Mendukung pencarian ID, Nama, Catatan, dan Filter Status.
+     * Menampilkan daftar pesanan dengan Filter & Search.
      */
     public function index(Request $request)
     {
-        // 1. Inisialisasi Query dasar dengan relasi
         $query = Pesanan::with(['user', 'details.menu', 'transaksi']);
 
-        // 2. LOGIKA PENCARIAN (Search Bar)
-        // Mencari berdasarkan ID Pesanan, Nama User, atau Catatan Pelanggan (Offline)
+        // 1. SEARCH: ID, Nama User, atau Catatan (Offline)
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -35,40 +32,32 @@ class PesananController extends Controller
             });
         }
 
-        // 3. LOGIKA FILTER STATUS (Dropdown)
+        // 2. FILTER STATUS
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
 
-        // 4. SORTING & PAGINATION
         $pesanans = $query
-            // Urutkan status: Pending -> Processing -> Completed -> Cancelled
             ->orderByRaw("FIELD(status, 'pending', 'processing', 'completed', 'cancelled')")
-            // Lalu urutkan berdasarkan waktu terbaru
             ->latest()
             ->paginate(10)
-            // Pastikan parameter search & status tetap ada di link pagination
-            ->withQueryString(); 
+            ->withQueryString();
         
         return view('admin.pesanan.index', compact('pesanans'));
     }
 
     /**
-     * Menampilkan halaman detail untuk satu pesanan.
+     * Menampilkan detail pesanan.
      */
     public function show(Pesanan $pesanan)
     {
-        // Mengambil relasi yang dibutuhkan termasuk data transaksi untuk cek pembayaran
         $pesanan->load(['user', 'details.menu', 'transaksi']); 
-        
-        // Ambil semua menu untuk dropdown "Tambah Item"
         $menus = Menu::orderBy('namaMenu')->get();
-        
         return view('admin.pesanan.show', compact('pesanan', 'menus'));
     }
 
     /**
-     * Mengupdate status dari sebuah pesanan.
+     * === [PENTING] LOGIKA UPDATE STATUS & PENGEMBALIAN STOK ===
      */
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
@@ -76,17 +65,47 @@ class PesananController extends Controller
             'status' => 'required|in:pending,processing,completed,cancelled'
         ]);
 
-        $pesanan->update([
-            'status' => $request->status
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('admin.pesanan.show', $pesanan)
-                         ->with('success', 'Status pesanan berhasil diperbarui.');
+            $oldStatus = $pesanan->status;
+            $newStatus = $request->status;
+
+            // Jika pesanan DIBATALKAN (dari status apapun selain cancelled)
+            // Maka kita harus MENGEMBALIKAN STOK (Restock)
+            if ($newStatus == 'cancelled' && $oldStatus != 'cancelled') {
+                
+                foreach ($pesanan->details as $detail) {
+                    $menu = $detail->menu;
+                    
+                    // Kembalikan stok ke 'jumlah_saat_ini' di DailyKetersediaan
+                    if ($menu && $menu->ketersediaanHariIni) {
+                        $menu->ketersediaanHariIni->increment('jumlah_saat_ini', $detail->jumlah);
+                    }
+                }
+
+                // Opsional: Jika sudah ada transaksi, hapus transaksinya agar laporan keuangan bersih
+                if ($pesanan->transaksi) {
+                    $pesanan->transaksi()->delete();
+                }
+            }
+
+            // Update status pesanan
+            $pesanan->update(['status' => $newStatus]);
+
+            DB::commit();
+
+            return redirect()->route('admin.pesanan.show', $pesanan)
+                             ->with('success', 'Status pesanan diperbarui menjadi ' . strtoupper($newStatus));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
-     * === METHOD BARU: STORE OFFLINE (PESANAN DI TEMPAT) ===
-     * Membuat pesanan kosong baru untuk pelanggan offline (Walk-in).
+     * Membuat pesanan Offline (Walk-in).
      */
     public function storeOffline(Request $request)
     {
@@ -95,50 +114,46 @@ class PesananController extends Controller
             'tipe_layanan' => 'required|in:Dine-in,Take Away'
         ]);
 
-        // Gunakan nama pelanggan di catatan agar mudah dikenali
-        // Karena user_id wajib (not null), kita gunakan ID Admin yang sedang login
         $nama = $request->nama_pelanggan ? $request->nama_pelanggan : 'Pelanggan Offline';
-        $catatan = "OFFLINE - " . $nama;
-
+        
         try {
             DB::beginTransaction();
 
             $pesanan = Pesanan::create([
-                'user_id' => auth()->id(), // Menggunakan ID Admin
-                'total_bayar' => 0, // Awalnya 0, akan bertambah saat add item
+                'user_id' => auth()->id(),
+                'total_bayar' => 0,
                 'status' => 'pending',
                 'tipe_layanan' => $request->tipe_layanan,
-                'catatan_pelanggan' => $catatan,
-                'metode_pembayaran' => null, // Belum bayar (nanti diisi saat verifikasi)
-                'jumlah_tamu' => 1, // Default
-                'bukti_bayar' => null // Tidak ada upload bukti
+                'catatan_pelanggan' => "OFFLINE - " . $nama,
+                'metode_pembayaran' => null,
+                
+                // [PERBAIKAN LOGIKA JUMLAH TAMU]
+                // Jika Dine-in default 1, Jika Take Away 0 (agar tidak muncul di nota)
+                'jumlah_tamu' => ($request->tipe_layanan == 'Dine-in') ? 1 : 0,
+                
+                'bukti_bayar' => null
             ]);
 
             DB::commit();
 
-            // Redirect langsung ke halaman detail agar Admin bisa langsung input menu
             return redirect()->route('admin.pesanan.show', $pesanan->id)
-                             ->with('success', 'Pesanan Offline berhasil dibuat. Silakan tambahkan menu.');
+                             ->with('success', 'Pesanan Offline dibuat. Silakan input menu.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal membuat pesanan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
     /**
-     * === METHOD REVISI: TAMBAH ITEM + RESET PEMBAYARAN ===
-     * Menambahkan item baru ke pesanan & Reset status lunas jika ada.
+     * Menambah Item ke Pesanan (Update Stok & Total).
      */
     public function addItem(Request $request, Pesanan $pesanan)
     {
-        // [VALIDASI STATUS] Mencegah perubahan pada pesanan yang sudah selesai atau dibatalkan
-        // Admin hanya boleh edit pesanan yang masih Pending atau Sedang Dibuat
         if (!in_array($pesanan->status, ['pending', 'processing'])) {
-            return redirect()->back()->with('error', 'Item tidak dapat ditambahkan karena pesanan sudah ' . $pesanan->status . '.');
+            return redirect()->back()->with('error', 'Tidak bisa mengubah pesanan yang sudah selesai/batal.');
         }
 
-        // 1. Validasi input
         $validated = $request->validate([
             'menu_id' => 'required|exists:menus,id',
             'jumlah' => 'required|integer|min:1',
@@ -147,28 +162,22 @@ class PesananController extends Controller
         $menu = Menu::findOrFail($validated['menu_id']);
         $jumlah = (int)$validated['jumlah'];
 
-        // 2. Cek Ketersediaan Harian
-        // Menggunakan accessor 'jumlah_saat_ini' dari Model Menu (relasi DailyKetersediaan)
+        // Cek Stok
         if ($menu->jumlah_saat_ini < $jumlah) {
-            return redirect()->back()->with('error', 'Stok tidak cukup untuk ' . $menu->namaMenu . ' (Sisa: ' . $menu->jumlah_saat_ini . ').');
+            return redirect()->back()->with('error', 'Stok ' . $menu->namaMenu . ' tidak cukup (Sisa: ' . $menu->jumlah_saat_ini . ').');
         }
 
-        // 3. Hitung harga subtotal
-        $subtotal = $menu->harga * $jumlah;
-
-        // 4. Mulai Transaksi Database (Agar data konsisten)
         try {
             DB::beginTransaction();
 
-            // 5. Cek apakah item ini sudah ada di detail pesanan?
+            $subtotal = $menu->harga * $jumlah;
+
+            // Update/Create Detail
             $existingDetail = $pesanan->details()->where('menu_id', $menu->id)->first();
-            
             if ($existingDetail) {
-                // Jika menu sudah ada, tambahkan jumlahnya
                 $existingDetail->increment('jumlah', $jumlah);
                 $existingDetail->increment('subtotal', $subtotal);
             } else {
-                // Jika belum ada, buat baris detail baru
                 PesananDetail::create([
                     'pesanan_id' => $pesanan->id,
                     'menu_id' => $menu->id,
@@ -178,35 +187,28 @@ class PesananController extends Controller
                 ]);
             }
 
-            // 6. Update Total Bayar di Pesanan Utama
+            // Update Total & Kurangi Stok
             $pesanan->increment('total_bayar', $subtotal);
-
-            // 7. Kurangi Stok Harian di tabel DailyKetersediaan
             $menu->ketersediaanHariIni->decrement('jumlah_saat_ini', $jumlah);
 
-            // === LOGIKA PENTING: RESET STATUS LUNAS ===
-            // Jika pesanan ini sebelumnya sudah dibayar (ada data di tabel transaksi),
-            // kita hapus data transaksinya. Ini akan membuat tombol "Verifikasi Pembayaran"
-            // muncul kembali di halaman detail, memaksa kasir menagih kekurangan bayar.
+            // Reset Pembayaran jika harga berubah
             if ($pesanan->transaksi) {
                 $pesanan->transaksi()->delete();
-                
-                // Kirim pesan WARNING (Kuning) agar kasir sadar status berubah
-                session()->flash('warning', 'Item berhasil ditambahkan. Status pembayaran DI-RESET menjadi BELUM LUNAS karena total harga berubah. Silakan tagih kekurangan dan verifikasi ulang.');
+                // Jika status processing, kembalikan ke pending karena harus bayar ulang
+                if($pesanan->status == 'processing') {
+                    $pesanan->update(['status' => 'pending']);
+                }
+                session()->flash('warning', 'Total harga berubah. Status pembayaran di-reset. Silakan verifikasi ulang.');
             } else {
-                // Jika belum bayar, kirim pesan SUKSES biasa (Hijau)
-                session()->flash('success', $jumlah . 'x ' . $menu->namaMenu . ' berhasil ditambahkan.');
+                session()->flash('success', 'Item berhasil ditambahkan.');
             }
 
-            // 8. Commit perubahan ke database
             DB::commit();
-
             return redirect()->back();
 
         } catch (\Exception $e) {
-            // 9. Rollback jika ada error sistem
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menambahkan item: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 }
